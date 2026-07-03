@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Parallel — Work</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Figtree:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FCFBF8;--card:#FFFFFF;
+  --ink:#111111;
+  --ink-70:rgba(17,17,17,.7);--ink-54:rgba(17,17,17,.54);--ink-38:rgba(17,17,17,.38);
+  --line:rgba(17,17,17,.1);--line-2:rgba(17,17,17,.22);--line-3:rgba(17,17,17,.45);
+  --sec:#6A685D;
+  --green:#19DB98;--green-ink:#0E8A60;--red:#D65151;
+  --fd:'Libre Baskerville',Georgia,serif;
+  --fs:'Figtree',-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;
+  --ease:cubic-bezier(.22,.9,.24,1);
+  --r:20px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font-family:var(--fs);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;min-height:100vh}
+.serif{font-family:var(--fd)}
+a{color:inherit}
+button{font-family:var(--fs)}
+
+.wrap{max-width:1240px;margin:0 auto;padding:0 44px 150px}
+
+/* ============ TOP BAR ============ */
+#topbar{display:flex;justify-content:space-between;align-items:center;padding:30px 0 0}
+#brand{display:flex;align-items:baseline;gap:14px}
+#brand .p{font-family:var(--fd);font-size:22px;letter-spacing:-.01em}
+#brand .sec{font-size:13px;color:var(--sec);border-left:1px solid var(--line-2);padding-left:14px;letter-spacing:.01em}
+#searchpill{display:flex;align-items:center;gap:10px;font-size:13.5px;color:var(--ink-54);background:var(--card);
+  border:1px solid var(--line);border-radius:100px;padding:9px 9px 9px 16px;cursor:pointer;
+  transition:border-color .25s,box-shadow .25s,color .25s}
+#searchpill:hover{border-color:var(--line-3);color:var(--ink);box-shadow:0 0 0 1px var(--line-2),0 10px 30px -12px rgba(17,17,17,.18)}
+#searchpill .kb{font-size:11.5px;color:var(--ink-38);border:1px solid var(--line);border-radius:6px;padding:2px 8px;background:var(--bg)}
+
+/* ============ HERO ============ */
+#hero{padding:11vh 0 44px}
+#hero .kicker{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--sec);font-weight:500;margin-bottom:26px}
+#hero h1{font-family:var(--fd);font-weight:400;font-size:clamp(38px,5.6vw,72px);line-height:1.14;letter-spacing:-.015em;max-width:15ch}
+#hero .sub{margin-top:24px;font-size:16px;color:var(--ink-54);line-height:1.6;max-width:46ch;font-weight:400}
+
+/* ============ FILTER CHIPS ============ */
+#controls{position:sticky;top:0;z-index:40;background:linear-gradient(var(--bg) 78%,rgba(252,251,248,0));padding:16px 0 22px}
+#chiprow{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+.chip{font-size:13.5px;font-weight:500;color:var(--ink-70);background:none;border:1px solid var(--line);border-radius:100px;
+  padding:8px 17px 9px;cursor:pointer;transition:color .22s,border-color .22s,background .22s,box-shadow .22s}
+.chip:hover{border-color:var(--line-3);color:var(--ink)}
+.chip.on{color:#fff;background:var(--ink);border-color:var(--ink)}
+.chipsep{width:1px;height:20px;background:var(--line-2);margin:0 8px}
+#resultline{margin-top:16px;font-size:13px;color:var(--ink-38);display:flex;align-items:center;gap:16px;min-height:18px}
+#resultline .rst{background:none;border:0;color:var(--sec);font-size:13px;cursor:pointer;border-bottom:1px solid var(--line-2);padding-bottom:1px;display:none}
+#resultline .rst:hover{color:var(--ink)}
+
+/* ============ CARD HOVER — stroke highlight + soft glow ============ */
+.glowable{transition:border-color .28s,box-shadow .28s,transform .45s var(--ease)}
+.glowable:hover{border-color:var(--line-3);transform:translateY(-3px);
+  box-shadow:0 0 0 1px var(--line-2),
+             0 1px 2px rgba(17,17,17,.04),
+             0 28px 70px -24px rgba(17,17,17,.22)}
+
+/* ============ FEATURED ============ */
+#featured{position:relative;border:1px solid var(--line);border-radius:var(--r);overflow:hidden;cursor:pointer;margin-bottom:20px;
+  background:var(--card);display:grid;grid-template-columns:1.2fr .8fr}
+#featured .fl{padding:42px 46px 40px}
+#featured .flag{display:inline-flex;align-items:center;gap:9px;font-size:12px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--green-ink);margin-bottom:20px}
+#featured .flag .pulse{width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse 2.2s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(25,219,152,.45)}70%{box-shadow:0 0 0 9px rgba(25,219,152,0)}100%{box-shadow:0 0 0 0 rgba(25,219,152,0)}}
+#featured h2{font-family:var(--fd);font-weight:400;font-size:clamp(26px,2.8vw,40px);letter-spacing:-.015em;line-height:1.22}
+#featured .fd{margin-top:16px;font-size:15px;color:var(--ink-54);line-height:1.62;max-width:48ch}
+#featured .fmeta{display:flex;gap:8px;margin-top:22px;flex-wrap:wrap}
+#featured .fbtn{display:inline-block;margin-top:28px;font-size:14.5px;font-weight:500;color:#fff;background:var(--ink);border-radius:100px;
+  padding:13px 26px;text-decoration:none;transition:transform .3s var(--ease),box-shadow .3s}
+#featured:hover .fbtn{transform:translateX(4px);box-shadow:0 14px 34px -12px rgba(17,17,17,.4)}
+#featured .fr{position:relative;border-left:1px solid var(--line);min-height:260px;
+  background:radial-gradient(90% 90% at 60% 30%,#F4F9F3,transparent 75%),linear-gradient(#FFFFFF,#FBFAF6)}
+.sketch{position:absolute;inset:0;padding:36px}
+.sketch svg{width:100%;height:100%;overflow:visible}
+.sketch .sl{position:absolute;left:36px;bottom:30px;font-size:12px;color:var(--ink-38);letter-spacing:.02em}
+
+/* ============ GRID ============ */
+#grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px}
+.card{position:relative;border:1px solid var(--line);border-radius:var(--r);background:var(--card);padding:26px 26px 22px;cursor:pointer;
+  display:flex;flex-direction:column;gap:12px;min-height:210px;
+  opacity:0;transform:translateY(14px);animation:rise .7s var(--ease) forwards}
+@keyframes rise{to{opacity:1;transform:none}}
+.card .ind{font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:var(--sec);font-weight:500}
+.card h3{font-family:var(--fd);font-weight:400;font-size:21px;letter-spacing:-.01em;line-height:1.3}
+.card .cd{font-size:14px;color:var(--ink-54);line-height:1.58;flex:1}
+.card .tags{display:flex;gap:7px;flex-wrap:wrap}
+.tg{font-size:12px;font-weight:500;color:var(--ink-54);border:1px solid var(--line);border-radius:100px;padding:5px 12px 6px;background:var(--bg)}
+.livedot{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:600;color:var(--green-ink);
+  background:rgba(25,219,152,.1);border-radius:100px;padding:5px 12px 6px}
+.livedot i{width:6px;height:6px;border-radius:50%;background:var(--green)}
+.addbtn{position:absolute;right:20px;top:20px;width:30px;height:30px;border-radius:50%;border:1px solid var(--line-2);background:var(--card);
+  color:var(--ink-54);font-size:16px;line-height:1;cursor:pointer;opacity:0;transform:scale(.9);z-index:3;
+  transition:opacity .2s,transform .25s var(--ease),color .2s,border-color .2s,background .2s}
+.card:hover .addbtn{opacity:1;transform:none}
+.addbtn:hover{color:var(--ink);border-color:var(--ink)}
+.addbtn.in{opacity:1;transform:none;background:var(--ink);border-color:var(--ink);color:#fff}
+
+/* ============ EMPTY ============ */
+#empty{display:none;text-align:center;padding:12vh 0}
+#empty .big{font-family:var(--fd);font-size:clamp(22px,2.6vw,34px);font-weight:400;margin-bottom:14px;letter-spacing:-.01em}
+#empty p{font-size:14px;color:var(--ink-54)}
+#empty button{margin-top:22px;font-size:13.5px;font-weight:500;color:var(--ink-70);background:none;border:1px solid var(--line-2);border-radius:100px;padding:10px 20px;cursor:pointer;transition:border-color .2s,color .2s}
+#empty button:hover{color:var(--ink);border-color:var(--ink)}
+
+/* ============ ARCHIVE ============ */
+#archive{margin-top:70px;border-top:1px solid var(--line);padding-top:30px}
+#archive .ah{font-size:12px;color:var(--ink-38);margin-bottom:16px;letter-spacing:.08em;text-transform:uppercase;font-weight:600}
+#archive .alist{display:flex;gap:10px;flex-wrap:wrap}
+#archive .ai{font-family:var(--fd);font-size:15px;color:var(--sec);border:1px dashed var(--line-2);border-radius:12px;padding:10px 18px;transition:color .2s,border-color .2s}
+#archive .ai:hover{color:var(--ink);border-color:var(--line-3)}
+
+/* ============ OVERLAYS (shared) ============ */
+.overlay{position:fixed;inset:0;z-index:200;background:rgba(252,251,248,.72);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  opacity:0;visibility:hidden;transition:opacity .28s,visibility 0s .28s;display:grid;place-items:center;padding:5vh 5vw}
+.overlay.open{opacity:1;visibility:visible;transition:opacity .28s}
+.oclose{position:fixed;top:26px;right:30px;width:42px;height:42px;border-radius:50%;border:1px solid var(--line-2);background:var(--card);
+  color:var(--ink-54);font-size:19px;cursor:pointer;z-index:210;transition:color .2s,border-color .2s}
+.oclose:hover{color:var(--ink);border-color:var(--ink)}
+.sheet{width:min(620px,100%);background:var(--card);border:1px solid var(--line);border-radius:24px;padding:44px 46px 40px;
+  box-shadow:0 40px 110px -20px rgba(17,17,17,.25);transform:translateY(14px);transition:transform .35s var(--ease)}
+.overlay.open .sheet{transform:none}
+.sheet .rk{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--sec);font-weight:600;margin-bottom:16px}
+.sheet h2{font-family:var(--fd);font-weight:400;font-size:clamp(26px,3vw,36px);letter-spacing:-.015em;line-height:1.22}
+.sheet .rdesc{font-size:15.5px;color:var(--ink-54);line-height:1.65;margin-top:16px;max-width:46ch}
+.sheet .stags{display:flex;gap:8px;flex-wrap:wrap;margin-top:24px}
+.racts{display:flex;gap:10px;margin-top:30px;flex-wrap:wrap;align-items:center}
+.racts .primary{font-size:14.5px;font-weight:500;color:#fff;background:var(--ink);border:0;border-radius:100px;padding:13px 26px;cursor:pointer;text-decoration:none;display:inline-block;transition:box-shadow .3s,transform .3s var(--ease)}
+.racts .primary:hover{transform:translateY(-1px);box-shadow:0 14px 34px -12px rgba(17,17,17,.4)}
+.racts .ghostb{font-size:13.5px;font-weight:500;color:var(--ink-70);background:none;border:1px solid var(--line-2);border-radius:100px;padding:12px 22px;cursor:pointer;transition:color .2s,border-color .2s}
+.racts .ghostb:hover{color:var(--ink);border-color:var(--ink)}
+.rnote{margin-top:20px;font-size:13px;color:var(--ink-38);line-height:1.6}
+
+/* ============ SPOTLIGHT ============ */
+#spot{align-items:flex-start;justify-items:center;padding-top:16vh}
+#spotpanel{width:min(640px,94vw);background:var(--card);border:1px solid var(--line);border-radius:22px;overflow:hidden;
+  box-shadow:0 0 0 1px rgba(17,17,17,.03),0 50px 120px -20px rgba(17,17,17,.3);
+  transform:translateY(-10px) scale(.985);transition:transform .3s var(--ease)}
+#spot.open #spotpanel{transform:none}
+#spotin{display:flex;align-items:center;gap:14px;padding:20px 24px;border-bottom:1px solid var(--line)}
+#spotin .mag{font-size:18px;color:var(--ink-38)}
+#sq{flex:1;border:0;outline:0;background:none;font-family:var(--fs);font-size:18px;color:var(--ink);font-weight:400}
+#sq::placeholder{color:var(--ink-38)}
+#spotin .esc{font-size:11px;color:var(--ink-38);border:1px solid var(--line);border-radius:6px;padding:3px 8px;background:var(--bg)}
+#sres{max-height:47vh;overflow:auto;padding:10px}
+.sr{display:flex;align-items:center;gap:16px;padding:13px 16px;border-radius:14px;cursor:pointer}
+.sr.sel{background:#F5F3EC}
+.sr .sn{font-family:var(--fd);font-size:16.5px;letter-spacing:-.01em;white-space:nowrap}
+.sr .sd{flex:1;font-size:13px;color:var(--ink-54);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sr .si{font-size:12px;color:var(--sec);white-space:nowrap}
+.sr .live{width:7px;height:7px;border-radius:50%;background:var(--green);flex:none}
+#snone{padding:34px 24px 40px;text-align:center;font-size:14px;color:var(--ink-38);display:none}
+#sfoot{display:flex;gap:18px;padding:12px 24px;border-top:1px solid var(--line);font-size:11.5px;color:var(--ink-38);background:var(--bg)}
+#sfoot b{font-weight:500;color:var(--ink-54)}
+
+/* ============ SHORTLIST TRAY ============ */
+#tray{position:fixed;bottom:26px;left:50%;transform:translate(-50%,100px);z-index:150;display:flex;align-items:center;gap:18px;
+  background:var(--card);border:1px solid var(--line);border-radius:100px;padding:10px 12px 10px 24px;
+  box-shadow:0 0 0 1px rgba(17,17,17,.03),0 30px 80px -18px rgba(17,17,17,.3);transition:transform .45s var(--ease)}
+#tray.show{transform:translate(-50%,0)}
+#tray .tl{font-size:13.5px;color:var(--ink-54)}
+#tray .tl b{color:var(--ink);font-weight:500}
+#tray .tclear{background:none;border:0;color:var(--ink-38);font-size:12.5px;cursor:pointer}
+#tray .tclear:hover{color:var(--ink)}
+#tray .tgo{font-size:13.5px;font-weight:500;color:#fff;background:var(--ink);border:0;border-radius:100px;padding:11px 20px;cursor:pointer;transition:box-shadow .3s}
+#tray .tgo:hover{box-shadow:0 12px 30px -10px rgba(17,17,17,.45)}
+
+/* ============ CURTAIN (page transition) ============ */
+#curtain{position:fixed;inset:0;z-index:999;background:var(--bg);display:grid;place-items:center;
+  opacity:0;pointer-events:none;transition:opacity .45s}
+#curtain.on{opacity:1;pointer-events:auto}
+#curtain .ct{font-family:var(--fd);font-size:clamp(20px,2.2vw,30px);color:var(--sec);letter-spacing:-.01em;
+  opacity:0;transform:translateY(10px);transition:opacity .4s .15s,transform .5s .15s var(--ease)}
+#curtain.on .ct{opacity:1;transform:none}
+
+@media(max-width:860px){
+  .wrap{padding:0 24px 150px}
+  #featured{grid-template-columns:1fr}
+  #featured .fr{display:none}
+  #hero{padding:8vh 0 30px}
+}
+@media (prefers-reduced-motion:reduce){*{transition-duration:.001s!important;animation-duration:.001s!important}}
+</style>
+</head>
+<body>
+<div id="curtain"><div class="ct"></div></div>
+<div class="wrap">
+
+  <div id="topbar">
+    <div id="brand"><span class="p">Parallel</span><span class="sec">Work</span></div>
+    <button id="searchpill"><span>⌕</span>Search the work<span class="kb">/</span></button>
+  </div>
+
+  <div id="hero">
+    <p class="kicker">Selected work · 2019 — 2026</p>
+    <h1>Taste is easier to show than explain.</h1>
+    <p class="sub">Thirty-three products, from fintech to space tech. Open any of them for the full story: the thinking, the product in motion, the results it drove.</p>
+  </div>
+
+  <div id="controls">
+    <div id="chiprow"></div>
+    <div id="resultline"><span id="rcount"></span><button class="rst" id="resetAll">Clear filters</button></div>
+  </div>
+
+  <div id="featured" class="glowable"></div>
+  <div id="grid"></div>
+
+  <div id="empty">
+    <div class="big serif">Nothing matches that yet.</div>
+    <p>Try a broader word, or clear the filters.</p>
+    <button id="emptyReset">Show everything</button>
+  </div>
+
+  <div id="archive">
+    <div class="ah">From the archive</div>
+    <div class="alist" id="alist"></div>
+  </div>
+
+</div>
+
+<!-- PROJECT SHEET -->
+<div class="overlay" id="record">
+  <button class="oclose" data-close>✕</button>
+  <div class="sheet" id="sheet"></div>
+</div>
+
+<!-- BESPOKE STORY -->
+<div class="overlay" id="assemble">
+  <button class="oclose" data-close>✕</button>
+  <div class="sheet">
+    <div class="rk">Bespoke walkthroughs</div>
+    <h2>A story assembled for you.</h2>
+    <p class="rdesc" id="asmList"></p>
+    <p class="rdesc" style="margin-top:14px">Pick the projects closest to what you're building, and we assemble them into one continuous walkthrough: the right depth, the right order, nothing generic. The Healthify walkthrough shows the format every chapter takes.</p>
+    <div class="racts"><button class="ghostb" data-close>Close</button></div>
+  </div>
+</div>
+
+<!-- SPOTLIGHT -->
+<div class="overlay" id="spot">
+  <div id="spotpanel">
+    <div id="spotin">
+      <span class="mag">⌕</span>
+      <input id="sq" type="text" placeholder="Search projects, industries, anything…" autocomplete="off" spellcheck="false">
+      <span class="esc">esc</span>
+    </div>
+    <div id="sres"></div>
+    <div id="snone">Nothing matches. Try “fintech”, “AI”, or a client name.</div>
+    <div id="sfoot"><span><b>↑↓</b> navigate</span><span><b>↵</b> open</span><span><b>esc</b> close</span></div>
+  </div>
+</div>
+
+<script>
+/* ================= DATA ================= */
+const CS=[
+ {n:"Healthify",d:"India's leading AI-powered health & nutrition expert. Diagnosing a retention fall after an AI-first redesign, and rewriting the roadmap through user verdicts.",ind:"Health Tech",m:"B2C",tags:["AI","Health","Consumer"],live:true,href:"healthify.html"},
+ {n:"Gullak",d:"Helping 1M+ users grow their wealth with digital gold.",ind:"Fintech",m:"B2C",tags:["Finance","Consumer"]},
+ {n:"Sarvam",d:"Designing AI experiences for the world's most diverse market.",ind:"AI",m:"B2B",tags:["AI","B2B"]},
+ {n:"UrbanPiper",d:"Building the operating system for 45,000+ restaurants.",ind:"B2B SaaS",m:"B2B",tags:["B2B"]},
+ {n:"DigiLocker",d:"Solving access to digital documents for 1.4 billion people.",ind:"GovTech",m:"B2C",tags:["Impact","Consumer"]},
+ {n:"Juspay",d:"Powering seamless payments at scale.",ind:"Fintech",m:"B2B",tags:["Finance","B2B"]},
+ {n:"Lume Health",d:"Shaping daily health habits through behaviour-led design.",ind:"Health Tech",m:"B2C",tags:["Health","Consumer"]},
+ {n:"Pageloop.ai",d:"Building the AI-native content ops layer for SaaS.",ind:"B2B SaaS",m:"B2B",tags:["AI","B2B"]},
+ {n:"The AX.ai",d:"Empowering consultancies with accelerated experiences.",ind:"B2B SaaS",m:"B2B",tags:["AI","B2B"]},
+ {n:"Pixxel",d:"Launching and scaling web presence for fast-growing space tech.",ind:"Space Tech",m:"B2B",tags:["Website","B2B"]},
+ {n:"SAVii",d:"Dignified credit for the workforce.",ind:"Fintech",m:"B2C",tags:["Finance","Consumer"]},
+ {n:"BNHS",d:"A digital backbone for serious birding.",ind:"Environment",m:"B2C",tags:["Impact","Consumer"]},
+ {n:"IndusInd",d:"A unified credit card experience.",ind:"Fintech",m:"B2C",tags:["Finance","Consumer"]},
+ {n:"Featurely",d:"Accelerating AI-driven usability testing for product teams.",ind:"AI SaaS",m:"B2B",tags:["AI","B2B","User Research"]},
+ {n:"Sequifi",d:"Modernising HR for the home services industry.",ind:"B2B SaaS",m:"B2B",tags:["B2B"]},
+ {n:"Inhouse AI",d:"Automating legal work for small businesses using AI.",ind:"AI SaaS",m:"B2B",tags:["AI","B2B"]},
+ {n:"Launch Today",d:"Creating a no-code AI product builder.",ind:"AI-Native",m:"B2B",tags:["AI","B2B"]},
+ {n:"Meta",d:"Reimagining the Family Center experience for parents and teens.",ind:"Consumer Tech",m:"B2C",tags:["User Research","Consumer"]},
+ {n:"xto10x",d:"Delivering scaling success for startups.",ind:"B2B SaaS",m:"B2B",tags:["B2B"]},
+ {n:"Occy",d:"Smart, streamlined volume hiring.",ind:"B2B SaaS",m:"B2B",tags:["B2B"]},
+ {n:"CoWIN",d:"Facilitating the world's largest vaccination drive.",ind:"Healthcare",m:"B2C",tags:["Health","Impact","Consumer"]},
+ {n:"JIVA",d:"Making the Indian judiciary more efficient with AI.",ind:"AI · GovTech",m:"B2B",tags:["AI","Impact"]},
+ {n:"Savage",d:"A personalised fitness app for each woman.",ind:"Consumer Tech",m:"B2C",tags:["Consumer","Health"]},
+ {n:"Delhivery",d:"A consumer app for India's largest delivery company.",ind:"Consumer Tech",m:"B2C",tags:["Consumer"]},
+ {n:"Apperture",d:"Reimagining analytics with AI.",ind:"Data · AI",m:"B2B",tags:["AI","B2B"]},
+ {n:"Sangeetha",d:"Digitising a 40-year-old retail legacy.",ind:"Consumer Tech",m:"B2C",tags:["Consumer","Website"]},
+ {n:"ABCD",d:"Helping Aditya Birla Capital Digital understand their users' emotions.",ind:"Finance",m:"B2B",tags:["Finance","User Research"]},
+ {n:"CLO",d:"Building a virtual Chief Listening Officer.",ind:"B2B SaaS",m:"B2B",tags:["AI","B2B"]},
+ {n:"AU Bank",d:"India's first customisable credit card experience.",ind:"Fintech",m:"B2C",tags:["Finance","Consumer"]},
+ {n:"NDAP",d:"Unlocking public data for smarter decisions.",ind:"GovTech",m:"B2B",tags:["Impact","B2B"]},
+ {n:"ABSLI",d:"A cohesive design system across ABSLI's product family.",ind:"Finance",m:"B2B",tags:["Finance","B2B"]},
+ {n:"Ambee",d:"Building the blue dot for climate intelligence.",ind:"Climate Tech",m:"B2B",tags:["Impact","B2B"]},
+ {n:"Anthriq",d:"Bridging the gap between human and tech.",ind:"Tech",m:"B2B",tags:["B2B"]}
+];
+const ARCHIVE=["TeamIndus","Possible","Equifax","Talentify","Citrus","Sportsie","TripAbrood"];
+const TAGS=["AI","Health","B2B","Finance","Consumer","Impact","Website","User Research"];
+
+/* ================= STATE ================= */
+let activeTags=new Set(),model='All';
+const pitch=new Set();
+
+/* ================= CURTAIN TRANSITION ================= */
+const curtain=document.getElementById('curtain');
+function goLive(href,label){
+  curtain.querySelector('.ct').textContent=label||'Healthify × Parallel';
+  curtain.classList.add('on');
+  setTimeout(()=>location.href=encodeURI(href),620);
+}
+addEventListener('pageshow',()=>{requestAnimationFrame(()=>curtain.classList.remove('on'));});
+
+/* ================= CHIPS ================= */
+const chiprow=document.getElementById('chiprow');
+function drawChips(){
+  chiprow.innerHTML='';
+  TAGS.forEach(t=>{
+    const b=document.createElement('button');b.className='chip'+(activeTags.has(t)?' on':'');b.textContent=t;
+    b.onclick=()=>{activeTags.has(t)?activeTags.delete(t):activeTags.add(t);refresh();};
+    chiprow.appendChild(b);
+  });
+  const sep=document.createElement('span');sep.className='chipsep';chiprow.appendChild(sep);
+  ['All','B2C','B2B'].forEach(mm=>{
+    const b=document.createElement('button');b.className='chip'+(model===mm?' on':'');b.textContent=mm==='All'?'Everything':mm;
+    b.onclick=()=>{model=mm;refresh();};
+    chiprow.appendChild(b);
+  });
+}
+
+/* ================= FILTERING ================= */
+function matchesFilters(c){
+  if(model!=='All'&&c.m!==model)return false;
+  for(const t of activeTags)if(!c.tags.includes(t))return false;
+  return true;
+}
+function textMatch(c,qs){
+  const hay=(c.n+' '+c.d+' '+c.ind+' '+c.m+' '+c.tags.join(' ')).toLowerCase();
+  return qs.split(/\s+/).filter(Boolean).every(w=>hay.includes(w));
+}
+
+/* ================= FEATURED ================= */
+function drawFeatured(show){
+  const f=document.getElementById('featured');
+  if(!show){f.style.display='none';return;}
+  f.style.display='grid';
+  const h=CS[0];
+  f.innerHTML=
+   '<div class="fl">'
+   +'<span class="flag"><span class="pulse"></span>Live walkthrough</span>'
+   +'<h2>Healthify × Parallel</h2>'
+   +'<p class="fd">'+h.d+' Told as an interactive story: prototypes embedded, every card opens into depth, and the room decides where to go next.</p>'
+   +'<div class="fmeta"><span class="tg">'+h.ind+'</span><span class="tg">'+h.m+'</span>'+h.tags.map(t=>'<span class="tg">'+t+'</span>').join('')+'</div>'
+   +'<a class="fbtn" href="'+encodeURI(h.href)+'">Open the walkthrough →</a>'
+   +'</div>'
+   +'<div class="fr"><div class="sketch">'
+   +'<svg viewBox="0 0 300 190" preserveAspectRatio="none">'
+   +'<line x1="0" y1="60" x2="300" y2="60" stroke="rgba(17,17,17,.07)"/>'
+   +'<line x1="0" y1="115" x2="300" y2="115" stroke="rgba(17,17,17,.07)"/>'
+   +'<path d="M8 160 C 60 148, 110 120, 150 92" stroke="#10B87F" stroke-width="2" fill="none"/>'
+   +'<path d="M150 92 C 190 96, 230 130, 288 168" stroke="#D65151" stroke-width="2" fill="none"/>'
+   +'<path d="M150 92 C 200 80, 250 66, 292 52" stroke="#6A685D" stroke-width="1.2" stroke-dasharray="4 7" fill="none" opacity=".4"/>'
+   +'<circle cx="150" cy="92" r="4.5" fill="#E0AC52"/>'
+   +'</svg><span class="sl">Scene 1 · The bet</span></div></div>';
+  f.querySelector('.fbtn').onclick=e=>{e.preventDefault();e.stopPropagation();goLive(h.href);};
+  f.onclick=()=>goLive(h.href);
+}
+
+/* ================= GRID ================= */
+const grid=document.getElementById('grid');
+function drawGrid(){
+  const list=CS.filter(matchesFilters);
+  const anyFilter=activeTags.size||model!=='All';
+  drawFeatured(!anyFilter);
+  grid.innerHTML='';
+  const shown=anyFilter?list:list.filter(c=>!c.live);
+  shown.forEach((c,k)=>{
+    const idx=CS.indexOf(c);
+    const el=document.createElement('div');
+    el.className='card glowable';
+    el.style.animationDelay=(Math.min(k,14)*0.035)+'s';
+    el.innerHTML=
+      '<span class="ind">'+c.ind+' · '+c.m+'</span>'
+     +'<h3>'+c.n+'</h3>'
+     +'<p class="cd">'+c.d+'</p>'
+     +'<div class="tags">'+(c.live?'<span class="livedot"><i></i>Live</span>':'')+c.tags.map(t=>'<span class="tg">'+t+'</span>').join('')+'</div>'
+     +'<button class="addbtn'+(pitch.has(idx)?' in':'')+'" title="Add to shortlist">'+(pitch.has(idx)?'✓':'+')+'</button>';
+    el.querySelector('.addbtn').onclick=e=>{e.stopPropagation();togglePitch(idx);};
+    el.onclick=()=>c.live?goLive(c.href):openRecord(idx);
+    grid.appendChild(el);
+  });
+  document.getElementById('rcount').textContent=anyFilter?list.length+' of '+CS.length+' projects':'';
+  document.getElementById('resetAll').style.display=anyFilter?'inline':'none';
+  document.getElementById('empty').style.display=list.length===0?'block':'none';
+  document.getElementById('archive').style.display=anyFilter?'none':'block';
+}
+
+/* ================= PROJECT SHEET ================= */
+const record=document.getElementById('record'),sheet=document.getElementById('sheet');
+function openRecord(idx){
+  const c=CS[idx];
+  sheet.innerHTML=
+    '<div class="rk">'+c.ind+' · '+c.m+'</div>'
+   +'<h2>'+c.n+'</h2>'
+   +'<p class="rdesc">'+c.d+'</p>'
+   +'<div class="stags">'+c.tags.map(t=>'<span class="tg">'+t+'</span>').join('')+'</div>'
+   +'<div class="racts">'
+   +(c.live?'<a class="primary" href="'+encodeURI(c.href)+'">Open walkthrough →</a>':'')
+   +'<button class="ghostb" id="addP">'+(pitch.has(idx)?'✓ In shortlist':'+ Add to shortlist')+'</button>'
+   +'</div>'
+   +(c.live?'':'<p class="rnote">The interactive walkthrough for this project is in the works. Happy to take you through it live.</p>');
+  const ap=sheet.querySelector('#addP');
+  ap.onclick=()=>{togglePitch(idx);ap.textContent=pitch.has(idx)?'✓ In shortlist':'+ Add to shortlist';};
+  const pr=sheet.querySelector('.primary');
+  if(pr)pr.onclick=e=>{e.preventDefault();goLive(c.href);};
+  record.classList.add('open');
+}
+
+/* ================= SHORTLIST ================= */
+const tray=document.createElement('div');tray.id='tray';document.body.appendChild(tray);
+function togglePitch(idx){pitch.has(idx)?pitch.delete(idx):pitch.add(idx);drawTray();drawGrid();}
+function drawTray(){
+  if(!pitch.size){tray.classList.remove('show');return;}
+  const names=[...pitch].map(i=>CS[i].n);
+  const label=names.length<=2?names.join(' + '):names.slice(0,2).join(', ')+' +'+(names.length-2);
+  tray.innerHTML='<span class="tl">Shortlist · <b>'+label+'</b></span>'
+    +'<button class="tclear" id="tclear">Clear</button>'
+    +'<button class="tgo" id="tgo">Build my story →</button>';
+  tray.classList.add('show');
+  tray.querySelector('#tclear').onclick=()=>{pitch.clear();drawTray();drawGrid();};
+  tray.querySelector('#tgo').onclick=()=>{
+    document.getElementById('asmList').textContent='Your shortlist: '+names.join(', ')+'.';
+    document.getElementById('assemble').classList.add('open');
+  };
+}
+
+/* ================= ARCHIVE ================= */
+document.getElementById('alist').innerHTML=ARCHIVE.map(a=>'<span class="ai">'+a+'</span>').join('');
+
+/* ================= SPOTLIGHT ================= */
+const spot=document.getElementById('spot'),sq=document.getElementById('sq'),sres=document.getElementById('sres'),snone=document.getElementById('snone');
+let sMatches=[],sSel=0;
+function openSpot(){spot.classList.add('open');sq.value='';spotDraw('');setTimeout(()=>sq.focus(),50);}
+function closeSpot(){spot.classList.remove('open');sq.blur();}
+function spotDraw(qs){
+  sMatches=qs?CS.filter(c=>textMatch(c,qs.toLowerCase())):[...CS];
+  sSel=0;
+  sres.innerHTML=sMatches.map((c,i)=>
+    '<div class="sr'+(i===0?' sel':'')+'" data-i="'+i+'">'
+    +(c.live?'<span class="live"></span>':'')
+    +'<span class="sn">'+c.n+'</span>'
+    +'<span class="sd">'+c.d+'</span>'
+    +'<span class="si">'+c.ind+'</span>'
+    +'</div>').join('');
+  snone.style.display=sMatches.length?'none':'block';
+  [...sres.children].forEach(el=>{
+    el.onmouseenter=()=>{sSel=+el.dataset.i;paintSel();};
+    el.onclick=()=>chooseSel();
+  });
+}
+function paintSel(){[...sres.children].forEach((el,i)=>el.classList.toggle('sel',i===sSel));
+  const el=sres.children[sSel];if(el)el.scrollIntoView({block:'nearest'});}
+function chooseSel(){
+  const c=sMatches[sSel];if(!c)return;
+  closeSpot();
+  if(c.live)goLive(c.href);
+  else openRecord(CS.indexOf(c));
+}
+sq.addEventListener('input',()=>spotDraw(sq.value.trim()));
+document.getElementById('searchpill').onclick=openSpot;
+
+/* ================= GLOBAL KEYS / CLOSE ================= */
+document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>document.querySelectorAll('.overlay').forEach(o=>o.classList.remove('open')));
+document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');}));
+function resetAll(){activeTags.clear();model='All';refresh();}
+document.getElementById('resetAll').onclick=resetAll;
+document.getElementById('emptyReset').onclick=resetAll;
+addEventListener('keydown',e=>{
+  const spotOpen=spot.classList.contains('open');
+  if(spotOpen){
+    if(e.key==='Escape'){closeSpot();return;}
+    if(e.key==='ArrowDown'){e.preventDefault();sSel=Math.min(sSel+1,sMatches.length-1);paintSel();return;}
+    if(e.key==='ArrowUp'){e.preventDefault();sSel=Math.max(sSel-1,0);paintSel();return;}
+    if(e.key==='Enter'){chooseSel();return;}
+    return;
+  }
+  const anyOpen=[...document.querySelectorAll('.overlay')].some(o=>o.classList.contains('open'));
+  if(e.key==='Escape'&&anyOpen){document.querySelectorAll('.overlay').forEach(o=>o.classList.remove('open'));return;}
+  if((e.key==='/'||((e.metaKey||e.ctrlKey)&&e.key==='k'))&&!anyOpen){e.preventDefault();openSpot();}
+});
+
+/* ================= INIT ================= */
+function refresh(){drawChips();drawGrid();}
+refresh();
+</script>
+</body>
+</html>
