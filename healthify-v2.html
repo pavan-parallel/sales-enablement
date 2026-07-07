@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Healthify × Parallel — Interactive Walkthrough (V2)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Figtree:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FCFBF8;--bg2:#FFFFFF;--panel:#FFFFFF;
+  --text:#111111;--muted:#6A685D;--faint:rgba(17,17,17,.38);
+  --line:rgba(17,17,17,.1);--line2:rgba(17,17,17,.22);--line3:rgba(17,17,17,.45);
+  --green:#0E8A60;--green-dot:#19DB98;--amber:#B07C1E;--red:#D65151;
+  --fd:'Libre Baskerville',Georgia,serif;
+  --fs:'Figtree',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  --ease:cubic-bezier(.22,.9,.24,1);
+  /* phone / app UI */
+  --pbg:#F5F4EF;--pcard:#FFFFFF;--pink:#17231D;--pmut:#8A928B;--pline:#E9E6DC;--pg:#2E9E5B;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden}
+body{background:var(--bg);color:var(--text);font-family:var(--fs);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+.serif{font-family:var(--fd)}
+.r{color:var(--red)}.g{color:var(--green)}
+
+.scene{position:absolute;inset:0;padding:7vh 7vw 12vh;opacity:0;visibility:hidden;transition:opacity .5s,visibility 0s .5s}
+.scene.active{opacity:1;visibility:visible;transition:opacity .5s,visibility 0s}
+.kicker{font-family:var(--fs);font-size:12.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:500}
+.big{font-family:var(--fd);font-weight:400;letter-spacing:-.01em;line-height:1.22}
+
+/* card hover — stroke highlight + soft glow */
+.glow{transition:border-color .28s,box-shadow .28s}
+.glow:hover{border-color:var(--line3);
+  box-shadow:0 0 0 1px var(--line2),0 1px 2px rgba(17,17,17,.04),0 26px 60px -22px rgba(17,17,17,.22)}
+
+/* ============ CURTAIN (page transition) ============ */
+#curtain{position:fixed;inset:0;z-index:999;background:var(--bg);display:grid;place-items:center;
+  opacity:0;pointer-events:none;transition:opacity .45s}
+#curtain.on{opacity:1;pointer-events:auto}
+#curtain .ct{font-family:var(--fd);font-size:clamp(20px,2.2vw,30px);color:var(--muted);letter-spacing:-.01em}
+
+/* ============ COVER ============ */
+#cover::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(50% 60% at 84% 10%,rgba(25,219,152,.08),transparent 70%),
+             radial-gradient(38% 50% at 6% 90%,rgba(176,124,30,.05),transparent 70%)}
+#cover .cwrap{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;padding:0 9vw}
+#cover .ck{font-family:var(--fs);font-size:13px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:500;margin-bottom:30px}
+#cover h1{font-family:var(--fd);font-weight:400;font-size:clamp(38px,5.4vw,74px);letter-spacing:-.015em;line-height:1.12;max-width:16ch}
+#cover .csub{margin-top:26px;font-size:16px;color:var(--muted);line-height:1.6;max-width:44ch}
+#cover .ctags{display:flex;gap:8px;margin-top:34px;flex-wrap:wrap}
+#cover .ctag{font-size:12.5px;font-weight:500;color:rgba(17,17,17,.6);border:1px solid var(--line);border-radius:100px;padding:6px 14px;background:var(--bg2)}
+#cover .chint{margin-top:8vh;font-size:13px;color:var(--faint)}
+#cover .chint b{font-weight:500;color:var(--muted)}
+#cover .cwrap>*{animation:coverrise .8s var(--ease) both}
+#cover .ck{animation-delay:.15s}#cover h1{animation-delay:.28s}#cover .csub{animation-delay:.42s}
+#cover .ctags{animation-delay:.54s}#cover .chint{animation-delay:.72s}
+@keyframes coverrise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+
+/* ============ DIVIDERS ============ */
+/* each chapter carries its narrative colour: amber = investigation, green = the win */
+#d2::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(46% 56% at 50% 28%,rgba(176,124,30,.07),transparent 72%)}
+#d3::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(34% 48% at 22% 40%,rgba(25,219,152,.06),transparent 70%),
+             radial-gradient(34% 48% at 50% 26%,rgba(176,124,30,.06),transparent 70%),
+             radial-gradient(34% 48% at 78% 40%,rgba(214,81,81,.05),transparent 70%)}
+#d4::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(50% 60% at 50% 30%,rgba(25,219,152,.09),transparent 72%)}
+#d2 .dvnum,#d3 .dvnum{color:var(--amber)}
+#d4 .dvnum{color:var(--green)}
+#d2 .dvdot,#d3 .dvdot{color:var(--amber)}
+#d4 .dvdot{color:var(--green)}
+.divider .dvwrap{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:0 8vw}
+.divider .dvnum{font-family:var(--fs);font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:500;margin-bottom:26px}
+.divider .dvtitle{font-family:var(--fd);font-weight:400;font-size:clamp(38px,5.2vw,70px);letter-spacing:-.015em;line-height:1.12}
+.divider .dvsub{margin-top:22px;font-family:var(--fs);font-size:14.5px;color:var(--muted);line-height:1.6;max-width:52ch}
+.divider .dvnum,.divider .dvtitle,.divider .dvsub{opacity:0;transform:translateY(16px);transition:opacity .6s,transform .7s var(--ease)}
+.divider.active .dvnum,.thumbscene.divider .dvnum{opacity:1;transform:none;transition-delay:.1s}
+.divider.active .dvtitle,.thumbscene.divider .dvtitle{opacity:1;transform:none;transition-delay:.22s}
+.divider.active .dvsub,.thumbscene.divider .dvsub{opacity:1;transform:none;transition-delay:.38s}
+
+/* ============ SCENE 1 · THE BET ============ */
+#s1 .stage{position:relative;height:100%;display:flex;flex-direction:column}
+#s1 .headline{height:34vh;display:flex;flex-direction:column;justify-content:flex-end;position:relative}
+#s1 .hl-line{position:absolute;bottom:0;left:0;right:7%;font-size:clamp(23px,3.1vw,42px);opacity:0;transform:translateY(22px);
+  transition:opacity .7s var(--ease),transform .7s var(--ease)}
+#s1 .hl-line .yr{font-family:var(--fs);font-size:13px;font-weight:500;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:14px}
+#s1 .hl-line.show{opacity:1;transform:none}
+#s1 .hl-line.gone{opacity:0;transform:translateY(-22px)}
+#s1 .chartwrap{flex:1;position:relative;margin-top:7vh}
+#s1 svg{width:100%;height:100%;overflow:visible}
+#riseline{stroke:url(#gRise);stroke-width:2.25;fill:none}
+#fall{stroke:url(#gFall);stroke-width:2.25;fill:none;opacity:0}
+/* growth era wash — hands over to the red wash when retention turns */
+#s1 .greenwash{position:absolute;inset:-8vh -8vw;background:radial-gradient(55% 65% at 26% 58%,rgba(25,219,152,.09),transparent 70%);
+  opacity:1;transition:opacity 1.4s;pointer-events:none}
+#s1.b2 .greenwash,#s1.b3 .greenwash,#s1.b4 .greenwash{opacity:0}
+.ghost{stroke:var(--muted);stroke-width:1.25;fill:none;stroke-dasharray:5 8;opacity:0;transition:opacity 1s}
+#s1.b3 .ghost{opacity:.38}
+#shipdot{opacity:0}
+#s1 .gridl{stroke:var(--line)}
+#shipflag{position:absolute;font-family:var(--fs);font-size:12px;font-weight:500;letter-spacing:.01em;color:var(--amber);
+  opacity:0;transform:translate(-50%,-14px);transition:opacity .5s,transform .6s var(--ease);white-space:nowrap}
+#shipflag::after{content:"";position:absolute;left:50%;top:calc(100% + 4px);width:1px;height:34px;background:linear-gradient(var(--amber),transparent)}
+#s1.b1 #shipflag,#s1.b2 #shipflag,#s1.b3 #shipflag,#s1.b4 #shipflag{opacity:1;transform:translate(-50%,0)}
+/* the three possible culprits, pinned to the diverging futures */
+.culprit{position:absolute;font-family:var(--fd);font-size:clamp(13px,1.15vw,16px);color:var(--muted);white-space:nowrap;
+  opacity:0;transform:translate(calc(-100% - 10px),-50%) translateX(8px);transition:opacity .7s,transform .8s var(--ease);pointer-events:none}
+#s1.b3 .culprit{opacity:1;transform:translate(calc(-100% - 10px),-50%)}
+#s1.b3 .culprit:nth-of-type(2){transition-delay:.15s}
+#s1.b3 .culprit:nth-of-type(3){transition-delay:.3s}
+#s1.b3 .culprit:nth-of-type(4){transition-delay:.45s}
+/* stat blocks share one visual system, one baseline row */
+.statblock{position:absolute;top:-6px}
+.statblock .sv{font-family:var(--fd);font-size:clamp(34px,3.6vw,52px);line-height:1;font-weight:400;letter-spacing:-.01em}
+.statblock .sl{font-family:var(--fs);font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);display:block;margin-top:10px;font-weight:500}
+#retno{right:0;text-align:right;transition:color .8s}
+#launchbox{left:0;text-align:left;opacity:0;transform:translateY(-12px);transition:opacity .7s,transform .7s var(--ease)}
+#s1.b4 #launchbox{opacity:1;transform:none}
+#launchbox .sv{color:var(--red);font-family:var(--fs);font-weight:400;font-variant-numeric:tabular-nums;letter-spacing:.01em;font-size:clamp(28px,3vw,44px)}
+#s1 .redwash{position:absolute;inset:-8vh -8vw;background:radial-gradient(60% 60% at 72% 62%,rgba(214,81,81,.07),transparent 70%);
+  opacity:0;transition:opacity 1.6s;pointer-events:none}
+#s1.b2 .redwash,#s1.b3 .redwash,#s1.b4 .redwash{opacity:1}
+
+/* ============ SCENE 2 · THE DIAGNOSIS ============ */
+#s2 .head{position:absolute;top:7vh;left:7vw;right:7vw;z-index:5;transition:opacity .55s var(--ease)}
+#s2.b3 .head{opacity:0;pointer-events:none}
+#s2 .head .big{font-size:clamp(23px,2.7vw,38px);margin-top:14px}
+#s2 .field{position:absolute;inset:0}
+.insight{position:absolute;width:min(300px,26vw);padding:17px 18px 16px;border:1px solid var(--line);border-radius:14px;background:var(--bg2);overflow:hidden;
+  font-family:var(--fd);font-size:14.5px;color:var(--text);line-height:1.42;box-shadow:0 14px 34px -14px rgba(17,17,17,.14);cursor:pointer;opacity:0;
+  transition:transform 1s var(--ease),opacity .7s,border-color .3s,box-shadow .3s;
+  transform:translate(var(--sx),var(--sy)) rotate(var(--sr)) scale(.86)}
+.insight .no{font-family:var(--fs);font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--faint);display:block;margin-bottom:9px}
+.insight .peek{position:absolute;right:13px;bottom:12px;font-family:var(--fs);font-size:11px;color:var(--faint);opacity:0;transition:opacity .25s}
+.insight:hover{border-color:var(--line3);
+  box-shadow:0 0 0 1px var(--line2),0 22px 50px -18px rgba(17,17,17,.24)}
+.insight:hover .peek{opacity:1}
+#s2.b0 .insight,#s2.b1 .insight{opacity:1;transform:translate(var(--sx),var(--sy)) rotate(var(--sr))}
+#s2.b1 .insight{transform:translate(var(--cx),var(--cy)) rotate(0deg) scale(.94);border-color:var(--cc);background:var(--ccbg)}
+#s2.b1 .insight .no{color:var(--cc)}
+#s2.b2 .insight,#s2.b3 .insight{opacity:0;transform:translate(var(--cx),var(--cy)) rotate(0deg) scale(.42);pointer-events:none}
+.problem{position:absolute;left:50%;width:min(340px,28vw);text-align:center;opacity:0;transform:translate(-50%,26px) scale(.94);
+  pointer-events:none;transition:opacity .6s,transform .8s var(--ease)}
+.problem h3{font-family:var(--fd);font-weight:400;font-size:clamp(19px,1.85vw,26px);margin-bottom:10px;letter-spacing:-.01em}
+.problem .pl{font-family:var(--fs);font-size:11.5px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;margin-bottom:9px;display:block}
+.problem p{font-family:var(--fs);font-size:13px;color:var(--muted);line-height:1.55}
+#s2.b2 .problem{opacity:1;transform:translate(-50%,0) scale(1);pointer-events:auto}
+#s2.b3 .problem{opacity:0;transform:translate(-50%,-34px) scale(.9)}
+#s2 .twistwash{position:absolute;inset:0;background:radial-gradient(52% 55% at 50% 46%,rgba(25,219,152,.09),transparent 72%);
+  opacity:0;transition:opacity 1.2s .3s;pointer-events:none}
+#s2.b3 .twistwash{opacity:1}
+#s2 .twist{position:absolute;left:8vw;right:8vw;top:50%;transform:translateY(-45%);text-align:center;opacity:0;pointer-events:none;transition:opacity .7s .25s}
+#s2 .twist .big{font-size:clamp(27px,3.7vw,52px);max-width:24ch;margin:0 auto;line-height:1.22}
+#s2.b3 .twist{opacity:1;pointer-events:auto}
+
+/* ============ SCENE 3 · THE EXPLORATION ============ */
+#s3 .head{position:relative;z-index:5;height:14vh}
+#s3 .head .hswap{position:absolute;top:0;left:0;right:0;opacity:0;transform:translateY(16px);transition:opacity .5s,transform .5s var(--ease)}
+#s3 .head .hswap.show{opacity:1;transform:none}
+#s3 .head .big{font-size:clamp(23px,2.8vw,40px);margin-top:12px}
+#grid{position:relative;margin-top:2vh;height:60vh}
+.con{position:absolute;width:calc((100% - 3*18px)/4);height:calc((100% - 2*18px)/3 - 4px);border:1px solid var(--line);border-radius:14px;overflow:hidden;
+  background:var(--bg2);padding:16px 17px;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;
+  box-shadow:0 10px 26px -14px rgba(17,17,17,.1);
+  opacity:0;transform:var(--pos,none) translateY(46px) scale(.94);
+  transition:transform .85s var(--ease),opacity .55s,border-color .3s,filter .8s,box-shadow .3s}
+.con .cn{font-family:var(--fd);font-size:clamp(13px,1.05vw,16.5px);line-height:1.32;letter-spacing:-.005em}
+.con .ct{font-family:var(--fs);font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--faint);font-weight:500}
+.con .peek{position:absolute;right:14px;top:14px;font-family:var(--fs);font-size:11px;color:var(--faint);opacity:0;transition:opacity .25s}
+.con:hover{border-color:var(--line3);
+  box-shadow:0 0 0 1px var(--line2),0 22px 50px -18px rgba(17,17,17,.24)}
+.con:hover .peek{opacity:1}
+.con .verd{display:inline-flex;align-items:center;gap:7px;font-family:var(--fs);font-size:12px;font-weight:600;color:var(--muted);
+  opacity:0;transform:translateY(4px);transition:opacity .3s,transform .35s var(--ease)}
+.con .verd .dot{width:8px;height:8px;border-radius:50%;background:currentColor;flex:none}
+.verd.pri{color:var(--green)}.verd.exp{color:var(--amber)}.verd.hold{color:var(--red)}
+#s3.b0 .con,#s3.b1 .con,#s3.b2 .con,#s3.b3 .con{opacity:1;transform:var(--pos,none)}
+#s3.b1 .con .verd,#s3.b2 .con .verd,#s3.b3 .con .verd{opacity:1;transform:none}
+/* once the verdicts land, the cards take their colour */
+#s3.b1 .con.v-pri{border-color:rgba(14,138,96,.3);background:#F4FAF7}
+#s3.b1 .con.v-exp{border-color:rgba(176,124,30,.28);background:#FBF7EF}
+#s3.b1 .con.v-hold{border-color:rgba(214,81,81,.26);background:#FBF3F2}
+#s3.b2 .con.v-hold,#s3.b3 .con.v-hold{filter:grayscale(.6);opacity:.45}
+#s3.b3 .con.v-hold{opacity:0;transform:var(--pos) translateY(46vh) rotate(var(--fall,5deg))!important;pointer-events:none;
+  transition:transform 1.1s cubic-bezier(.5,0,.8,.4),opacity .9s .25s}
+#s3 .finale{position:absolute;left:34vw;right:7vw;bottom:9vh;text-align:center;opacity:0;transform:translateY(16px);
+  transition:opacity .7s .7s,transform .7s .7s var(--ease)}
+#s3.b3 .finale{opacity:1;transform:none}
+#s3 .finale .big{font-size:clamp(22px,2.8vw,38px);line-height:1.25}
+#s3 .finale .fnext{margin-top:16px;font-family:var(--fs);font-size:13px;color:var(--faint)}
+
+/* ============ SCENE 4 · WHAT IT DROVE ============ */
+#s4::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(52% 62% at 18% 22%,rgba(25,219,152,.08),transparent 72%)}
+#s4 .owrap{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;padding:9vh 9vw}
+#s4 .okick,#s4 .obig{opacity:0;transform:translateY(16px);transition:opacity .6s,transform .7s var(--ease)}
+#s4.active .okick,.thumbscene#s4 .okick{opacity:1;transform:none;transition-delay:.1s}
+#s4.active .obig,.thumbscene#s4 .obig{opacity:1;transform:none;transition-delay:.22s}
+#s4 .okick{margin-bottom:20px}
+#s4 .obig{font-family:var(--fd);font-weight:400;font-size:clamp(26px,3.3vw,46px);line-height:1.22;letter-spacing:-.01em;max-width:22ch;margin-bottom:8vh}
+#s4 .ostats{display:grid;grid-template-columns:repeat(4,1fr);gap:3vw}
+#s4 .ostat{border-top:1px solid var(--line2);padding-top:20px;opacity:0;transform:translateY(18px);transition:opacity .6s,transform .7s var(--ease)}
+#s4.b1 .ostat{opacity:1;transform:none}
+#s4.b1 .ostat:nth-child(2){transition-delay:.12s}
+#s4.b1 .ostat:nth-child(3){transition-delay:.24s}
+#s4.b1 .ostat:nth-child(4){transition-delay:.36s}
+#s4 .ostat .n{font-family:var(--fd);font-size:clamp(32px,4vw,56px);line-height:1;letter-spacing:-.01em;color:var(--green)}
+#s4 .ostat .l{font-family:var(--fs);font-size:13px;color:var(--muted);margin-top:12px;line-height:1.5}
+#s4 .oacts{margin-top:9vh;display:flex;align-items:center;gap:22px;opacity:0;transition:opacity .7s .5s}
+#s4.b1 .oacts{opacity:1}
+#s4 .figbtn{font-family:var(--fs);font-size:13.5px;font-weight:500;color:var(--bg);background:var(--text);border:0;border-radius:100px;
+  padding:13px 24px;cursor:pointer;transition:box-shadow .3s,transform .3s var(--ease)}
+#s4 .figbtn:hover{transform:translateY(-1px);box-shadow:0 14px 34px -12px rgba(17,17,17,.4)}
+#s4 .oacts a{font-family:var(--fs);font-size:13.5px;color:var(--muted);text-decoration:none;border-bottom:1px solid var(--line2);padding-bottom:2px;transition:color .2s,border-color .2s}
+#s4 .oacts a:hover{color:var(--text);border-color:var(--text)}
+
+/* ============ FIGMA EMBED ============ */
+#figma .fbar{position:absolute;top:20px;left:28px;right:84px;display:flex;align-items:center;gap:16px;z-index:210}
+#figma .flabel{font-family:var(--fs);font-size:12px;letter-spacing:.05em;text-transform:uppercase;font-weight:600;color:var(--muted)}
+#figma .fstage{position:absolute;inset:76px 28px 28px}
+#figma .floader{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--fd);font-size:19px;color:var(--faint)}
+#figma iframe{position:relative;width:100%;height:100%;border:1px solid var(--line);border-radius:16px;background:transparent;
+  box-shadow:0 30px 80px -24px rgba(17,17,17,.28)}
+
+/* ============ CHROME / NAV ============ */
+#chrome{position:fixed;bottom:0;left:0;right:0;display:flex;justify-content:space-between;align-items:center;
+  padding:16px 26px;z-index:60}
+.navbtn{font-family:var(--fs);font-size:13px;font-weight:500;color:var(--muted);background:var(--bg2);border:1px solid var(--line);border-radius:100px;
+  padding:9px 16px;cursor:pointer;transition:color .2s,border-color .2s,box-shadow .2s;text-decoration:none;display:inline-block}
+.navbtn:hover{color:var(--text);border-color:var(--line3)}
+.navbtn:disabled{opacity:.35;cursor:default}
+.navgrp{display:flex;gap:9px;align-items:center}
+#center{display:flex;flex-direction:column;align-items:center;gap:9px}
+#beats{display:flex;gap:6px;align-items:center}
+#beats .bd{position:relative;width:8px;height:8px;border-radius:50%;background:var(--line);cursor:pointer;transition:background .3s,transform .3s}
+#beats .bd::before{content:"";position:absolute;inset:-9px;border-radius:50%}
+#beats .bd:hover{background:var(--line3)}
+#beats .bd.done{background:var(--line3)}
+#beats .bd.now{background:var(--text);transform:scale(1.4)}
+#beats .sep{width:14px}
+#scenelab{font-family:var(--fs);font-size:12px;color:var(--faint);letter-spacing:.02em}
+#hint{position:fixed;bottom:74px;left:50%;transform:translateX(-50%);font-family:var(--fs);font-size:12.5px;color:var(--muted);
+  z-index:59;background:var(--bg2);border:1px solid var(--line);border-radius:100px;padding:8px 16px;transition:opacity .5s;
+  box-shadow:0 10px 30px -12px rgba(17,17,17,.15)}
+
+/* dot hover preview */
+#dotprev{position:fixed;z-index:80;display:flex;flex-direction:column;align-items:center;pointer-events:none;
+  opacity:0;transform:translate(-50%,10px) scale(.96);
+  transition:opacity .16s ease,transform .2s var(--ease),left .22s var(--ease),bottom .22s var(--ease);
+  will-change:left,bottom,transform,opacity}
+#dotprev.on{opacity:1;transform:translate(-50%,0) scale(1)}
+#dotprev .thumbport{width:var(--tw,270px);height:var(--th,169px);border-radius:12px;overflow:hidden;position:relative;
+  background:var(--bg);box-shadow:0 26px 64px -10px rgba(17,17,17,.28),0 0 0 1px var(--line2)}
+#dotprev .thumbstage{position:absolute;top:0;left:0;transform-origin:top left}
+#dotprev .thumbcap{margin-top:9px;font-family:var(--fs);font-size:11.5px;color:var(--muted);white-space:nowrap;letter-spacing:.01em}
+#dotprev .thumbcap b{color:var(--text);font-weight:500}
+.thumbscene{opacity:1!important;visibility:visible!important}
+.thumbscene,.thumbscene *{transition:none!important;animation:none!important;transition-delay:0s!important;animation-delay:0s!important}
+
+/* ============ OVERLAYS ============ */
+.overlay{position:fixed;inset:0;z-index:200;background:rgba(252,251,248,.85);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  opacity:0;visibility:hidden;transition:opacity .3s,visibility 0s .3s}
+.overlay.open{opacity:1;visibility:visible;transition:opacity .3s}
+.oclose{position:fixed;top:24px;right:28px;width:40px;height:40px;border-radius:50%;border:1px solid var(--line2);background:var(--bg2);
+  color:var(--muted);font-size:19px;cursor:pointer;z-index:210;transition:color .2s,border-color .2s}
+.oclose:hover{color:var(--text);border-color:var(--text)}
+#menu .mwrap{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;padding:8vh 9vw;overflow:auto}
+#menu .mtitle{font-family:var(--fs);font-size:12.5px;letter-spacing:.06em;text-transform:uppercase;font-weight:500;color:var(--muted);margin-bottom:28px}
+#menu .mgroup{margin-bottom:22px}
+#menu .mnum{font-family:var(--fs);font-size:12px;color:var(--faint);margin-bottom:6px}
+#menu .mlink{font-family:var(--fd);font-size:clamp(22px,2.7vw,36px);color:var(--text);cursor:pointer;display:inline-block;
+  transition:color .2s,transform .2s var(--ease);line-height:1.3;letter-spacing:-.01em}
+#menu .mlink:hover{color:var(--green);transform:translateX(6px)}
+#menu .msub{display:flex;flex-wrap:wrap;gap:8px 22px;margin-top:10px}
+#menu .msub span{font-family:var(--fs);font-size:14px;color:var(--muted);cursor:pointer;transition:color .2s;border-bottom:1px solid transparent}
+#menu .msub span:hover{color:var(--text);border-bottom-color:var(--line2)}
+
+/* ============ DETAIL (context + prototype) ============ */
+#detail .dgrid{position:absolute;inset:0;display:grid;grid-template-columns:44% 56%}
+#detail .dleft{padding:9vh 4vw 9vh 7vw;display:flex;flex-direction:column;justify-content:center;overflow:auto}
+#detail .dright{position:relative;display:grid;place-items:center;
+  background:radial-gradient(80% 70% at 50% 42%,rgba(17,17,17,.03),transparent 70%);border-left:1px solid var(--line)}
+#detail .dkick{font-family:var(--fs);font-size:12px;letter-spacing:.05em;text-transform:uppercase;font-weight:600;color:var(--muted);margin-bottom:16px}
+#detail .dtitle{font-family:var(--fd);font-size:clamp(26px,3vw,42px);line-height:1.16;letter-spacing:-.015em;margin-bottom:18px;font-weight:400}
+#detail .ddoes{font-family:var(--fd);font-size:clamp(16px,1.4vw,19px);color:var(--text);line-height:1.5;margin-bottom:30px;max-width:36ch}
+#detail .dsub{font-family:var(--fs);font-size:11.5px;font-weight:600;color:var(--faint);letter-spacing:.05em;text-transform:uppercase;margin-bottom:14px}
+#detail .dsaid{list-style:none;display:flex;flex-direction:column;gap:14px;max-width:44ch}
+#detail .dsaid li{font-family:var(--fs);font-size:14.5px;color:var(--muted);line-height:1.55;padding-left:18px;position:relative}
+#detail .dsaid li::before{content:"";position:absolute;left:0;top:9px;width:6px;height:6px;border-radius:50%;background:var(--line2)}
+#detail .dverd{display:flex;align-items:center;gap:10px;margin-top:32px;font-family:var(--fs)}
+#detail .dverd .dot{width:10px;height:10px;border-radius:50%;background:currentColor}
+#detail .dverd .vl{font-size:14px;font-weight:600}
+#detail .dverd .sig{color:var(--muted);font-weight:400;font-size:13.5px;border-left:1px solid var(--line2);padding-left:12px;margin-left:2px}
+#detail .dcount{position:fixed;bottom:26px;left:7vw;font-family:var(--fs);font-size:12px;color:var(--faint)}
+#detail .darrows{position:fixed;bottom:22px;right:28px;display:flex;gap:9px;z-index:210}
+#detail .darrows button{width:40px;height:40px;border-radius:50%;border:1px solid var(--line2);background:var(--bg2);color:var(--muted);
+  font-size:16px;cursor:pointer;transition:color .2s,border-color .2s}
+#detail .darrows button:hover{color:var(--text);border-color:var(--text)}
+
+/* phone */
+.phone{position:relative;width:min(300px,80%);aspect-ratio:9/19;background:var(--pbg);border-radius:38px;
+  box-shadow:0 34px 80px -18px rgba(17,17,17,.3),0 0 0 1px var(--line);overflow:hidden;color:var(--pink);font-family:var(--fs);font-size:12px}
+.phone .notch{position:absolute;top:9px;left:50%;transform:translateX(-50%);width:110px;height:24px;background:#111;border-radius:14px;z-index:3}
+.phscreen{position:absolute;inset:0;display:flex;flex-direction:column}
+.phstat{display:flex;justify-content:space-between;padding:12px 20px 2px;font-size:11px;font-weight:600}
+.phbody{flex:1;overflow:hidden;padding:8px 15px 14px;display:flex;flex-direction:column;gap:11px}
+.phbar{display:flex;align-items:center;justify-content:space-between;padding:4px 0 2px}
+.phbar h4{font-size:16px;font-weight:600;letter-spacing:-.01em}
+.phbar .loc{font-size:11px;color:var(--pmut);font-weight:500}
+.phbar .av{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#43b06f,#1f7a45)}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.tile{background:var(--pcard);border:1px solid var(--pline);border-radius:14px;overflow:hidden}
+.tile .img{height:56px;position:relative}
+.tile .tb{padding:8px 9px 9px}
+.tile b{font-size:12px;font-weight:600;display:block;line-height:1.2}
+.tile small{color:var(--pmut);font-size:10px;display:block;margin-top:3px}
+.chip{display:inline-block;padding:3px 8px;border-radius:999px;font-size:9.5px;font-weight:600;margin-top:6px}
+.chip.local{background:#FBF0DF;color:#B07C1E}.chip.doc{background:#E7EEFB;color:#3C63B0}.chip.pcos{background:#F4E9F6;color:#9A4EA8}
+.phwhy{background:var(--pcard);border:1px solid var(--pline);border-radius:12px;padding:10px 12px;font-size:11.5px;color:var(--pink);line-height:1.4}
+.phwhy b{color:var(--pg)}
+.tabbar{margin-top:auto;display:flex;justify-content:space-around;align-items:flex-end;padding:8px 4px 4px;border-top:1px solid var(--pline);color:#BcC3Bc}
+.tabbar i{width:18px;height:18px;border-radius:5px;background:#CfD5Cf;display:block}
+.tabbar .mid{width:46px;height:46px;border-radius:50%;background:var(--pg);color:#fff;display:grid;place-items:center;margin-top:-20px;
+  box-shadow:0 8px 18px rgba(46,158,91,.45);font-size:22px}
+/* placeholder phone */
+.phone.ph-empty{background:#FAF9F5;border:1px dashed var(--line2);box-shadow:0 24px 60px -18px rgba(17,17,17,.18);color:var(--muted)}
+.ph-empty .pe{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:30px;text-align:center}
+.ph-empty .peco{font-family:var(--fd);font-size:21px;color:var(--text);line-height:1.3}
+.ph-empty .pelabel{font-family:var(--fs);font-size:11px;letter-spacing:.06em;color:var(--faint);text-transform:uppercase;font-weight:500}
+.ph-empty .pebars{width:70%;display:flex;flex-direction:column;gap:9px;margin-top:6px}
+.ph-empty .pebars i{height:10px;border-radius:5px;background:var(--line)}
+.ph-empty .pebars i:nth-child(2){width:82%}.ph-empty .pebars i:nth-child(3){width:64%}
+/* embedded figma prototype (concept detail) — real 375×812 viewport, scaled to fit */
+.protowrap{position:relative;height:min(78vh,740px);aspect-ratio:375/812;max-width:88%;
+  border:1px solid var(--line);border-radius:28px;overflow:hidden;background:#fff;
+  box-shadow:0 34px 80px -18px rgba(17,17,17,.3)}
+.protowrap .protoload{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:0 24px;
+  font-family:var(--fd);font-size:16px;color:var(--faint)}
+.protowrap iframe{position:relative;width:375px;height:812px;border:0;background:transparent;transform-origin:top left}
+/* insight evidence panel */
+.evidence{width:min(440px,86%);display:flex;flex-direction:column;gap:14px}
+.evidence .ec{background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:16px 18px;
+  font-family:var(--fs);font-size:15px;color:var(--muted);line-height:1.55;box-shadow:0 12px 30px -14px rgba(17,17,17,.12)}
+.evidence .en{font-family:var(--fd);font-size:13px;color:var(--faint);display:block;margin-bottom:6px}
+
+/* ============ ROUND CURSOR ============ */
+@media (pointer:fine){
+  *{cursor:none!important}
+  #cursor{position:fixed;left:0;top:0;width:10px;height:10px;border-radius:50%;background:#fff;
+    mix-blend-mode:difference;pointer-events:none;z-index:2000;opacity:0;
+    transform:translate(-50%,-50%);
+    transition:width .3s var(--ease),height .3s var(--ease),opacity .25s}
+  #cursor.on{opacity:1}
+  #cursor.hot{width:34px;height:34px}
+  #cursor.press{width:20px;height:20px}
+  /* inside the Figma embed the native cursor takes over — precision beats polish there */
+  body.figma-open *{cursor:auto!important}
+  body.figma-open #cursor{opacity:0!important}
+}
+
+@media (prefers-reduced-motion:reduce){
+  *{transition-duration:.001s!important;animation-duration:.001s!important;transition-delay:0s!important}
+}
+@media(max-width:900px){
+  .insight{width:40vw;font-size:13px}
+  #detail .dgrid{grid-template-columns:1fr;grid-template-rows:auto 1fr}
+  #detail .dleft{padding:8vh 8vw 3vh}
+  #s4 .ostats{grid-template-columns:1fr 1fr;gap:5vw 3vw}
+}
+</style>
+</head>
+<body>
+
+<div id="curtain"><div class="ct"></div></div>
+
+<!-- COVER -->
+<section class="scene active" id="cover" data-beats="1">
+  <div class="cwrap">
+    <p class="ck">Parallel · Case study</p>
+    <h1>Healthify × Parallel</h1>
+    <p class="csub">An AI-first redesign, a retention scare, and the research that turned it around.</p>
+    <div class="ctags"><span class="ctag">Health Tech</span><span class="ctag">B2C</span><span class="ctag">AI</span><span class="ctag">Product design</span></div>
+    <p class="chint"><b>→</b> to begin &nbsp;·&nbsp; <b>C</b> for contents</p>
+  </div>
+</section>
+
+<!-- SCENE 1 · THE BET -->
+<section class="scene" id="s1" data-beats="5">
+  <div class="stage">
+    <div class="greenwash"></div>
+    <div class="redwash"></div>
+    <div class="headline">
+      <div class="hl-line big" data-b="0"><span class="yr">2018 – 2023</span>Healthify builds the world's first AI nutritionist. <span class="g">Fifty million people</span> follow.</div>
+      <div class="hl-line big" data-b="1"><span class="yr">2024</span>They bet the company on an AI-first redesign.</div>
+      <div class="hl-line big" data-b="2"><span class="yr">Weeks later</span>Retention starts to <span class="r">fall.</span></div>
+      <div class="hl-line big" data-b="3"><span class="yr">The problem</span>No one can tell which part is to blame.</div>
+      <div class="hl-line big" data-b="4"><span class="yr">The clock</span>And the US launch <span class="r">won't wait.</span></div>
+    </div>
+    <div class="chartwrap">
+      <div class="statblock" id="retno"><span class="sv" id="retval">—</span><span class="sl">Retention index</span></div>
+      <div class="statblock" id="launchbox"><span class="sv" id="cd">180 : 00 : 00</span><span class="sl">Days to US launch</span></div>
+      <svg viewBox="0 0 1000 420" preserveAspectRatio="none" aria-hidden="true">
+        <defs>
+          <linearGradient id="gRise" x1="0" y1="0" x2="560" y2="0" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#8FD0B0"/><stop offset="1" stop-color="#0E8A60"/>
+          </linearGradient>
+          <linearGradient id="gFall" x1="560" y1="0" x2="990" y2="0" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#C98A2E"/><stop offset="1" stop-color="#D65151"/>
+          </linearGradient>
+        </defs>
+        <line class="gridl" x1="0" y1="105" x2="1000" y2="105"/>
+        <line class="gridl" x1="0" y1="210" x2="1000" y2="210"/>
+        <line class="gridl" x1="0" y1="315" x2="1000" y2="315"/>
+        <path id="riseline" d="M0 340 C 120 322, 220 300, 330 268 C 420 242, 500 210, 560 186"/>
+        <path id="fall" d="M560 186 C 640 190, 700 226, 770 272 C 830 312, 900 352, 990 382"/>
+        <path class="ghost" d="M560 186 C 660 170, 780 150, 990 120"/>
+        <path class="ghost" d="M560 186 C 660 200, 800 240, 990 250"/>
+        <path class="ghost" d="M560 186 C 640 210, 720 290, 990 400"/>
+        <circle id="shipdot" cx="560" cy="186" r="5.5" fill="#B07C1E"/>
+      </svg>
+      <div id="shipflag">AI-first redesign ships</div>
+      <span class="culprit" data-x="984" data-y="120">the product?</span>
+      <span class="culprit" data-x="984" data-y="250">onboarding?</span>
+      <span class="culprit" data-x="984" data-y="400">the AI itself?</span>
+    </div>
+  </div>
+</section>
+
+<!-- DIVIDER · THE DIAGNOSIS -->
+<section class="scene divider" id="d2" data-beats="1">
+  <div class="dvwrap">
+    <p class="dvnum">Chapter 02</p>
+    <h2 class="dvtitle">The diagnosis<span class="dvdot">.</span></h2>
+    <p class="dvsub">Twenty interviews with the people who stayed and the people who left.</p>
+  </div>
+</section>
+
+<!-- SCENE 2 · THE DIAGNOSIS -->
+<section class="scene" id="s2" data-beats="4">
+  <div class="head">
+    <p class="kicker">The diagnosis</p>
+    <div class="hswap"><h2 class="big" data-h="0">Twenty interviews produced seven insights.</h2></div>
+  </div>
+  <div class="field" id="field"></div>
+  <div class="twistwash"></div>
+  <div class="twist">
+    <p class="kicker" style="margin-bottom:22px">The turn</p>
+    <h2 class="big">Users didn't hate the AI. <span class="g">The AI was getting in the way of the core job.</span></h2>
+  </div>
+</section>
+
+<!-- DIVIDER · THE EXPLORATION -->
+<section class="scene divider" id="d3" data-beats="1">
+  <div class="dvwrap">
+    <p class="dvnum">Chapter 03</p>
+    <h2 class="dvtitle">The exploration<span class="dvdot">.</span></h2>
+    <p class="dvsub">Twelve AI concepts, put in front of the people who would live with them.</p>
+  </div>
+</section>
+
+<!-- SCENE 3 · THE EXPLORATION -->
+<section class="scene" id="s3" data-beats="4">
+  <div class="head">
+    <p class="kicker">The exploration</p>
+    <div class="hswap show" data-h="0"><h2 class="big">We designed twelve AI concepts.</h2></div>
+    <div class="hswap" data-h="1"><h2 class="big">Then users passed judgement.</h2></div>
+    <div class="hswap" data-h="2"><h2 class="big">So the verdicts rewrote the roadmap.</h2></div>
+  </div>
+  <div id="grid"></div>
+  <div class="finale">
+    <h2 class="big">Personal context <span class="g">won.</span> External signals <span class="r">didn't.</span></h2>
+    <p class="fnext">Next chapter · What it drove</p>
+  </div>
+</section>
+
+<!-- DIVIDER · WHAT IT DROVE -->
+<section class="scene divider" id="d4" data-beats="1">
+  <div class="dvwrap">
+    <p class="dvnum">Chapter 04</p>
+    <h2 class="dvtitle">What it drove<span class="dvdot">.</span></h2>
+    <p class="dvsub">The numbers after the redesign found its way.</p>
+  </div>
+</section>
+
+<!-- SCENE 4 · WHAT IT DROVE -->
+<section class="scene" id="s4" data-beats="2">
+  <div class="owrap">
+    <p class="kicker okick">What it drove</p>
+    <h2 class="obig">Healthify launched in the US and put 10 million new people on a healthier path.</h2>
+    <div class="ostats">
+      <div class="ostat"><div class="n">77%</div><div class="l">Queries handled by AI</div></div>
+      <div class="ostat"><div class="n">10M</div><div class="l">New users</div></div>
+      <div class="ostat"><div class="n">$1M</div><div class="l">ARR · post-pilot, US</div></div>
+      <div class="ostat"><div class="n">$24.5M</div><div class="l">FY24 revenue, India</div></div>
+    </div>
+    <div class="oacts">
+      <button class="figbtn" id="figBtn">Explore the design file →</button>
+      <a href="index.html" id="endlib">← Back to the library</a>
+    </div>
+  </div>
+</section>
+
+<!-- CHROME -->
+<div id="hint">← → or the buttons to move · click any card to dive in · press C for contents</div>
+<div id="chrome">
+  <div class="navgrp">
+    <a class="navbtn" href="index.html" id="libBtn">← Library</a>
+    <button class="navbtn" id="menuBtn">Contents</button>
+  </div>
+  <div id="center">
+    <div id="beats"></div>
+    <span id="scenelab"></span>
+  </div>
+  <div class="navgrp">
+    <button class="navbtn" id="backBtn">← Back</button>
+    <button class="navbtn" id="nextBtn">Next →</button>
+  </div>
+</div>
+
+<div id="dotprev"><div class="thumbport"><div class="thumbstage" id="thumbstage"></div></div><div class="thumbcap" id="thumbcap"></div></div>
+
+<!-- CONTENTS MENU -->
+<div class="overlay" id="menu">
+  <button class="oclose" data-close="menu">✕</button>
+  <div class="mwrap">
+    <p class="mtitle">Contents — jump anywhere</p>
+    <div class="mgroup">
+      <div class="mnum">01</div>
+      <span class="mlink" data-go="1,0">The bet</span>
+    </div>
+    <div class="mgroup">
+      <div class="mnum">02</div>
+      <span class="mlink" data-go="3,0">The diagnosis</span>
+      <div class="msub">
+        <span data-go="3,0">Seven insights</span>
+        <span data-go="3,2">Three problems</span>
+        <span data-go="3,3">The turn</span>
+      </div>
+    </div>
+    <div class="mgroup">
+      <div class="mnum">03</div>
+      <span class="mlink" data-go="5,0">The exploration</span>
+      <div class="msub">
+        <span data-go="5,0">Twelve concepts</span>
+        <span data-go="5,1">The verdicts</span>
+        <span data-go="5,3">The roadmap</span>
+      </div>
+    </div>
+    <div class="mgroup">
+      <div class="mnum">04</div>
+      <span class="mlink" data-go="7,0">What it drove</span>
+      <div class="msub">
+        <span data-go="7,1">The numbers</span>
+        <span id="mfigma">The design file ↗</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FIGMA EMBED -->
+<div class="overlay" id="figma">
+  <button class="oclose" data-close="figma">✕</button>
+  <div class="fbar">
+    <button class="navbtn" id="figLib">← Library</button>
+    <span class="flabel">Healthify · Design handoff</span>
+  </div>
+  <div class="fstage">
+    <div class="floader">Opening the design file…</div>
+    <iframe id="figframe" allowfullscreen title="Healthify design handoff in Figma"></iframe>
+  </div>
+</div>
+
+<!-- DETAIL -->
+<div class="overlay" id="detail">
+  <button class="oclose" data-close="detail">✕</button>
+  <div class="dgrid">
+    <div class="dleft" id="dleft"></div>
+    <div class="dright" id="dright"></div>
+  </div>
+  <div class="dcount" id="dcount"></div>
+  <div class="darrows"><button id="dprev">←</button><button id="dnext">→</button></div>
+</div>
+
+<script>
+/* ---------------- DATA ---------------- */
+/* cluster colours are categorical (themes), NOT judgements — green/amber/red stay reserved for verdicts */
+const PROBLEMS=[
+  {k:"Clarity of the core job", d:"The AI-first redesign buried the one action users came for — fast, reliable tracking.", c:"#3C63B0"},
+  {k:"Discoverability of features", d:"The most powerful AI features — Ria, Snap, insights — were invisible or felt locked away.", c:"#9A4EA8"},
+  {k:"Trust in AI", d:"Curiosity about AI collapsed into doubt over accuracy, control and personalisation.", c:"#0F8484"}
+];
+const INSIGHTS=[
+  {t:"The 'clean redesign' buried the core action of meal tracking", cluster:0, obs:[
+    "Users liked the homogenised look and seeing meal insights up front.",
+    "But existing users missed the clear, instant 'track a meal' CTA and felt lost about where to track.",
+    "They came to track meals and were blind to the 'active choice' welcome — features went undiscovered."]},
+  {t:"Users trust manual search but doubt Snap's accuracy", cluster:2, obs:[
+    "Existing users default to manual search out of habit and trust; new users are more open to Snap.",
+    "Snap drew curiosity but failed on accuracy — portion size, healthy swaps.",
+    "One bad capture sent them back to manual for good; privacy and clumsy edits compounded the distrust."]},
+  {t:"'Track with Ria' was powerful but nearly invisible", cluster:1, obs:[
+    "Not one existing-user participant had tried tracking via Ria — it wasn't a consistent choice on the home screen.",
+    "Many didn't know how to phrase commands, unsure what the AI needed.",
+    "When they did log via Ria, inaccuracies and hard-to-fix entries quickly cost it credibility."]},
+  {t:"Users want insights that tell them what to do next", cluster:0, obs:[
+    "Insights act as motivation and education, driving consistency.",
+    "Existing users asked for early signals on whether they're meeting calorie goals.",
+    "They wanted actionable, goal-curated guidance — not generic tips."]},
+  {t:"Users thought Ria was paywalled and preferred taps over typing", cluster:1, obs:[
+    "Existing users were hesitant; some assumed Ria was paid/pro after the UI upgrade and never tried.",
+    "New users discovered Ria more organically.",
+    "When nudged in, most entered through active choices and prompts — they didn't know how to start a free-form chat."]},
+  {t:"Users expect the in-app AI to know more than ChatGPT", cluster:2, obs:[
+    "They expect Ria to use their logs, goals and dietary preferences in every answer.",
+    "A bias that AI can't truly customise to their body sends nutrition questions to coaches and friends.",
+    "They reject bot-like preset replies and will trade more input for a genuinely engaging conversation."]},
+  {t:"To users, Healthify is 'the calorie tracker' — and that must stay sacred", cluster:0, obs:[
+    "Its value is 'the calorie tracker', not a holistic fitness app.",
+    "Power users come for Indian recipes and India-aware measurement — 'a tablespoon', not abstract grams.",
+    "Implication: AI must strengthen the core tracking job first."]}
+];
+const CLUSTER=INSIGHTS.map(i=>i.cluster);
+const CCOL=['#3C63B0','#9A4EA8','#0F8484'];
+const CCBG=['#F1F4FA','#F8F2F9','#EEF6F5'];
+const TERR={mm:"Multi-modal & assistive",pr:"Personalised meal planning",co:"Community & social"};
+const CONCEPTS=[
+  {name:"Multi-modality tracking",terr:"mm",v:"pri",does:"Track meals using search, voice, photo or barcode — all feeding one log.",
+   said:["Users are loyal to one modality, chosen for its accuracy.","Voice excites, but only if it can be trusted to log accurately.","Existing users know Snap's limits and fall back to manual search."],
+   sig:"Wanted — but each modality must earn trust on accuracy."},
+  {name:"Voice-based planning",terr:"mm",v:"exp",does:"Plan and log meals hands-free by talking to Ria.",
+   said:["Reaction split by comfort with voice.","Non-users saw no use case; fans expected a spoken reply, not text.","Strong only if it's accurate and allows hyper-detailed logging."],
+   sig:"Split by comfort; ship opt-in with spoken replies."},
+  {name:"Video Ria interaction",terr:"mm",v:"exp",does:"Short recipe videos from Ria to help you decide what to cook.",
+   said:["Users want videos that enable a quick decision.","They need ingredients, difficulty and cook-time shown up front.","Without that, they won't invest time watching."],
+   sig:"Useful only if ingredients and effort are shown up front."},
+  {name:"Suggestions from your logs",terr:"pr",v:"exp",does:"Meal ideas generated from what you usually log.",
+   said:["Majority saw value but were wary of repeat recommendations.","They know their regular meals by heart and want new, healthy ideas.","Best when suggestions stay close to what they already eat."],
+   sig:"Liked, but want new ideas — not repeats of usual meals."},
+  {name:"Location-based suggestions",terr:"pr",v:"pri",does:"Healthy options nearby for ordering in or eating out.",
+   said:["Majority keen to find healthy options away from home.","Also wanted it while choosing restaurants or deciding where to eat.","Sceptics worried about privacy, or avoid outside food entirely."],
+   sig:"Keen for healthy options when eating out or ordering in."},
+  {name:"Picked for you",terr:"pr",v:"pri",does:"A personalised, of-the-moment set of meals chosen for each user.",
+   said:["Most popular concept — 11 of 13 keen to use it.","Wanted authentic, geography-specific picks with local ingredients.","For conditions like PCOS, wanted doctor-recommended assurance."],
+   sig:"Most popular (11/13) — wanted authentic, local, doctor-backed picks.", full:true},
+  {name:"Coach recommends",terr:"pr",v:"pri",does:"Meal guidance from an AI coach based on your goals.",
+   said:["Coach-plan users saw the greatest value and wanted it up front.","Non-users were open to a hyper-personalised AI coach.","Some saw it merging naturally with 'Picked for you'."],
+   sig:"Strong openness to guidance from a human or AI coach."},
+  {name:"Live health meter",terr:"pr",v:"pri",does:"An at-a-glance read on how healthy a meal is for you.",
+   said:["High value — but users needed clarity on how 'health' is judged.","Many wanted a macro-level meter tied to their goals.","The word 'health' alone read as vague."],
+   sig:"High value — show macros, not a vague 'health' score."},
+  {name:"Suggestions from social saves",terr:"co",v:"exp",does:"Meal ideas drawn from posts you've saved on social media.",
+   said:["Polarising — half loved it, half found it invasive.","Fans liked ideas from their saved healthy posts.","Others cited privacy, and that saves are aesthetic, not intent."],
+   sig:"Loved by some, invasive to others; make it opt-in."},
+  {name:"Popular around you",terr:"co",v:"hold",does:"See what people near you are eating.",
+   said:["Large majority had no interest in user-generated meal content.","Peers' preferences and goals felt irrelevant to copy.","Engaging with AI on a 'story' felt like overkill."],
+   sig:"Little interest — 'I don't want to copy people'.",
+   proto:"https://embed.figma.com/proto/dDLYimw9n8LlAGO3vsR3Bg/Handoff-%7C-Apr---Jun-2026?node-id=163-2946&viewport=4395%2C2389%2C0.39&scaling=min-zoom&content-scaling=fixed&starting-point-node-id=590%3A158584&page-id=148%3A8888&embed-host=share&hide-ui=1"},
+  {name:"What celebrities eat",terr:"co",v:"hold",does:"Browse the diets and meals of celebrities.",
+   said:["Most found no real value in it.","Any interest was curiosity, not utility.","Users trusted their own tastes over a celebrity's."],
+   sig:"Curiosity only, no real utility."},
+  {name:"Q&A / polls",terr:"co",v:"hold",does:"Community questions and polls about food and cravings.",
+   said:["Least popular concept in the study.","Users couldn't find a relevant use case.","They already know what they're craving."],
+   sig:"No relevant use case; least popular in the study."}
+];
+const VMETA={pri:{l:"Prioritise",c:"#0E8A60"},exp:{l:"Explore",c:"#B07C1E"},hold:{l:"Hold",c:"#D65151"}};
+
+/* ---------------- SCENE 2 FIELD ---------------- */
+const field=document.getElementById('field');
+INSIGHTS.forEach((ins,i)=>{
+  const d=document.createElement('div');
+  d.className='insight';
+  d.innerHTML='<span class="no">Insight 0'+(i+1)+'</span>'+ins.t+'<span class="peek">Read ↗</span>';
+  const col=i%3,row=Math.floor(i/3);
+  const sx=([5,34,62][col]+Math.sin(i*2.3)*2)+'vw';
+  const sy=(30+row*19+Math.cos(i*1.7)*2.5)+'vh';
+  const sr=((i%2?1:-1)*(3+(i*13)%5))+'deg';
+  const c=CLUSTER[i];
+  const within=CLUSTER.slice(0,i).filter(x=>x===c).length;
+  d.style.setProperty('--sx',sx);d.style.setProperty('--sy',sy);d.style.setProperty('--sr',sr);
+  d.style.setProperty('--cx',(12+c*30)+'vw');d.style.setProperty('--cy',(34+within*16)+'vh');
+  d.style.setProperty('--cc',CCOL[c]);d.style.setProperty('--ccbg',CCBG[c]);
+  d.style.transitionDelay=(i*0.06)+'s';
+  d.addEventListener('click',()=>openDetail('insight',i));
+  field.appendChild(d);
+});
+PROBLEMS.forEach((p,i)=>{
+  const el=document.createElement('div');
+  el.className='problem';
+  el.style.left=(12+i*30+13)+'vw';el.style.top='36vh';el.style.transitionDelay=(i*0.1)+'s';
+  el.innerHTML='<span class="pl" style="color:'+p.c+'">Problem 0'+(i+1)+'</span><h3>'+p.k+'</h3><p>'+p.d+'</p>';
+  document.getElementById('s2').appendChild(el);
+});
+
+/* ---------------- SCENE 3 GRID ---------------- */
+const grid=document.getElementById('grid');
+const cards=CONCEPTS.map((c,i)=>{
+  const d=document.createElement('div');
+  d.className='con v-'+c.v;
+  d.innerHTML='<div><span class="ct">'+TERR[c.terr].split(' ')[0]+'</span><p class="cn" style="margin-top:8px">'+c.name+'</p></div>'
+    +'<span class="verd '+c.v+'"><span class="dot"></span>'+VMETA[c.v].l+'</span>'
+    +'<span class="peek">Open ↗</span>';
+  d.style.transitionDelay=(i*0.045)+'s';
+  d.style.setProperty('--fall',((i%2?1:-1)*(4+i%7))+'deg');
+  d.addEventListener('click',()=>openDetail('concept',i));
+  grid.appendChild(d);
+  return d;
+});
+function layout(order){
+  const gw=grid.clientWidth,gh=grid.clientHeight;
+  const cw=(gw-3*18)/4, ch=(gh-2*18)/3-4;
+  order.forEach((ci,slot)=>{
+    const col=slot%4,row=Math.floor(slot/4);
+    cards[ci].style.setProperty('--pos','translate('+(col*(cw+18))+'px,'+(row*(ch+18))+'px)');
+  });
+}
+const ORDER0=[5,9,0,3,10,6,1,11,7,4,2,8];
+const bucket=v=>CONCEPTS.map((c,i)=>[c,i]).filter(([c])=>c.v===v).map(([,i])=>i);
+const SORTED=[...bucket('pri'),...bucket('exp'),...bucket('hold')];
+
+/* ---------------- SCENE HOOKS ---------------- */
+const scenes=[...document.querySelectorAll('.scene')];
+const S1=document.getElementById('s1');
+const rise=document.getElementById('riseline'),fall=document.getElementById('fall');
+const retval=document.getElementById('retval');
+let cdTimer=null;
+function setLine(el,drawn){const L=el.getTotalLength();el.style.strokeDasharray=L;el.style.strokeDashoffset=L*(1-drawn);}
+let introTimer=null;
+// time-based tween (setInterval, not rAF) so it stays correct even if the tab is backgrounded
+function introDraw(line,fromN,toN,dur){clearInterval(introTimer);const t0=performance.now();setLine(line,0);retval.textContent=Math.round(fromN);
+  introTimer=setInterval(()=>{const p=Math.min(1,(performance.now()-t0)/dur);
+    setLine(line,1-Math.pow(1-p,3));
+    retval.textContent=Math.round(fromN+(toN-fromN)*(1-Math.pow(1-p,2)));
+    if(p>=1){setLine(line,1);retval.textContent=toN;clearInterval(introTimer);}},16);}
+function headlines(sc,b){sc.querySelectorAll('.hl-line').forEach(h=>{const hb=+h.dataset.b;h.classList.toggle('show',hb===b);h.classList.toggle('gone',hb<b);});}
+function startCountdown(){clearInterval(cdTimer);let secs=180*24*3600;const el=document.getElementById('cd');
+  cdTimer=setInterval(()=>{secs-=37;const d=Math.floor(secs/86400),h=Math.floor(secs%86400/3600),m=Math.floor(secs%3600/60);
+    el.textContent=String(d).padStart(3,'0')+' : '+String(h).padStart(2,'0')+' : '+String(m).padStart(2,'0');},50);}
+const shipflag=document.getElementById('shipflag');
+const shipdot=document.getElementById('shipdot');
+function placeMarks(){
+  const svg=S1.querySelector('svg');const r=svg.getBoundingClientRect(),w=S1.querySelector('.chartwrap').getBoundingClientRect();
+  shipflag.style.left=(r.left-w.left+560/1000*r.width)+'px';
+  shipflag.style.top=(r.top-w.top+186/420*r.height-52)+'px';
+  S1.querySelectorAll('.culprit').forEach(el=>{
+    el.style.left=(r.left-w.left+(+el.dataset.x)/1000*r.width)+'px';
+    el.style.top=(r.top-w.top+(+el.dataset.y)/420*r.height)+'px';
+  });
+}
+function retColor(c){document.getElementById('retno').style.color=c;}
+const hookS1=(b,silent)=>{headlines(S1,b);
+  if(b===0){setLine(fall,0);fall.style.opacity=0;shipdot.style.opacity=0;
+    if(!silent){introDraw(rise,0,100,1800);}else{clearInterval(introTimer);setLine(rise,1);retval.textContent='100';}
+    retColor('var(--green)');clearInterval(cdTimer);}
+  if(b===1){placeMarks();shipdot.style.opacity=1;fall.style.opacity=1;setLine(fall,0);}
+  if(b===2){fall.style.opacity=1;
+    if(!silent){introDraw(fall,100,64,2200);}else{clearInterval(introTimer);setLine(fall,1);retval.textContent='64';}
+    retColor('var(--red)');}
+  if(b===4&&!silent)startCountdown();
+  if(b<4)clearInterval(cdTimer);};
+const hookS2=(b)=>{const h=document.getElementById('s2').querySelector('[data-h="0"]');
+  if(b===0)h.textContent='Twenty interviews produced seven insights.';
+  if(b===1)h.textContent='Seven insights clustered into three patterns.';
+  if(b>=2)h.textContent='Three patterns named three problems.';};
+const hookS3=(b)=>{const heads=document.getElementById('s3').querySelectorAll('.hswap');heads.forEach(x=>x.classList.remove('show'));
+  if(b===0)heads[0].classList.add('show');else if(b===1)heads[1].classList.add('show');else heads[2].classList.add('show');
+  layout(b>=2?SORTED:ORDER0);};
+const noop=()=>{};
+const sceneHooks=[noop,hookS1,noop,hookS2,noop,hookS3,noop,noop];
+const IDX={s1:1,s2:3,s3:5,s4:7};
+
+/* ---------------- BEAT ENGINE ---------------- */
+let si=0,beat=0;
+const beatsEl=document.getElementById('beats');
+const sceneLab=document.getElementById('scenelab');
+const SCENE_NAMES=['Healthify × Parallel','The bet','The diagnosis','The diagnosis','The exploration','The exploration','What it drove','What it drove'];
+const hintEl=document.getElementById('hint');let hintGone=false;
+function killHint(){if(!hintGone){hintGone=true;hintEl.style.opacity='0';setTimeout(()=>hintEl.remove(),600);}}
+function drawBeats(){beatsEl.innerHTML='';
+  for(let s=0;s<scenes.length;s++){
+    if(s>0){const sep=document.createElement('span');sep.className='sep';beatsEl.appendChild(sep);}
+    const t=+scenes[s].dataset.beats;
+    for(let b=0;b<t;b++){const d=document.createElement('span');d.className='bd';
+      if(s<si||(s===si&&b<beat))d.classList.add('done');
+      if(s===si&&b===beat)d.classList.add('now');
+      d.addEventListener('click',()=>goTo(s,b));
+      d.addEventListener('mouseenter',()=>showPreview(s,b,d));
+      beatsEl.appendChild(d);}}
+  sceneLab.textContent=SCENE_NAMES[si];}
+
+/* ---------- dot hover previews ---------- */
+const THUMB_W=280;let THUMBS=[];
+const BEATCAP=[
+  ['Cover'],
+  ['Fifty million follow','The AI-first bet','Retention falls','Which part?','The clock'],
+  ['Chapter 02'],
+  ['Seven insights','Three patterns','Three problems','The turn'],
+  ['Chapter 03'],
+  ['Twelve concepts','The verdicts','Sorted into lanes','The roadmap'],
+  ['Chapter 04'],
+  ['The headline','The numbers']
+];
+function precomputeThumbs(){
+  const sS=si,sB=beat;
+  scenes.forEach((sc,s)=>{
+    THUMBS[s]=[];const total=+sc.dataset.beats;
+    for(let b=0;b<total;b++){
+      for(let k=0;k<8;k++)sc.classList.remove('b'+k);
+      for(let k=0;k<=b;k++)sc.classList.add('b'+k);
+      for(let k=0;k<=b;k++)sceneHooks[s](k,true);
+      const c=sc.cloneNode(true);c.classList.add('thumbscene');c.classList.remove('active');
+      THUMBS[s][b]=c.outerHTML;
+    }
+    for(let k=0;k<8;k++)sc.classList.remove('b'+k);
+  });
+  layout(ORDER0);
+  show(sS,sB,false);
+}
+const dotprev=document.getElementById('dotprev'),thumbstage=document.getElementById('thumbstage'),thumbcap=document.getElementById('thumbcap');
+let prevHideT=null;
+function showPreview(s,b,dot){
+  if(!THUMBS[s]||THUMBS[s][b]==null)return;
+  clearTimeout(prevHideT);
+  const r=dot.getBoundingClientRect();
+  const scale=THUMB_W/innerWidth;
+  thumbstage.style.width=innerWidth+'px';thumbstage.style.height=innerHeight+'px';
+  thumbstage.style.transform='scale('+scale+')';
+  dotprev.style.setProperty('--tw',THUMB_W+'px');
+  dotprev.style.setProperty('--th',Math.round(innerHeight*scale)+'px');
+  thumbstage.innerHTML=THUMBS[s][b];
+  thumbcap.innerHTML='<b>'+SCENE_NAMES[s]+'</b> · '+BEATCAP[s][b];
+  dotprev.style.left=(r.left+r.width/2)+'px';
+  dotprev.style.bottom=(innerHeight-r.top+16)+'px';
+  dotprev.classList.add('on');
+}
+function hidePreview(){prevHideT=setTimeout(()=>dotprev.classList.remove('on'),80);}
+function updateNav(){document.getElementById('backBtn').disabled=(si===0&&beat===0);
+  document.getElementById('nextBtn').disabled=(si===scenes.length-1&&beat===+scenes[si].dataset.beats-1);}
+function render(animate){const sc=scenes[si];
+  if(si!==IDX.s1){clearInterval(cdTimer);clearInterval(introTimer);}
+  for(let b=0;b<8;b++)sc.classList.remove('b'+b);
+  for(let b=0;b<=beat;b++)sc.classList.add('b'+b);
+  for(let b=0;b<=beat;b++)sceneHooks[si](b,!(animate&&b===beat));
+  drawBeats();updateNav();}
+function show(s,b,animate){scenes.forEach((sc,idx)=>sc.classList.toggle('active',idx===s));si=s;beat=b;render(animate);}
+function next(){killHint();const total=+scenes[si].dataset.beats;
+  if(beat<total-1)show(si,beat+1,true);
+  else if(si<scenes.length-1)show(si+1,0,true);}
+function prev(){killHint();
+  if(beat>0)show(si,beat-1,false);
+  else if(si>0)show(si-1,+scenes[si-1].dataset.beats-1,false);}
+function goTo(s,b){killHint();closeAll();show(s,b,false);}
+
+/* ---------------- DETAIL OVERLAY ---------------- */
+const detail=document.getElementById('detail'),dleft=document.getElementById('dleft'),dright=document.getElementById('dright'),dcount=document.getElementById('dcount');
+let dKind=null,dIndex=0;
+function phonePicked(){
+  return '<div class="phone"><div class="notch"></div><div class="phscreen">'
+   +'<div class="phstat"><span>9:41</span><span>▮▮▮ ⌁ 100%</span></div>'
+   +'<div class="phbody">'
+   +'<div class="phbar"><div><h4>Picked for you</h4><div class="loc">Bengaluru · updated this morning</div></div><div class="av"></div></div>'
+   +'<div class="tiles">'
+   +'<div class="tile"><div class="img" style="background:linear-gradient(135deg,#cfe3cf,#a9ccae)"></div><div class="tb"><b>Ragi dosa set</b><small>320 kcal · high fibre</small><span class="chip local">Local pick</span></div></div>'
+   +'<div class="tile"><div class="img" style="background:linear-gradient(135deg,#e7d9c3,#d3bd9c)"></div><div class="tb"><b>Millet khichdi</b><small>410 kcal · balanced</small><span class="chip pcos">PCOS-friendly</span></div></div>'
+   +'<div class="tile"><div class="img" style="background:linear-gradient(135deg,#d8e6cf,#b7d1a6)"></div><div class="tb"><b>Paneer thali</b><small>520 kcal · high protein</small><span class="chip doc">Doctor-backed</span></div></div>'
+   +'<div class="tile"><div class="img" style="background:linear-gradient(135deg,#e3ddc9,#cfc39e)"></div><div class="tb"><b>Sprout chaat</b><small>210 kcal · light</small><span class="chip local">Local pick</span></div></div>'
+   +'</div>'
+   +'<div class="phwhy"><b>Why these?</b> Chosen from your goals, your city\'s ingredients, and doctor guidance for your profile.</div>'
+   +'<div class="tabbar"><i></i><i></i><div class="mid">+</div><i></i><i></i></div>'
+   +'</div></div></div>';
+}
+function protoEmbed(src){
+  return '<div class="protowrap"><div class="protoload">Opening the prototype…</div>'
+   +'<iframe src="'+src+'" allowfullscreen title="Figma prototype"></iframe></div>';
+}
+function fitProto(){
+  const pw=dright.querySelector('.protowrap');if(!pw)return;
+  const fr=pw.querySelector('iframe');if(!fr)return;
+  fr.style.transform='scale('+(pw.clientHeight/812)+')';
+}
+function phonePlaceholder(name){
+  return '<div class="phone ph-empty"><div class="pe">'
+   +'<div class="pelabel">Prototype</div>'
+   +'<div class="peco">'+name+'</div>'
+   +'<div class="pebars"><i></i><i></i><i></i></div>'
+   +'<div class="pelabel" style="margin-top:6px">Mockup to follow</div>'
+   +'</div></div>';
+}
+function renderDetail(){
+  if(dKind==='concept'){
+    const c=CONCEPTS[dIndex],vm=VMETA[c.v];
+    dleft.innerHTML='<div class="dkick">'+TERR[c.terr]+'</div>'
+      +'<h2 class="dtitle">'+c.name+'</h2>'
+      +'<p class="ddoes">'+c.does+'</p>'
+      +'<div class="dsub">What users said</div>'
+      +'<ul class="dsaid">'+c.said.map(s=>'<li>'+s+'</li>').join('')+'</ul>'
+      +'<div class="dverd" style="color:'+vm.c+'"><span class="dot"></span><span class="vl">'+vm.l+'</span><span class="sig">'+c.sig+'</span></div>';
+    dright.innerHTML=c.full?phonePicked():(c.proto?protoEmbed(c.proto):phonePlaceholder(c.name));
+    fitProto();
+    dcount.textContent='Concept '+(dIndex+1)+' / '+CONCEPTS.length+'  ·  ← → to browse';
+  } else {
+    const ins=INSIGHTS[dIndex],p=PROBLEMS[ins.cluster];
+    dleft.innerHTML='<div class="dkick" style="color:'+p.c+'">Rolls up to · '+p.k+'</div>'
+      +'<h2 class="dtitle">'+ins.t+'</h2>'
+      +'<p class="ddoes">'+p.d+'</p>';
+    dright.innerHTML='<div class="evidence"><div class="dsub" style="margin-bottom:2px">What we saw in the sessions</div>'
+      +ins.obs.map((s,k)=>'<div class="ec"><span class="en">Observation 0'+(k+1)+'</span>'+s+'</div>').join('')+'</div>';
+    dcount.textContent='Insight '+(dIndex+1)+' / '+INSIGHTS.length+'  ·  ← → to browse';
+  }
+}
+function openDetail(kind,i){killHint();dKind=kind;dIndex=i;renderDetail();detail.classList.add('open');}
+function stepDetail(dir){const n=dKind==='concept'?CONCEPTS.length:INSIGHTS.length;dIndex=(dIndex+dir+n)%n;renderDetail();}
+document.getElementById('dprev').addEventListener('click',()=>stepDetail(-1));
+document.getElementById('dnext').addEventListener('click',()=>stepDetail(1));
+
+/* ---------------- MENU / FIGMA ---------------- */
+const menu=document.getElementById('menu'),figmaOv=document.getElementById('figma');
+const FIGMA_SRC='https://embed.figma.com/design/M39nVJePaqyKzyxMgGrOxm/Healthify---Design-handoff?node-id=1-666&embed-host=share';
+function openMenu(){killHint();menu.classList.add('open');}
+function openFigma(){killHint();closeAll();
+  const fr=document.getElementById('figframe');
+  if(!fr.getAttribute('src'))fr.setAttribute('src',FIGMA_SRC);
+  figmaOv.classList.add('open');document.body.classList.add('figma-open');}
+function closeAll(){detail.classList.remove('open');menu.classList.remove('open');
+  figmaOv.classList.remove('open');document.body.classList.remove('figma-open');}
+function anyOpen(){return detail.classList.contains('open')||menu.classList.contains('open')||figmaOv.classList.contains('open');}
+document.getElementById('figBtn').addEventListener('click',openFigma);
+document.getElementById('mfigma').addEventListener('click',openFigma);
+document.getElementById('figLib').addEventListener('click',()=>leaveTo('index.html','Parallel'));
+document.querySelectorAll('[data-go]').forEach(el=>el.addEventListener('click',()=>{const[a,b]=el.dataset.go.split(',').map(Number);goTo(a,b);}));
+document.querySelectorAll('[data-close]').forEach(el=>el.addEventListener('click',closeAll));
+[menu,detail,figmaOv].forEach(o=>o.addEventListener('click',e=>{if(e.target===o)closeAll();}));
+document.getElementById('menuBtn').addEventListener('click',openMenu);
+document.getElementById('backBtn').addEventListener('click',prev);
+document.getElementById('nextBtn').addEventListener('click',next);
+
+/* ---------------- CURTAIN TRANSITIONS ---------------- */
+const curtain=document.getElementById('curtain');
+function leaveTo(href,label){curtain.querySelector('.ct').textContent=label||'';curtain.classList.add('on');
+  setTimeout(()=>location.href=href,520);}
+document.getElementById('libBtn').addEventListener('click',e=>{e.preventDefault();leaveTo(e.currentTarget.href,'Parallel')});
+document.getElementById('endlib').addEventListener('click',e=>{e.preventDefault();leaveTo(e.currentTarget.href,'Parallel')});
+addEventListener('pageshow',()=>{requestAnimationFrame(()=>curtain.classList.remove('on'));});
+
+/* ---------------- ROUND CURSOR ---------------- */
+if(matchMedia('(pointer:fine)').matches){
+  const cur=document.createElement('div');cur.id='cursor';document.body.appendChild(cur);
+  let cx=innerWidth/2,cy=innerHeight/2,mx=cx,my=cy,shown=false;
+  addEventListener('mousemove',e=>{
+    mx=e.clientX;my=e.clientY;
+    if(!shown){shown=true;cx=mx;cy=my;cur.classList.add('on');}
+    const hot=e.target.closest('a,button,.insight,.con,.bd,.mlink,.msub span,[data-go]');
+    cur.classList.toggle('hot',!!hot);
+  });
+  document.addEventListener('mouseleave',()=>{shown=false;cur.classList.remove('on');});
+  // native cursor takes over inside any embedded iframe (Figma prototypes etc.)
+  document.addEventListener('mouseover',e=>{
+    if(e.target.tagName==='IFRAME')cur.classList.remove('on');
+    else if(shown)cur.classList.add('on');
+  });
+  addEventListener('mousedown',()=>cur.classList.add('press'));
+  addEventListener('mouseup',()=>cur.classList.remove('press'));
+  (function follow(){cx+=(mx-cx)*.35;cy+=(my-cy)*.35;cur.style.left=cx+'px';cur.style.top=cy+'px';requestAnimationFrame(follow);})();
+}
+
+/* ---------------- INPUT ---------------- */
+addEventListener('keydown',e=>{
+  if(anyOpen()){
+    if(e.key==='Escape')closeAll();
+    else if(detail.classList.contains('open')){if(e.key==='ArrowRight')stepDetail(1);if(e.key==='ArrowLeft')stepDetail(-1);}
+    return;
+  }
+  if(['ArrowRight','ArrowDown',' ','PageDown'].includes(e.key)){e.preventDefault();next();}
+  else if(['ArrowLeft','ArrowUp','PageUp'].includes(e.key)){e.preventDefault();prev();}
+  else if(e.key==='c'||e.key==='C')openMenu();
+  else if(e.key==='1')goTo(IDX.s1,0);else if(e.key==='2')goTo(IDX.s2,0);
+  else if(e.key==='3')goTo(IDX.s3,0);else if(e.key==='4')goTo(IDX.s4,0);
+});
+let tx=null;
+addEventListener('touchstart',e=>tx=e.touches[0].clientX,{passive:true});
+addEventListener('touchend',e=>{if(tx===null||anyOpen())return;const dx=e.changedTouches[0].clientX-tx;if(Math.abs(dx)>55)dx<0?next():prev();tx=null;},{passive:true});
+let rzT=null;
+addEventListener('resize',()=>{if(si===IDX.s3)layout(beat>=2?SORTED:ORDER0);if(si===IDX.s1&&beat>=1)placeMarks();
+  if(detail.classList.contains('open'))fitProto();
+  hidePreview();clearTimeout(rzT);rzT=setTimeout(precomputeThumbs,250);});
+setTimeout(killHint,8000);
+
+/* ---------------- INIT ---------------- */
+curtain.classList.add('on');
+layout(ORDER0);
+beatsEl.addEventListener('mouseleave',hidePreview);
+precomputeThumbs();     // capture thumbnails silently first…
+show(0,0,true);         // …then land on the cover
+requestAnimationFrame(()=>requestAnimationFrame(()=>curtain.classList.remove('on')));
+</script>
+</body>
+</html>

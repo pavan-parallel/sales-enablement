@@ -263,6 +263,7 @@ button{font-family:var(--fs)}
 /* ================= DATA ================= */
 const CS=[
  {n:"Healthify",d:"India's leading AI-powered health & nutrition expert. Diagnosing a retention fall after an AI-first redesign, and rewriting the roadmap through user verdicts.",ind:"Health Tech",m:"B2C",tags:["AI","Health","Consumer"],live:true,href:"healthify.html"},
+ {n:"Healthify — V2",d:"The next cut of the walkthrough: visual-first storytelling, the full shipped story, and a rebuilt navigation system. In progress.",ind:"Health Tech",m:"B2C",tags:["AI","Health","Consumer"],live:true,href:"healthify-v2.html"},
  {n:"Gullak",d:"Helping 1M+ users grow their wealth with digital gold.",ind:"Fintech",m:"B2C",tags:["Finance","Consumer"]},
  {n:"Sarvam",d:"Designing AI experiences for the world's most diverse market.",ind:"AI",m:"B2B",tags:["AI","B2B"]},
  {n:"UrbanPiper",d:"Building the operating system for 45,000+ restaurants.",ind:"B2B SaaS",m:"B2B",tags:["B2B"]},
@@ -374,7 +375,7 @@ function drawGrid(){
   const anyFilter=activeTags.size||model!=='All';
   drawFeatured(!anyFilter);
   grid.innerHTML='';
-  const shown=anyFilter?list:list.filter(c=>!c.live);
+  const shown=anyFilter?list:list.filter(c=>c!==CS[0]); // featured project lives in the hero card; other live builds stay in the grid
   shown.forEach((c,k)=>{
     const idx=CS.indexOf(c);
     const el=document.createElement('div');
