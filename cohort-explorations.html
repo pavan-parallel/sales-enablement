@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cohort slide — three explorations</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Figtree:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FCFBF8;--bg2:#FFFFFF;
+  --text:#111111;--muted:#6A685D;--faint:rgba(17,17,17,.38);
+  --line:rgba(17,17,17,.1);--line2:rgba(17,17,17,.22);--line3:rgba(17,17,17,.45);
+  --green:#0E8A60;--amber:#B07C1E;--red:#D65151;
+  --fd:'Libre Baskerville',Georgia,serif;
+  --fs:'Figtree',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  --ease:cubic-bezier(.22,.9,.24,1);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-snap-type:y mandatory}
+body{background:var(--bg);color:var(--text);font-family:var(--fs);-webkit-font-smoothing:antialiased}
+.variant{position:relative;height:100vh;scroll-snap-align:start;padding:7vh 7vw 10vh;overflow:hidden;cursor:pointer}
+.variant+.variant{border-top:1px solid var(--line)}
+.vtag{position:absolute;top:26px;right:28px;font-family:var(--fs);font-size:11.5px;letter-spacing:.05em;text-transform:uppercase;
+  font-weight:600;color:var(--faint);border:1px solid var(--line);border-radius:100px;padding:6px 14px;background:var(--bg2)}
+.kicker{font-size:12.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:500}
+.big{font-family:var(--fd);font-weight:400;letter-spacing:-.01em;line-height:1.22;font-size:clamp(23px,2.7vw,38px);margin-top:14px}
+.hswap{position:relative;height:11vh}
+.hswap .big{position:absolute;top:0;left:0;right:0;opacity:0;transform:translateY(14px);transition:opacity .5s,transform .5s var(--ease)}
+.hswap .big.show{opacity:1;transform:none}
+.vfoot{position:absolute;left:7vw;right:7vw;bottom:7vh;font-size:13px;color:var(--muted);line-height:1.6;opacity:0;transform:translateY(8px);transition:opacity .6s .5s,transform .6s .5s var(--ease)}
+.vfoot b{color:var(--text);font-weight:500}
+.vdots{position:absolute;bottom:26px;left:50%;transform:translateX(-50%);display:flex;gap:7px}
+.vdots span{width:8px;height:8px;border-radius:50%;background:var(--line);transition:background .3s,transform .3s}
+.vdots span.on{background:var(--text);transform:scale(1.3)}
+.hint{position:fixed;top:26px;left:28px;z-index:50;font-size:12.5px;color:var(--muted);background:var(--bg2);
+  border:1px solid var(--line);border-radius:100px;padding:8px 16px;box-shadow:0 10px 30px -12px rgba(17,17,17,.15)}
+
+/* ============ A · THE AXES ============ */
+#va .stage{position:absolute;left:14vw;right:14vw;top:26vh;bottom:20vh}
+#va .axh,#va .axv{position:absolute;background:var(--line2)}
+#va .axh{left:0;right:0;top:50%;height:1px;transform:scaleX(0);transition:transform 1s var(--ease)}
+#va .axv{top:0;bottom:0;left:50%;width:1px;transform:scaleY(0);transition:transform 1s .25s var(--ease)}
+#va.b0 .axh{transform:scaleX(1)}
+#va.b0 .axv{transform:scaleY(1)}
+#va .axlab{position:absolute;font-size:12px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);
+  opacity:0;transition:opacity .5s .9s;background:var(--bg);padding:4px 10px}
+#va.b0 .axlab{opacity:1}
+#va .axlab.w{left:0;top:50%;transform:translate(-50%,-50%) rotate(0)}
+#va .axlab.e{right:0;top:50%;transform:translate(50%,-50%)}
+#va .axlab.n{left:50%;top:0;transform:translate(-50%,-50%)}
+#va .axlab.s{left:50%;bottom:0;transform:translate(-50%,50%)}
+#va .qd{position:absolute;width:16px;height:16px;border-radius:50%;background:var(--line3);
+  opacity:0;transform:scale(.2);transition:opacity .45s,transform .55s var(--ease)}
+#va.b1 .qd{opacity:1;transform:scale(1)}
+#va .qcount{position:absolute;font-family:var(--fd);font-size:clamp(15px,1.4vw,19px);color:var(--muted);
+  opacity:0;transition:opacity .6s .8s}
+#va.b1 .qcount{opacity:1}
+
+/* ============ B · THE FRAMES ============ */
+#vb .stage{position:absolute;left:7vw;right:7vw;top:27vh;bottom:18vh;display:flex;gap:2.4vw}
+#vb .frame{flex:1;border:1.5px dashed var(--line2);border-radius:18px;position:relative;
+  opacity:0;transform:translateY(16px);transition:opacity .5s var(--ease),transform .6s var(--ease)}
+#vb.b0 .frame{opacity:1;transform:none}
+#vb.b0 .frame:nth-child(2){transition-delay:.1s}
+#vb.b0 .frame:nth-child(3){transition-delay:.2s}
+#vb.b0 .frame:nth-child(4){transition-delay:.3s}
+#vb.b1 .frame{border-color:transparent;background:var(--bg2);box-shadow:0 14px 34px -14px rgba(17,17,17,.12);border:1px solid var(--line)}
+#vb .frame .fl{position:absolute;top:18px;left:20px;right:20px}
+#vb .frame .fl .un{font-family:var(--fd);font-size:clamp(15px,1.4vw,19px)}
+#vb .frame .fl .os{display:inline-block;margin-top:7px;font-size:10.5px;font-weight:600;letter-spacing:.03em;
+  border:1px solid var(--line2);border-radius:100px;padding:3px 10px;color:var(--muted)}
+#vb .avatars{position:absolute;inset:0;pointer-events:none}
+#vb .av{position:absolute;left:0;top:0;width:46px;text-align:center;opacity:0;
+  transform:translate(var(--sx),var(--sy)) scale(.4);transition:transform 1.1s var(--ease),opacity .5s}
+#vb.b1 .av{opacity:1;transform:translate(var(--tx),var(--ty)) scale(1)}
+#vb .av .ic{width:40px;height:40px;border-radius:50%;background:var(--bg2);border:1px solid var(--line2);margin:0 auto;
+  display:grid;place-items:center;box-shadow:0 8px 20px -8px rgba(17,17,17,.18)}
+#vb .av .ic svg{width:20px;height:20px;fill:var(--line3)}
+#vb .av .ct{display:block;font-size:9.5px;color:var(--faint);margin-top:4px;white-space:nowrap}
+#vb .av:nth-child(even) .ct{transform:translateY(12px)} /* stagger label rows so long city names never collide */
+
+/* ============ C · THE CONTRAST ============ */
+#vc .pole{position:absolute;top:32vh;width:30vw;opacity:0;transition:opacity .6s var(--ease),transform .8s var(--ease),top .8s var(--ease),width .8s var(--ease)}
+#vc .pole.l{left:9vw;transform:translateX(-40px)}
+#vc .pole.r{right:9vw;text-align:right;transform:translateX(40px)}
+#vc.b0 .pole{opacity:1;transform:none}
+#vc .pole .who{font-family:var(--fd);font-size:clamp(22px,2.5vw,34px);line-height:1.25}
+#vc .pole .meta{margin-top:14px;font-size:13.5px;color:var(--muted);line-height:1.7}
+#vc .pole .meta b{color:var(--text);font-weight:500}
+#vc .neq{position:absolute;left:50%;top:36vh;transform:translate(-50%,0) scale(.4);font-family:var(--fd);font-style:italic;
+  font-size:clamp(40px,5vw,72px);color:var(--red);opacity:0;transition:opacity .5s .6s,transform .6s .6s cubic-bezier(.3,1.4,.5,1)}
+#vc.b0 .neq{opacity:1;transform:translate(-50%,0) scale(1)}
+#vc.b1 .neq{opacity:0;transition:opacity .3s}
+/* beat 1 — the spectrum between the poles */
+#vc.b1 .pole{top:30vh;width:16vw}
+#vc.b1 .pole .who{font-size:clamp(14px,1.3vw,18px)}
+#vc.b1 .pole .meta{font-size:11.5px;line-height:1.6}
+#vc .spec{position:absolute;left:9vw;right:9vw;top:56vh;height:1px;background:var(--line2);
+  transform:scaleX(0);transition:transform .9s .35s var(--ease)}
+#vc.b1 .spec{transform:scaleX(1)}
+#vc .sd{position:absolute;top:56vh;width:14px;height:14px;border-radius:50%;background:var(--line3);margin-top:-7px;
+  opacity:0;transform:scale(.2);transition:opacity .4s,transform .5s var(--ease)}
+#vc.b1 .sd{opacity:1;transform:scale(1)}
+#vc .tick{position:absolute;top:calc(56vh + 16px);font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;
+  color:var(--faint);transform:translateX(-50%);opacity:0;transition:opacity .5s 1s}
+#vc.b1 .tick{opacity:1}
+</style>
+</head>
+<body>
+
+<div class="hint">Cohort slide · three explorations — click a slide to step its beats, scroll for the next</div>
+
+<!-- ============ VARIANT A ============ -->
+<section class="variant" id="va" data-beats="2">
+  <span class="vtag">Exploration A · The axes draw it</span>
+  <p class="kicker">The diagnosis</p>
+  <div class="hswap">
+    <h2 class="big" data-h="0">We engineered the mix on two axes first.</h2>
+    <h2 class="big" data-h="1">Five people in every quadrant — twenty in all.</h2>
+  </div>
+  <div class="stage">
+    <div class="axh"></div><div class="axv"></div>
+    <span class="axlab w">Existing user</span>
+    <span class="axlab e">New user</span>
+    <span class="axlab n">iOS</span>
+    <span class="axlab s">Android</span>
+  </div>
+  <p class="vfoot"><b>Then three more axes cut across every quadrant</b> — profession · geography · AI usage. 20 sessions, 60–75 minutes each.</p>
+  <div class="vdots"><span></span><span></span></div>
+</section>
+
+<!-- ============ VARIANT B ============ -->
+<section class="variant" id="vb" data-beats="2">
+  <span class="vtag">Exploration B · Empty seats, then people</span>
+  <p class="kicker">The diagnosis</p>
+  <div class="hswap">
+    <h2 class="big" data-h="0">Four cohorts, designed before anyone was recruited.</h2>
+    <h2 class="big" data-h="1">Then twenty people — Delhi to Coimbatore — filled them.</h2>
+  </div>
+  <div class="stage">
+    <div class="frame"><div class="fl"><div class="un">Existing user</div><span class="os">iOS</span></div></div>
+    <div class="frame"><div class="fl"><div class="un">Existing user</div><span class="os">Android</span></div></div>
+    <div class="frame"><div class="fl"><div class="un">New user</div><span class="os">iOS</span></div></div>
+    <div class="frame"><div class="fl"><div class="un">New user</div><span class="os">Android</span></div></div>
+  </div>
+  <div class="avatars" id="avatars"></div>
+  <p class="vfoot"><b>Engineered on five axes</b> — operating system · new vs existing · profession · geography · AI usage. 20 sessions, 60–75 minutes each.</p>
+  <div class="vdots"><span></span><span></span></div>
+</section>
+
+<!-- ============ VARIANT C ============ -->
+<section class="variant" id="vc" data-beats="2">
+  <span class="vtag">Exploration C · The two poles</span>
+  <p class="kicker">The diagnosis</p>
+  <div class="hswap">
+    <h2 class="big" data-h="0">A product manager in Delhi behaves nothing like a shop owner in Coimbatore.</h2>
+    <h2 class="big" data-h="1">So we recruited the whole spread between them.</h2>
+  </div>
+  <div class="pole l">
+    <div class="who">A product manager</div>
+    <div class="meta"><b>Delhi</b> · iOS<br>Uses AI every day</div>
+  </div>
+  <span class="neq">≠</span>
+  <div class="pole r">
+    <div class="who">A small-business owner</div>
+    <div class="meta"><b>Coimbatore</b> · Android<br>Has never used AI</div>
+  </div>
+  <div class="spec"></div>
+  <p class="vfoot"><b>Twenty people across four cohorts</b> — engineered on five axes: OS · new vs existing · profession · geography · AI usage. 20 sessions, 60–75 minutes each.</p>
+  <div class="vdots"><span></span><span></span></div>
+</section>
+
+<script>
+/* ---------- variant A: quadrant dots ---------- */
+(function(){
+  const stage=document.querySelector('#va .stage');
+  // five hand-placed dots per quadrant (percent of stage), plus a count note per quadrant
+  const Q={
+    nw:[[18,22],[30,34],[13,40],[36,16],[25,45]],
+    ne:[[64,18],[76,30],[86,22],[70,42],[82,44]],
+    sw:[[15,62],[28,72],[20,84],[36,64],[33,86]],
+    se:[[66,66],[78,58],[87,74],[70,84],[81,88]]
+  };
+  Object.values(Q).flat().forEach(([x,y],i)=>{
+    const d=document.createElement('span');d.className='qd';
+    d.style.left=x+'%';d.style.top=y+'%';
+    d.style.transitionDelay=(0.05*i)+'s';
+    stage.appendChild(d);
+  });
+  [['nw','25%','8%'],['ne','75%','8%'],['sw','25%','94%'],['se','75%','94%']].forEach(([q,x,y])=>{
+    const c=document.createElement('span');c.className='qcount';c.textContent='×5';
+    c.style.left=x;c.style.top=y;c.style.transform='translate(-50%,-50%)';
+    stage.appendChild(c);
+  });
+})();
+
+/* ---------- variant B: avatars fly into the frames ---------- */
+(function(){
+  const wrap=document.getElementById('avatars');
+  const person='<svg viewBox="0 0 24 24"><path d="M12 12c2.5 0 4.5-2 4.5-4.5S14.5 3 12 3 7.5 5 7.5 7.5 9.5 12 12 12zm0 2.2c-3.6 0-9 1.8-9 5.4V21h18v-1.4c0-3.6-5.4-5.4-9-5.4z"/></svg>';
+  const CITIES=[["Delhi",1],["Bangalore",1],["Mumbai",1],["Pune",1],["Delhi",1],
+                ["Coimbatore",2],["Kochi",2],["Pimpri-Chinchwad",2],["Delhi",2],["Kochi",2],
+                ["Saharanpur",3],["Visakhapatnam",3],["Kochi",3],["Delhi",3],["Bangalore",3],
+                ["Noida",4],["Kolkata",4],["Gurugram",4],["Delhi",4],["Kolkata",4]];
+  // scattered start (viewport %), then a seat inside frame f (row of 5 near frame bottom)
+  const SCAT=[[8,88],[20,95],[35,90],[52,96],[66,88],[80,94],[92,89],[12,12],[30,6],[48,10],
+              [64,6],[82,11],[94,20],[5,45],[95,52],[3,70],[97,72],[40,4],[58,92],[26,90]];
+  CITIES.forEach(([city,f],i)=>{
+    const a=document.createElement('span');a.className='av';
+    a.innerHTML='<span class="ic">'+person+'</span><span class="ct">'+city+'</span>';
+    const j=i%5;
+    a.style.setProperty('--sx',SCAT[i][0]+'vw');
+    a.style.setProperty('--sy',SCAT[i][1]+'vh');
+    // frames: 4 columns from 7vw, each (86 - 3*2.4)/4 ≈ 19.7vw wide + 2.4vw gap
+    const fx=7+(f-1)*(19.7+2.4);
+    a.style.setProperty('--tx','calc('+fx+'vw + '+(j*3.3+1.6)+'vw)');
+    a.style.setProperty('--ty','calc(82vh - 13vh)');
+    a.style.transitionDelay=(i*0.045)+'s';
+    wrap.appendChild(a);
+  });
+})();
+
+/* ---------- variant C: the spectrum dots + ticks ---------- */
+(function(){
+  const vc=document.getElementById('vc');
+  // 20 dots along the line, loosely grouped around 4 cohort ticks
+  const T=[16,40,62,86]; // tick centers, % of line
+  const LBL=['Existing · iOS','Existing · Android','New · iOS','New · Android'];
+  for(let i=0;i<20;i++){
+    const c=Math.floor(i/5), j=i%5;
+    const d=document.createElement('span');d.className='sd';
+    const off=(j-2)*3 + ((i*7)%3-1)*0.8;
+    d.style.left='calc(9vw + '+(T[c]+off)+'% * 0.82)';
+    d.style.transitionDelay=(0.5+i*0.05)+'s';
+    vc.appendChild(d);
+  }
+  T.forEach((t,c)=>{
+    const k=document.createElement('span');k.className='tick';k.textContent=LBL[c];
+    k.style.left='calc(9vw + '+t+'% * 0.82)';
+    vc.appendChild(k);
+  });
+})();
+
+/* ---------- shared beat engine ---------- */
+document.querySelectorAll('.variant').forEach(v=>{
+  const total=+v.dataset.beats;let b=-1;
+  const dots=v.querySelectorAll('.vdots span');
+  const heads=v.querySelectorAll('.hswap .big');
+  function apply(){
+    for(let k=0;k<4;k++)v.classList.toggle('b'+k,k<=b&&b>=0);
+    dots.forEach((d,i)=>d.classList.toggle('on',i===b));
+    heads.forEach(h=>h.classList.toggle('show',+h.dataset.h===b));
+    const foot=v.querySelector('.vfoot');if(foot)foot.style.opacity=(b===total-1)?1:0;
+  }
+  v.addEventListener('click',()=>{b=(b+1)%total;apply();});
+  let played=false;
+  new IntersectionObserver(es=>es.forEach(e=>{
+    if(e.isIntersecting&&!played){played=true;b=0;apply();setTimeout(()=>{b=1;apply();},1800);}
+  }),{threshold:.55}).observe(v);
+  apply();
+});
+</script>
+</body>
+</html>

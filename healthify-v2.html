@@ -190,8 +190,8 @@ body{background:var(--bg);color:var(--text);font-family:var(--fs);-webkit-font-s
 #s2 .artifact:hover{border-color:var(--line3);box-shadow:0 0 0 1px var(--line2),0 20px 44px -16px rgba(17,17,17,.22)}
 #s2.b4 .artifact{opacity:1;transform:translate(-50%,0);pointer-events:auto}
 #s2.b5 .artifact{opacity:0;transform:translate(-50%,-16px);pointer-events:none}
-.insight{position:absolute;width:min(280px,25vw);padding:17px 18px 16px;border:1px solid var(--line);border-radius:14px;background:var(--bg2);overflow:hidden;
-  font-family:var(--fd);font-size:clamp(15px,1.35vw,19px);color:var(--text);line-height:1.35;box-shadow:0 14px 34px -14px rgba(17,17,17,.14);cursor:pointer;opacity:0;
+.insight{position:absolute;width:min(300px,26vw);padding:17px 18px 16px;border:1px solid var(--line);border-radius:14px;background:var(--bg2);overflow:hidden;
+  font-family:var(--fd);font-size:14.5px;color:var(--text);line-height:1.42;box-shadow:0 14px 34px -14px rgba(17,17,17,.14);cursor:pointer;opacity:0;
   pointer-events:none;transition:transform 1s var(--ease),opacity .7s,border-color .3s,box-shadow .3s;
   transform:translate(var(--sx),var(--sy)) rotate(var(--sr)) scale(.86)}
 .insight .no{font-family:var(--fs);font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--faint);display:block;margin-bottom:9px}
@@ -235,16 +235,11 @@ body{background:var(--bg);color:var(--text);font-family:var(--fs);-webkit-font-s
 #s3 .terrsum .ts .tt{font-family:var(--fs);font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;display:block;margin-bottom:8px}
 #s3 .terrsum .ts p{font-family:var(--fs);font-size:12.5px;color:var(--muted);line-height:1.5}
 #grid{position:relative;margin-top:2vh;height:52vh}
-.con{position:absolute;border:1px solid var(--line);border-radius:14px;overflow:hidden;
-  background:var(--bg2);padding:14px 16px;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;
+.con{position:absolute;width:calc((100% - 3*18px)/4);height:calc((100% - 2*18px)/3 - 4px);border:1px solid var(--line);border-radius:14px;overflow:hidden;
+  background:var(--bg2);padding:16px 17px;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;
   box-shadow:0 10px 26px -14px rgba(17,17,17,.1);
   opacity:0;transform:var(--pos,none) translateY(46px) scale(.94);
-  transition:transform .85s var(--ease),opacity .55s,border-color .3s,filter .8s,box-shadow .3s,width .85s var(--ease),height .85s var(--ease)}
-/* territory band labels — the grid itself reads 'twelve concepts across three territories' (beats 0–1) */
-#s3 .tlab{position:absolute;left:0;font-family:var(--fs);font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--faint);font-weight:600;
-  opacity:0;transition:opacity .5s .3s}
-#s3.b0 .tlab{opacity:1}
-#s3.b2 .tlab{opacity:0;transition:opacity .25s}
+  transition:transform .85s var(--ease),opacity .55s,border-color .3s,filter .8s,box-shadow .3s}
 .con .cn{font-family:var(--fd);font-size:clamp(13px,1.05vw,16.5px);line-height:1.32;letter-spacing:-.005em}
 .con .ct{font-family:var(--fs);font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--faint);font-weight:500}
 .con .peek{position:absolute;right:14px;top:14px;font-family:var(--fs);font-size:11px;color:var(--faint);opacity:0;transition:opacity .25s}
@@ -965,7 +960,7 @@ const field=document.getElementById('field');
 INSIGHTS.forEach((ins,i)=>{
   const d=document.createElement('div');
   d.className='insight';
-  d.innerHTML='<span class="no">Insight 0'+(i+1)+'</span>'+ins.short+'<span class="peek">Read ↗</span>';
+  d.innerHTML='<span class="no">Insight 0'+(i+1)+'</span>'+ins.t+'<span class="peek">Read ↗</span>';
   const col=i%3,row=Math.floor(i/3);
   const sx=([5,34,62][col]+Math.sin(i*2.3)*2)+'vw';
   const sy=(30+row*19+Math.cos(i*1.7)*2.5)+'vh';
@@ -1034,36 +1029,15 @@ const cards=CONCEPTS.map((c,i)=>{
   grid.appendChild(d);
   return d;
 });
-/* two layouts: by territory (the sprint's shape, beats 0–1) and by verdict (the roadmap, beats 2–3) */
-const TERR_ROWS=[['mm',[0,1,2]],['pr',[3,4,5,6,7]],['co',[8,9,10,11]]];
-const tlabs=TERR_ROWS.map(([t,idx])=>{
-  const l=document.createElement('span');l.className='tlab';
-  l.textContent=TERR[t]+' · '+idx.length+(idx.length>1?' concepts':' concept');
-  grid.appendChild(l);return l;
-});
-function layoutTerritory(){
-  const gw=grid.clientWidth,gh=grid.clientHeight;
-  const bh=gh/3;
-  TERR_ROWS.forEach(([t,idx],r)=>{
-    tlabs[r].style.top=(r*bh)+'px';
-    const n=idx.length,cw=(gw-(n-1)*16)/n,ch=bh-26-16;
-    idx.forEach((ci,k)=>{
-      const el=cards[ci];
-      el.style.width=cw+'px';el.style.height=ch+'px';
-      el.style.setProperty('--pos','translate('+(k*(cw+16))+'px,'+(r*bh+26)+'px)');
-    });
-  });
-}
-function layoutSorted(){
+function layout(order){
   const gw=grid.clientWidth,gh=grid.clientHeight;
   const cw=(gw-3*18)/4, ch=(gh-2*18)/3-4;
-  SORTED.forEach((ci,slot)=>{
+  order.forEach((ci,slot)=>{
     const col=slot%4,row=Math.floor(slot/4);
-    const el=cards[ci];
-    el.style.width=cw+'px';el.style.height=ch+'px';
-    el.style.setProperty('--pos','translate('+(col*(cw+18))+'px,'+(row*(ch+18))+'px)');
+    cards[ci].style.setProperty('--pos','translate('+(col*(cw+18))+'px,'+(row*(ch+18))+'px)');
   });
 }
+const ORDER0=[5,9,0,3,10,6,1,11,7,4,2,8];
 const bucket=v=>CONCEPTS.map((c,i)=>[c,i]).filter(([c])=>c.v===v).map(([,i])=>i);
 const SORTED=[...bucket('pri'),...bucket('exp'),...bucket('hold')];
 
@@ -1127,7 +1101,7 @@ const hookS2=(b)=>{const h=document.getElementById('s2').querySelector('[data-h=
   if(b>=4)h.textContent='Three patterns named three problems.';};
 const hookS3=(b)=>{const heads=document.getElementById('s3').querySelectorAll('.hswap');heads.forEach(x=>x.classList.remove('show'));
   if(b===0)heads[0].classList.add('show');else if(b===1)heads[1].classList.add('show');else heads[2].classList.add('show');
-  if(b>=2)layoutSorted();else layoutTerritory();};
+  layout(b>=2?SORTED:ORDER0);};
 const hookS5=(b)=>{const s5=document.getElementById('s5');
   s5.querySelectorAll('.hswap').forEach(x=>x.classList.toggle('show',+x.dataset.h===b));
   s5.querySelectorAll('.shipbeat').forEach(x=>x.classList.toggle('show',+x.dataset.sb===b));};
@@ -1181,7 +1155,7 @@ function precomputeThumbs(){
     }
     for(let k=0;k<8;k++)sc.classList.remove('b'+k);
   });
-  layoutTerritory();
+  layout(ORDER0);
   show(sS,sB,false);
 }
 const dotprev=document.getElementById('dotprev'),thumbstage=document.getElementById('thumbstage'),thumbcap=document.getElementById('thumbcap');
@@ -1366,14 +1340,14 @@ let tx=null;
 addEventListener('touchstart',e=>tx=e.touches[0].clientX,{passive:true});
 addEventListener('touchend',e=>{if(tx===null||anyOpen())return;const dx=e.changedTouches[0].clientX-tx;if(Math.abs(dx)>55)dx<0?next():prev();tx=null;},{passive:true});
 let rzT=null;
-addEventListener('resize',()=>{if(si===IDX.s3){if(beat>=2)layoutSorted();else layoutTerritory();}if(si===IDX.s1&&beat>=1)placeMarks();
+addEventListener('resize',()=>{if(si===IDX.s3)layout(beat>=2?SORTED:ORDER0);if(si===IDX.s1&&beat>=1)placeMarks();
   if(detail.classList.contains('open'))fitProto();
   hidePreview();clearTimeout(rzT);rzT=setTimeout(precomputeThumbs,250);});
 setTimeout(killHint,8000);
 
 /* ---------------- INIT ---------------- */
 curtain.classList.add('on');
-layoutTerritory();
+layout(ORDER0);
 beatsEl.addEventListener('mouseleave',hidePreview);
 precomputeThumbs();     // capture thumbnails silently first…
 show(0,0,true);         // …then land on the cover
