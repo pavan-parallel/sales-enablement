@@ -121,15 +121,14 @@ body{background:var(--bg);color:var(--text);font-family:var(--fs);-webkit-font-s
 #s1.b3 .culprit:nth-of-type(2){transition-delay:.15s}
 #s1.b3 .culprit:nth-of-type(3){transition-delay:.3s}
 #s1.b3 .culprit:nth-of-type(4){transition-delay:.45s}
-/* our role — its own moment: the chart falls to a ghost, the clock stays lit, the brief takes the room */
-#s1 .mandates{position:absolute;left:0;right:0;top:54%;transform:translateY(-30%) translateY(16px);display:grid;grid-template-columns:repeat(3,1fr);gap:4.5vw;
+/* our role — a clean brief: the chart chapter is over, only the mandate remains */
+#s1 .mandates{position:absolute;left:0;right:0;top:46%;transform:translateY(-30%) translateY(16px);display:grid;grid-template-columns:repeat(3,1fr);gap:4.5vw;
   opacity:0;transition:opacity .7s .3s,transform .9s .3s var(--ease);pointer-events:none}
 #s1 .mandates .mand{border-top:1px solid var(--line2);padding-top:22px}
 #s1 .mandates .mand .mn{font-family:var(--fs);font-size:11.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--amber);font-weight:600;display:block;margin-bottom:14px}
 #s1 .mandates .mand p{font-family:var(--fd);font-size:clamp(17px,1.65vw,23px);line-height:1.42;max-width:24ch}
 #s1.b5 .mandates{opacity:1;transform:translateY(-30%)}
-#s1.b5 svg{opacity:.06;transition:opacity .7s}
-#s1.b5 #retno,#s1.b5 #shipflag,#s1.b5 .culprit{opacity:0;transition:opacity .5s}
+#s1.b5 svg,#s1.b5 #retno,#s1.b5 #launchbox,#s1.b5 #shipflag,#s1.b5 .culprit,#s1.b5 .redwash{opacity:0;transition:opacity .5s}
 /* stat blocks share one visual system, one baseline row */
 .statblock{position:absolute;top:-6px}
 .statblock .sv{font-family:var(--fd);font-size:clamp(34px,3.6vw,52px);line-height:1;font-weight:400;letter-spacing:-.01em}
@@ -141,41 +140,32 @@ body{background:var(--bg);color:var(--text);font-family:var(--fs);-webkit-font-s
 #s1 .redwash{position:absolute;inset:-8vh -8vw;background:radial-gradient(60% 60% at 72% 62%,rgba(214,81,81,.07),transparent 70%);
   opacity:0;transition:opacity 1.6s;pointer-events:none}
 #s1.b2 .redwash{opacity:1}
+/* our-role beat: the chart chapter is fully over — clock and wash included (must sit after their show rules) */
+#s1.b5 .redwash,#s1.b5 #launchbox{opacity:0;transition:opacity .5s}
 
 /* ============ SCENE 2 · THE DIAGNOSIS ============ */
 #s2 .head{position:absolute;top:7vh;left:7vw;right:7vw;z-index:5;transition:opacity .55s var(--ease)}
-#s2.b4 .head{opacity:0;pointer-events:none}
+#s2.b5 .head{opacity:0;pointer-events:none}
 #s2 .head .big{font-size:clamp(23px,2.7vw,38px);margin-top:14px}
 #s2 .field{position:absolute;inset:0}
-/* the method — twenty people, engineered into four cohorts. A diagram, not a paragraph. (beat 0) */
-#s2 .method{position:absolute;left:7vw;right:7vw;top:34vh;opacity:0;transform:translateY(16px);
-  transition:opacity .6s var(--ease),transform .7s var(--ease)}
-#s2.b0 .method{opacity:1;transform:none}
-#s2.b1 .method{opacity:0;transform:translateY(-14px);pointer-events:none}
-#s2 .cohgrid{display:flex;gap:7vw;align-items:flex-end;margin:2vh 0 7vh}
-#s2 .coh{display:flex;flex-direction:column;gap:18px}
-#s2 .coh .dots{display:flex;gap:11px;align-items:flex-end}
-#s2 .coh .dots i{width:19px;height:19px;border-radius:50%;background:var(--line2);display:block}
-#s2 .coh .dots i:nth-child(2){transform:translateY(-9px)}
-#s2 .coh .dots i:nth-child(3){transform:translateY(-3px)}
-#s2 .coh .dots i:nth-child(4){transform:translateY(-11px)}
-#s2 .coh .dots i:nth-child(5){transform:translateY(-5px)}
-#s2 .coh:nth-child(2) .dots i{background:rgba(60,99,176,.5)}
-#s2 .coh:nth-child(3) .dots i{background:rgba(154,78,168,.45)}
-#s2 .coh:nth-child(4) .dots i{background:rgba(15,132,132,.5)}
-#s2 .coh .cl{font-family:var(--fs);font-size:11.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--faint);font-weight:600}
-/* staggered arrival — the cohorts assemble */
-#s2 .coh{opacity:0;transform:translateY(12px);transition:opacity .5s var(--ease),transform .6s var(--ease)}
-#s2.b0 .coh{opacity:1;transform:none}
-#s2.b0 .coh:nth-child(2){transition-delay:.12s}
-#s2.b0 .coh:nth-child(3){transition-delay:.24s}
-#s2.b0 .coh:nth-child(4){transition-delay:.36s}
-#s2.b1 .coh{opacity:0}
-#s2 .maxes{font-family:var(--fs);font-size:13.5px;color:var(--muted);line-height:1.6;margin-bottom:2.2vh}
-#s2 .maxes b{color:var(--text);font-weight:500}
-#s2 .mwhy2{font-family:var(--fd);font-size:clamp(16px,1.65vw,22px);color:var(--text);line-height:1.6;max-width:56ch}
-#s2 .mwhy2 .g2{color:var(--muted)}
-#s2 .msess{display:block;margin-top:2.4vh;font-family:var(--fs);font-size:12.5px;color:var(--faint)}
+/* the method — the crowd tells it: twenty people (beat 0) organise into four cohorts (beat 1),
+   then hand the stage to what they said (beat 2). The motion IS 'engineered'. */
+#s2 .people{position:absolute;inset:0;pointer-events:none}
+#s2 .person{position:absolute;left:0;top:0;width:17px;height:17px;border-radius:50%;background:var(--line3);opacity:0;
+  transform:translate(var(--px),var(--py)) scale(.4);transition:transform 1.1s var(--ease),opacity .6s}
+#s2.b0 .person{opacity:1;transform:translate(var(--px),var(--py)) scale(1)}
+#s2.b1 .person{transform:translate(var(--qx),var(--qy)) scale(1)}
+#s2.b2 .person{opacity:0;transform:translate(var(--qx),var(--qy)) scale(.3)}
+#s2 .clab{position:absolute;top:0;left:0;font-family:var(--fs);font-size:11.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--faint);font-weight:600;
+  transform:translate(var(--lx),var(--ly)) translate(-50%,10px);opacity:0;transition:opacity .5s .75s,transform .6s .75s var(--ease)}
+#s2.b1 .clab{opacity:1;transform:translate(var(--lx),var(--ly)) translate(-50%,0)}
+#s2.b2 .clab{opacity:0;transition:opacity .25s}
+#s2 .axesline{position:absolute;left:7vw;right:7vw;bottom:11vh;font-family:var(--fs);font-size:13.5px;color:var(--muted);line-height:1.6;
+  opacity:0;transform:translateY(10px);transition:opacity .6s 1s,transform .7s 1s var(--ease)}
+#s2 .axesline b{color:var(--text);font-weight:500}
+#s2 .axesline .why{display:block;margin-top:9px;color:var(--faint);font-size:12.5px;max-width:88ch}
+#s2.b1 .axesline{opacity:1;transform:none}
+#s2.b2 .axesline{opacity:0;transition:opacity .25s}
 /* the feature-check artifact — what the diagnosis was used for (beat 3) */
 #s2 .artifact{position:absolute;left:50%;bottom:11vh;transform:translate(-50%,20px);display:flex;align-items:center;gap:14px;
   border:1px solid var(--line);border-radius:100px;background:var(--bg2);padding:12px 22px 12px 18px;cursor:pointer;
@@ -184,8 +174,8 @@ body{background:var(--bg);color:var(--text);font-family:var(--fs);-webkit-font-s
   transition:opacity .6s .5s,transform .7s .5s var(--ease),border-color .25s,box-shadow .25s}
 #s2 .artifact b{color:var(--text);font-weight:500}
 #s2 .artifact:hover{border-color:var(--line3);box-shadow:0 0 0 1px var(--line2),0 20px 44px -16px rgba(17,17,17,.22)}
-#s2.b3 .artifact{opacity:1;transform:translate(-50%,0);pointer-events:auto}
-#s2.b4 .artifact{opacity:0;transform:translate(-50%,-16px);pointer-events:none}
+#s2.b4 .artifact{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+#s2.b5 .artifact{opacity:0;transform:translate(-50%,-16px);pointer-events:none}
 .insight{position:absolute;width:min(300px,26vw);padding:17px 18px 16px;border:1px solid var(--line);border-radius:14px;background:var(--bg2);overflow:hidden;
   font-family:var(--fd);font-size:14.5px;color:var(--text);line-height:1.42;box-shadow:0 14px 34px -14px rgba(17,17,17,.14);cursor:pointer;opacity:0;
   pointer-events:none;transition:transform 1s var(--ease),opacity .7s,border-color .3s,box-shadow .3s;
@@ -195,29 +185,24 @@ body{background:var(--bg);color:var(--text);font-family:var(--fs);-webkit-font-s
 .insight:hover{border-color:var(--line3);
   box-shadow:0 0 0 1px var(--line2),0 22px 50px -18px rgba(17,17,17,.24)}
 .insight:hover .peek{opacity:1}
-#s2.b1 .insight{opacity:1;pointer-events:auto;transform:translate(var(--sx),var(--sy)) rotate(var(--sr))}
-#s2.b2 .insight{opacity:1;transform:translate(var(--cx),var(--cy)) rotate(0deg) scale(.94);border-color:var(--cc);background:var(--ccbg)}
-#s2.b2 .insight .no{color:var(--cc)}
-#s2.b3 .insight{opacity:0;transform:translate(var(--cx),var(--cy)) rotate(0deg) scale(.42);pointer-events:none}
+#s2.b2 .insight{opacity:1;pointer-events:auto;transform:translate(var(--sx),var(--sy)) rotate(var(--sr))}
+#s2.b3 .insight{opacity:1;transform:translate(var(--cx),var(--cy)) rotate(0deg) scale(.94);border-color:var(--cc);background:var(--ccbg)}
+#s2.b3 .insight .no{color:var(--cc)}
+#s2.b4 .insight{opacity:0;transform:translate(var(--cx),var(--cy)) rotate(0deg) scale(.42);pointer-events:none}
 .problem{position:absolute;left:50%;width:min(340px,28vw);text-align:center;opacity:0;transform:translate(-50%,26px) scale(.94);
   pointer-events:none;transition:opacity .6s,transform .8s var(--ease)}
 .problem h3{font-family:var(--fd);font-weight:400;font-size:clamp(19px,1.85vw,26px);margin-bottom:10px;letter-spacing:-.01em}
 .problem .pl{font-family:var(--fs);font-size:11.5px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;margin-bottom:9px;display:block}
 .problem p{font-family:var(--fs);font-size:13px;color:var(--muted);line-height:1.55}
-#s2.b3 .problem{opacity:1;transform:translate(-50%,0) scale(1);pointer-events:auto}
-#s2.b4 .problem{opacity:0;transform:translate(-50%,-34px) scale(.9);pointer-events:none}
+#s2.b4 .problem{opacity:1;transform:translate(-50%,0) scale(1);pointer-events:auto}
+#s2.b5 .problem{opacity:0;transform:translate(-50%,-34px) scale(.9);pointer-events:none}
 #s2 .twistwash{position:absolute;inset:0;background:radial-gradient(52% 55% at 50% 46%,rgba(25,219,152,.09),transparent 72%);
   opacity:0;transition:opacity 1.2s .3s;pointer-events:none}
-#s2.b4 .twistwash{opacity:1}
-#s2 .twist{position:absolute;left:8vw;right:8vw;top:50%;transform:translateY(-46%);text-align:center;opacity:0;pointer-events:none;transition:opacity .5s}
-#s2 .twist .kicker{margin-bottom:3.5vh}
-#s2 .twist .t1,#s2 .twist .t2{opacity:0;transform:translateY(14px);transition:opacity .6s var(--ease),transform .7s var(--ease)}
-#s2 .twist .t1{font-size:clamp(24px,2.9vw,42px);color:var(--muted);line-height:1.2}
-#s2 .twist .t2{font-size:clamp(34px,4.6vw,66px);margin-top:2.5vh;line-height:1.16;letter-spacing:-.015em}
-#s2 .twist .t2 em{color:var(--green);font-style:italic}
-#s2.b4 .twist{opacity:1;pointer-events:auto}
-#s2.b4 .twist .t1{opacity:1;transform:none;transition-delay:.2s}
-#s2.b4 .twist .t2{opacity:1;transform:none;transition-delay:.75s}
+#s2.b5 .twistwash{opacity:1}
+#s2 .twist{position:absolute;left:8vw;right:8vw;top:50%;transform:translateY(-46%);text-align:center;opacity:0;pointer-events:none;transition:opacity .7s .25s}
+#s2 .twist .kicker{margin-bottom:3vh}
+#s2 .twist .big{font-size:clamp(30px,3.9vw,56px);max-width:22ch;margin:0 auto;line-height:1.26}
+#s2.b5 .twist{opacity:1;pointer-events:auto}
 
 /* ============ SCENE 3 · THE EXPLORATION ============ */
 #s3 .head{position:relative;z-index:5;height:14vh}
@@ -260,11 +245,13 @@ body{background:var(--bg);color:var(--text);font-family:var(--fs);-webkit-font-s
 #s3.b2 .con.v-hold,#s3.b3 .con.v-hold{filter:grayscale(.6);opacity:.45}
 #s3.b3 .con.v-hold{opacity:0;transform:var(--pos) translateY(46vh) rotate(var(--fall,5deg))!important;pointer-events:none;
   transition:transform 1.1s cubic-bezier(.5,0,.8,.4),opacity .9s .25s}
-#s3 .finale{position:absolute;left:34vw;right:7vw;bottom:9vh;text-align:center;opacity:0;transform:translateY(16px);
-  transition:opacity .7s .7s,transform .7s .7s var(--ease)}
+#s3 .finale{position:absolute;left:7vw;right:7vw;bottom:14vh;text-align:center;opacity:0;transform:translateY(18px);
+  transition:opacity .7s .8s,transform .8s .8s var(--ease)}
 #s3.b3 .finale{opacity:1;transform:none}
-#s3 .finale .big{font-size:clamp(22px,2.8vw,38px);line-height:1.25}
-#s3 .finale .fnext{margin-top:16px;font-family:var(--fs);font-size:13px;color:var(--faint)}
+#s3 .finale .big{font-size:clamp(26px,3.4vw,50px);line-height:1.22}
+#s3 .finale .fnext{margin-top:18px;font-family:var(--fs);font-size:13px;color:var(--faint)}
+/* the survivors recede so the verdict line owns the close */
+#s3.b3 .con:not(.v-hold){opacity:.3;transition:opacity .8s .5s}
 
 /* ============ SCENE 5 · THE SHIP ============ */
 #s5 .head{position:relative;z-index:5;height:13vh}
@@ -324,21 +311,28 @@ body{background:var(--bg);color:var(--text);font-family:var(--fs);-webkit-font-s
 /* why Parallel — its own panel: the numbers step aside, the closing argument takes the room (beat 2) */
 #s4 .opanel1{transition:opacity .5s var(--ease)}
 #s4.b2 .opanel1{opacity:0;pointer-events:none}
-#s4 .opanel2{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;padding:9vh 9vw 16vh;
+/* the end-card is centred — a deliberate break from every left-aligned content slide, echoing the chapter dividers: this is the close */
+#s4 .opanel2{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:9vh 9vw 18vh;
   opacity:0;pointer-events:none;transition:opacity .5s .35s var(--ease)}
 #s4.b2 .opanel2{opacity:1;pointer-events:auto}
-#s4 .opanel2 .wkick{margin-bottom:20px}
-#s4 .opanel2 .wbig{font-family:var(--fd);font-weight:400;font-size:clamp(24px,3vw,42px);line-height:1.22;letter-spacing:-.01em;max-width:24ch;margin-bottom:7vh}
-#s4 .pillars{display:grid;grid-template-columns:repeat(4,1fr);gap:3.5vw}
-#s4 .pillar{border-top:1px solid var(--line2);padding-top:20px;opacity:0;transform:translateY(16px);transition:opacity .6s,transform .7s var(--ease)}
+#s4 .opanel2 .wkick{margin-bottom:24px}
+#s4 .opanel2 .wbig{font-family:var(--fd);font-weight:400;font-size:clamp(30px,3.9vw,56px);line-height:1.18;letter-spacing:-.015em;max-width:22ch;margin:0 auto 8vh}
+#s4 .pillars{display:grid;grid-template-columns:repeat(4,1fr);gap:3.5vw;width:min(1160px,86vw)}
+#s4 .pillar{border-top:1px solid var(--line2);padding-top:18px;text-align:left;opacity:0;transform:translateY(16px);transition:opacity .6s,transform .7s var(--ease)}
 #s4.b2 .pillar{opacity:1;transform:none;transition-delay:.45s}
 #s4.b2 .pillar:nth-child(2){transition-delay:.57s}
 #s4.b2 .pillar:nth-child(3){transition-delay:.69s}
 #s4.b2 .pillar:nth-child(4){transition-delay:.81s}
-#s4 .pillar .pt{font-family:var(--fd);font-size:clamp(16px,1.55vw,21px);margin-bottom:10px}
-#s4 .pillar .pd{font-family:var(--fs);font-size:13px;color:var(--muted);line-height:1.6}
-#s4 .oacts{position:absolute;left:9vw;bottom:11vh;display:flex;align-items:center;gap:22px;opacity:0;transition:opacity .7s .5s;z-index:3}
+#s4 .pillar .pt{font-family:var(--fd);font-size:clamp(15px,1.4vw,19px);margin-bottom:9px}
+#s4 .pillar .pd{font-family:var(--fs);font-size:12.5px;color:var(--muted);line-height:1.6}
+#s4 .oacts{position:absolute;left:9vw;bottom:11vh;display:flex;align-items:center;gap:22px;opacity:0;z-index:3;
+  transition:opacity .7s .5s,left .7s var(--ease),transform .7s var(--ease)}
 #s4.b1 .oacts{opacity:1}
+#s4.b2 .oacts{left:50%;transform:translateX(-50%)}
+/* the room warms green at the close */
+#s4 .endwash{position:absolute;inset:0;background:radial-gradient(56% 60% at 50% 44%,rgba(25,219,152,.1),transparent 72%);
+  opacity:0;transition:opacity 1.4s;pointer-events:none}
+#s4.b2 .endwash{opacity:1}
 #s4 .figbtn{font-family:var(--fs);font-size:13.5px;font-weight:500;color:var(--bg);background:var(--text);border:0;border-radius:100px;
   padding:13px 24px;cursor:pointer;transition:box-shadow .3s,transform .3s var(--ease)}
 #s4 .figbtn:hover{transform:translateY(-1px);box-shadow:0 14px 34px -12px rgba(17,17,17,.4)}
@@ -586,29 +580,20 @@ body{background:var(--bg);color:var(--text);font-family:var(--fs);-webkit-font-s
 </section>
 
 <!-- SCENE 2 · THE DIAGNOSIS -->
-<section class="scene" id="s2" data-beats="5">
+<section class="scene" id="s2" data-beats="6">
   <div class="head">
     <p class="kicker">The diagnosis</p>
-    <div class="hswap"><h2 class="big" data-h="0">First, the method: twenty users, four engineered cohorts.</h2></div>
+    <div class="hswap"><h2 class="big" data-h="0">We started with twenty people.</h2></div>
   </div>
-  <div class="method">
-    <div class="cohgrid">
-      <div class="coh"><div class="dots"><i></i><i></i><i></i><i></i><i></i></div><span class="cl">Cohort 01</span></div>
-      <div class="coh"><div class="dots"><i></i><i></i><i></i><i></i><i></i></div><span class="cl">Cohort 02</span></div>
-      <div class="coh"><div class="dots"><i></i><i></i><i></i><i></i><i></i></div><span class="cl">Cohort 03</span></div>
-      <div class="coh"><div class="dots"><i></i><i></i><i></i><i></i><i></i></div><span class="cl">Cohort 04</span></div>
-    </div>
-    <p class="maxes">Engineered on five axes — <b>operating system</b> · <b>new vs existing</b> · <b>profession</b> · <b>geography</b> · <b>AI usage</b></p>
-    <p class="mwhy2">A product manager in Delhi on iOS behaves nothing like a small-business owner in Coimbatore on Android. <span class="g2">The insights live in those differences.</span>
-    <span class="msess">20 sessions · 60–75 minutes each · semi-structured interviews + moderated tasks on the live app</span></p>
-  </div>
+  <div class="people" id="people"></div>
+  <div class="axesline">Engineered on five axes — <b>operating system</b> · <b>new vs existing</b> · <b>profession</b> · <b>geography</b> · <b>AI usage</b>
+    <span class="why">A product manager in Delhi on iOS behaves nothing like a small-business owner in Coimbatore on Android — the insights live in the differences. 20 sessions, 60–75 minutes each.</span></div>
   <div class="field" id="field"></div>
   <div class="artifact" id="pmfBtn"><span>And every existing feature got a verdict</span><b>View the feature check ↗</b></div>
   <div class="twistwash"></div>
   <div class="twist">
     <p class="kicker">The turn</p>
-    <h2 class="big t1">Users didn't hate the AI.</h2>
-    <h2 class="big t2">It was getting in the way<br>of <em>the core job.</em></h2>
+    <h2 class="big">Users didn't hate the AI. <span class="g">It was getting in the way of the core job.</span></h2>
   </div>
 </section>
 
@@ -633,8 +618,8 @@ body{background:var(--bg);color:var(--text);font-family:var(--fs);-webkit-font-s
   <div id="grid"></div>
   <p class="testnote">Tested with a fresh participant mix — existing all-active users, next-gen users, and new users, from metros to small towns — to separate genuine signal from novelty.</p>
   <div class="terrsum">
-    <div class="ts"><span class="tt" style="color:var(--amber)">Multi-modal &amp; assistive</span><p>Users are loyal to one modality, chosen for accuracy. Every new modality must earn its trust.</p></div>
     <div class="ts"><span class="tt" style="color:var(--green)">Personalised meal planning</span><p>The clear winner — 'Picked for you' was the most popular concept in the study, 11 of 13 keen.</p></div>
+    <div class="ts"><span class="tt" style="color:var(--amber)">Multi-modal &amp; assistive</span><p>Users are loyal to one modality, chosen for accuracy. Every new modality must earn its trust.</p></div>
     <div class="ts"><span class="tt" style="color:var(--red)">Community &amp; social</span><p>Peers' preferences, celebrity diets and polls failed to resonate. Curiosity, not utility.</p></div>
   </div>
   <div class="finale">
@@ -745,6 +730,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--fs);-webkit-font-s
       </div>
     </div>
   </div>
+  <div class="endwash"></div>
   <div class="opanel2">
     <p class="kicker wkick" style="color:var(--green)">Why it worked</p>
     <h2 class="wbig">We turn high-stakes AI bets into products people adopt.</h2>
@@ -799,10 +785,10 @@ body{background:var(--bg);color:var(--text);font-family:var(--fs);-webkit-font-s
       <span class="mlink" data-go="3,0">The diagnosis</span>
       <div class="msub">
         <span data-go="3,0">The method</span>
-        <span data-go="3,1">Seven insights</span>
-        <span data-go="3,3">Three problems</span>
+        <span data-go="3,2">Seven insights</span>
+        <span data-go="3,4">Three problems</span>
         <span id="mpmf">The feature check</span>
-        <span data-go="3,4">The turn</span>
+        <span data-go="3,5">The turn</span>
       </div>
     </div>
     <div class="mgroup">
@@ -984,6 +970,28 @@ PROBLEMS.forEach((p,i)=>{
   document.getElementById('s2').appendChild(el);
 });
 
+/* the crowd — 20 people scattered like a real crowd (b0), engineered into 4 cohort columns (b1).
+   Positions are hand-placed: formulas leave streaks, and a crowd must look found, not generated. */
+const people=document.getElementById('people');
+const CROWD=[[12,46],[18,63],[23,33],[30,55],[35,70],[40,37],[46,59],[51,29],[56,67],[60,46],
+             [65,33],[69,61],[73,44],[77,69],[81,30],[86,55],[27,68],[15,52],[63,72],[85,42]];
+const COHX=[20,40,60,80]; // column centers, vw
+CROWD.forEach(([x,y],i)=>{
+  const p=document.createElement('span');p.className='person';
+  const c=i%4, j=Math.floor(i/4);
+  const qx=(COHX[c]+Math.sin(j*2.7)*1.1)+'vw';               // near-tidy columns — engineered, still human
+  const qy=(33+j*6.4)+'vh';
+  p.style.setProperty('--px',x+'vw');p.style.setProperty('--py',y+'vh');
+  p.style.setProperty('--qx',qx);p.style.setProperty('--qy',qy);
+  p.style.transitionDelay=(i*0.035)+'s';
+  people.appendChild(p);
+});
+COHX.forEach((x,c)=>{
+  const l=document.createElement('span');l.className='clab';l.textContent='Cohort 0'+(c+1);
+  l.style.setProperty('--lx',(x+0.6)+'vw');l.style.setProperty('--ly','67vh');
+  people.appendChild(l);
+});
+
 /* ---------------- SCENE 3 GRID ---------------- */
 const grid=document.getElementById('grid');
 const cards=CONCEPTS.map((c,i)=>{
@@ -1060,13 +1068,14 @@ const hookS1=(b,silent)=>{headlines(S1,b);
   if(b===2){fall.style.opacity=1;
     if(!silent){introDraw(fall,100,64,2200);}else{clearInterval(introTimer);setLine(fall,1);retval.textContent='64';}
     retColor('var(--red)');}
-  if(b>=4&&!silent)startCountdown();
-  if(b<4)clearInterval(cdTimer);};
+  if(b===4&&!silent)startCountdown();
+  if(b<4||b===5)clearInterval(cdTimer);};
 const hookS2=(b)=>{const h=document.getElementById('s2').querySelector('[data-h="0"]');
-  if(b===0)h.textContent='First, the method: twenty users, four engineered cohorts.';
-  if(b===1)h.textContent='Twenty interviews produced seven insights.';
-  if(b===2)h.textContent='Seven insights clustered into three patterns.';
-  if(b>=3)h.textContent='Three patterns named three problems.';};
+  if(b===0)h.textContent='We started with twenty people.';
+  if(b===1)h.textContent='Engineered into four cohorts.';
+  if(b===2)h.textContent='Twenty conversations produced seven insights.';
+  if(b===3)h.textContent='Seven insights clustered into three patterns.';
+  if(b>=4)h.textContent='Three patterns named three problems.';};
 const hookS3=(b)=>{const heads=document.getElementById('s3').querySelectorAll('.hswap');heads.forEach(x=>x.classList.remove('show'));
   if(b===0)heads[0].classList.add('show');else if(b===1)heads[1].classList.add('show');else heads[2].classList.add('show');
   layout(b>=2?SORTED:ORDER0);};
@@ -1102,7 +1111,7 @@ const BEATCAP=[
   ['Cover'],
   ['Fifty million follow','The AI-first bet','Retention falls','Which part?','The clock','Our role'],
   ['Phase 1 · Research'],
-  ['The method','Seven insights','Three patterns','Three problems','The turn'],
+  ['Twenty people','Four cohorts','Seven insights','Three patterns','Three problems','The turn'],
   ['Phase 2 · Design & Validate'],
   ['Twelve concepts','The verdicts','Sorted into lanes','The roadmap'],
   ['Phase 3 · Refine & Ship'],
