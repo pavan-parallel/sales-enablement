@@ -148,23 +148,37 @@ body{background:var(--bg);color:var(--text);font-family:var(--fs);-webkit-font-s
 #s2.b5 .head{opacity:0;pointer-events:none}
 #s2 .head .big{font-size:clamp(23px,2.7vw,38px);margin-top:14px}
 #s2 .field{position:absolute;inset:0}
-/* the method — the crowd tells it: twenty people (beat 0) organise into four cohorts (beat 1),
-   then hand the stage to what they said (beat 2). The motion IS 'engineered'. */
+/* the method — first the engineering (beat 0: four cohort definitions), then the recruiting
+   (beat 1: twenty people fly in and take their seats). The cards ARE the cohorts. */
 #s2 .people{position:absolute;inset:0;pointer-events:none}
-#s2 .person{position:absolute;left:0;top:0;width:17px;height:17px;border-radius:50%;background:var(--line3);opacity:0;
-  transform:translate(var(--px),var(--py)) scale(.4);transition:transform 1.1s var(--ease),opacity .6s}
-#s2.b0 .person{opacity:1;transform:translate(var(--px),var(--py)) scale(1)}
-#s2.b1 .person{transform:translate(var(--qx),var(--qy)) scale(1)}
-#s2.b2 .person{opacity:0;transform:translate(var(--qx),var(--qy)) scale(.3)}
-#s2 .clab{position:absolute;top:0;left:0;font-family:var(--fs);font-size:11.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--faint);font-weight:600;
-  transform:translate(var(--lx),var(--ly)) translate(-50%,10px);opacity:0;transition:opacity .5s .75s,transform .6s .75s var(--ease)}
-#s2.b1 .clab{opacity:1;transform:translate(var(--lx),var(--ly)) translate(-50%,0)}
-#s2.b2 .clab{opacity:0;transition:opacity .25s}
-#s2 .axesline{position:absolute;left:7vw;right:7vw;bottom:11vh;font-family:var(--fs);font-size:13.5px;color:var(--muted);line-height:1.6;
-  opacity:0;transform:translateY(10px);transition:opacity .6s 1s,transform .7s 1s var(--ease)}
+#s2 .cohcard{position:absolute;top:31vh;width:19.5vw;height:37vh;left:var(--cx0);border:1px solid var(--line);border-radius:14px;
+  background:var(--bg2);padding:16px 17px 15px;box-shadow:0 14px 34px -14px rgba(17,17,17,.12);overflow:hidden;
+  opacity:0;transform:translateY(18px);transition:opacity .55s var(--ease),transform .65s var(--ease)}
+#s2.b0 .cohcard{opacity:1;transform:none}
+#s2.b0 .cohcard:nth-of-type(2){transition-delay:.1s}
+#s2.b0 .cohcard:nth-of-type(3){transition-delay:.2s}
+#s2.b0 .cohcard:nth-of-type(4){transition-delay:.3s}
+#s2.b2 .cohcard{opacity:0;transform:translateY(-14px) scale(.96);transition:opacity .4s,transform .5s var(--ease)}
+#s2 .cohcard .chn{font-family:var(--fs);font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--faint);font-weight:600}
+#s2 .cohcard .cht{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:7px 0 12px}
+#s2 .cohcard .cht .un{font-family:var(--fd);font-size:clamp(15px,1.35vw,19px)}
+#s2 .cohcard .os{font-family:var(--fs);font-size:10.5px;font-weight:600;letter-spacing:.03em;border:1px solid var(--line2);border-radius:100px;padding:3px 10px;color:var(--muted);flex:none}
+#s2 .cohcard .crow{margin-bottom:9px}
+#s2 .cohcard .crl{font-family:var(--fs);font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:var(--faint);font-weight:600;display:block;margin-bottom:5px}
+#s2 .cohcard .chips{display:flex;flex-wrap:wrap;gap:4px}
+#s2 .cohcard .chip2{font-family:var(--fs);font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:100px;padding:2.5px 9px;background:var(--bg)}
+/* the five seats each cohort fills (beat 1) */
+#s2 .cohcard .seats{position:absolute;left:17px;right:17px;bottom:13px;display:flex;gap:9px}
+#s2 .cohcard .seats i{width:15px;height:15px;border-radius:50%;border:1px dashed var(--line2);display:block}
+#s2 .person{position:absolute;left:0;top:0;width:15px;height:15px;border-radius:50%;background:var(--line3);opacity:0;
+  transform:translate(var(--px),var(--py)) scale(.4);transition:transform 1.15s var(--ease),opacity .55s}
+#s2.b1 .person{opacity:1;transform:translate(var(--qx),var(--qy)) scale(1)}
+#s2.b2 .person{opacity:0;transform:translate(var(--qx),var(--qy)) scale(.3);transition:opacity .35s,transform .45s}
+#s2 .axesline{position:absolute;left:7vw;right:7vw;bottom:9vh;font-family:var(--fs);font-size:13.5px;color:var(--muted);line-height:1.6;
+  opacity:0;transform:translateY(10px);transition:opacity .6s .55s,transform .7s .55s var(--ease)}
 #s2 .axesline b{color:var(--text);font-weight:500}
 #s2 .axesline .why{display:block;margin-top:9px;color:var(--faint);font-size:12.5px;max-width:88ch}
-#s2.b1 .axesline{opacity:1;transform:none}
+#s2.b0 .axesline{opacity:1;transform:none}
 #s2.b2 .axesline{opacity:0;transition:opacity .25s}
 /* the feature-check artifact — what the diagnosis was used for (beat 3) */
 #s2 .artifact{position:absolute;left:50%;bottom:11vh;transform:translate(-50%,20px);display:flex;align-items:center;gap:14px;
@@ -176,8 +190,8 @@ body{background:var(--bg);color:var(--text);font-family:var(--fs);-webkit-font-s
 #s2 .artifact:hover{border-color:var(--line3);box-shadow:0 0 0 1px var(--line2),0 20px 44px -16px rgba(17,17,17,.22)}
 #s2.b4 .artifact{opacity:1;transform:translate(-50%,0);pointer-events:auto}
 #s2.b5 .artifact{opacity:0;transform:translate(-50%,-16px);pointer-events:none}
-.insight{position:absolute;width:min(300px,26vw);padding:17px 18px 16px;border:1px solid var(--line);border-radius:14px;background:var(--bg2);overflow:hidden;
-  font-family:var(--fd);font-size:14.5px;color:var(--text);line-height:1.42;box-shadow:0 14px 34px -14px rgba(17,17,17,.14);cursor:pointer;opacity:0;
+.insight{position:absolute;width:min(280px,25vw);padding:17px 18px 16px;border:1px solid var(--line);border-radius:14px;background:var(--bg2);overflow:hidden;
+  font-family:var(--fd);font-size:clamp(15px,1.35vw,19px);color:var(--text);line-height:1.35;box-shadow:0 14px 34px -14px rgba(17,17,17,.14);cursor:pointer;opacity:0;
   pointer-events:none;transition:transform 1s var(--ease),opacity .7s,border-color .3s,box-shadow .3s;
   transform:translate(var(--sx),var(--sy)) rotate(var(--sr)) scale(.86)}
 .insight .no{font-family:var(--fs);font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--faint);display:block;margin-bottom:9px}
@@ -221,11 +235,16 @@ body{background:var(--bg);color:var(--text);font-family:var(--fs);-webkit-font-s
 #s3 .terrsum .ts .tt{font-family:var(--fs);font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;display:block;margin-bottom:8px}
 #s3 .terrsum .ts p{font-family:var(--fs);font-size:12.5px;color:var(--muted);line-height:1.5}
 #grid{position:relative;margin-top:2vh;height:52vh}
-.con{position:absolute;width:calc((100% - 3*18px)/4);height:calc((100% - 2*18px)/3 - 4px);border:1px solid var(--line);border-radius:14px;overflow:hidden;
-  background:var(--bg2);padding:16px 17px;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;
+.con{position:absolute;border:1px solid var(--line);border-radius:14px;overflow:hidden;
+  background:var(--bg2);padding:14px 16px;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;
   box-shadow:0 10px 26px -14px rgba(17,17,17,.1);
   opacity:0;transform:var(--pos,none) translateY(46px) scale(.94);
-  transition:transform .85s var(--ease),opacity .55s,border-color .3s,filter .8s,box-shadow .3s}
+  transition:transform .85s var(--ease),opacity .55s,border-color .3s,filter .8s,box-shadow .3s,width .85s var(--ease),height .85s var(--ease)}
+/* territory band labels — the grid itself reads 'twelve concepts across three territories' (beats 0–1) */
+#s3 .tlab{position:absolute;left:0;font-family:var(--fs);font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--faint);font-weight:600;
+  opacity:0;transition:opacity .5s .3s}
+#s3.b0 .tlab{opacity:1}
+#s3.b2 .tlab{opacity:0;transition:opacity .25s}
 .con .cn{font-family:var(--fd);font-size:clamp(13px,1.05vw,16.5px);line-height:1.32;letter-spacing:-.005em}
 .con .ct{font-family:var(--fs);font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--faint);font-weight:500}
 .con .peek{position:absolute;right:14px;top:14px;font-family:var(--fs);font-size:11px;color:var(--faint);opacity:0;transition:opacity .25s}
@@ -325,10 +344,8 @@ body{background:var(--bg);color:var(--text);font-family:var(--fs);-webkit-font-s
 #s4.b2 .pillar:nth-child(4){transition-delay:.81s}
 #s4 .pillar .pt{font-family:var(--fd);font-size:clamp(15px,1.4vw,19px);margin-bottom:9px}
 #s4 .pillar .pd{font-family:var(--fs);font-size:12.5px;color:var(--muted);line-height:1.6}
-#s4 .oacts{position:absolute;left:9vw;bottom:11vh;display:flex;align-items:center;gap:22px;opacity:0;z-index:3;
-  transition:opacity .7s .5s,left .7s var(--ease),transform .7s var(--ease)}
+#s4 .oacts{position:absolute;left:9vw;bottom:11vh;display:flex;align-items:center;gap:22px;opacity:0;z-index:3;transition:opacity .7s .5s}
 #s4.b1 .oacts{opacity:1}
-#s4.b2 .oacts{left:50%;transform:translateX(-50%)}
 /* the room warms green at the close */
 #s4 .endwash{position:absolute;inset:0;background:radial-gradient(56% 60% at 50% 44%,rgba(25,219,152,.1),transparent 72%);
   opacity:0;transition:opacity 1.4s;pointer-events:none}
@@ -855,31 +872,31 @@ const PROBLEMS=[
   {k:"Trust in AI", d:"Curiosity about AI collapsed into doubt over accuracy, control and personalisation.", c:"#0F8484"}
 ];
 const INSIGHTS=[
-  {t:"The 'clean redesign' buried the core action of meal tracking", cluster:0, obs:[
+  {t:"The 'clean redesign' buried the core action of meal tracking", short:"The redesign buried tracking", cluster:0, obs:[
     "Users liked the homogenised look and seeing meal insights up front.",
     "But existing users missed the clear, instant 'track a meal' CTA and felt lost about where to track.",
     "They came to track meals and were blind to the 'active choice' welcome — features went undiscovered."]},
-  {t:"Users trust manual search but doubt Snap's accuracy", cluster:2, obs:[
+  {t:"Users trust manual search but doubt Snap's accuracy", short:"Manual is trusted. Snap isn't.", cluster:2, obs:[
     "Existing users default to manual search out of habit and trust; new users are more open to Snap.",
     "Snap drew curiosity but failed on accuracy — portion size, healthy swaps.",
     "One bad capture sent them back to manual for good; privacy and clumsy edits compounded the distrust."]},
-  {t:"'Track with Ria' was powerful but nearly invisible", cluster:1, obs:[
+  {t:"'Track with Ria' was powerful but nearly invisible", short:"Ria was nearly invisible", cluster:1, obs:[
     "Not one existing-user participant had tried tracking via Ria — it wasn't a consistent choice on the home screen.",
     "Many didn't know how to phrase commands, unsure what the AI needed.",
     "When they did log via Ria, inaccuracies and hard-to-fix entries quickly cost it credibility."]},
-  {t:"Users want insights that tell them what to do next", cluster:0, obs:[
+  {t:"Users want insights that tell them what to do next", short:"Insights must say what's next", cluster:0, obs:[
     "Insights act as motivation and education, driving consistency.",
     "Existing users asked for early signals on whether they're meeting calorie goals.",
     "They wanted actionable, goal-curated guidance — not generic tips."]},
-  {t:"Users thought Ria was paywalled and preferred taps over typing", cluster:1, obs:[
+  {t:"Users thought Ria was paywalled and preferred taps over typing", short:"Ria felt paywalled", cluster:1, obs:[
     "Existing users were hesitant; some assumed Ria was paid/pro after the UI upgrade and never tried.",
     "New users discovered Ria more organically.",
     "When nudged in, most entered through active choices and prompts — they didn't know how to start a free-form chat."]},
-  {t:"Users expect the in-app AI to know more than ChatGPT", cluster:2, obs:[
+  {t:"Users expect the in-app AI to know more than ChatGPT", short:"It must beat ChatGPT", cluster:2, obs:[
     "They expect Ria to use their logs, goals and dietary preferences in every answer.",
     "A bias that AI can't truly customise to their body sends nutrition questions to coaches and friends.",
     "They reject bot-like preset replies and will trade more input for a genuinely engaging conversation."]},
-  {t:"To users, Healthify is 'the calorie tracker' — and that must stay sacred", cluster:0, obs:[
+  {t:"To users, Healthify is 'the calorie tracker' — and that must stay sacred", short:"The calorie tracker is sacred", cluster:0, obs:[
     "Its value is 'the calorie tracker', not a holistic fitness app.",
     "Power users come for Indian recipes and India-aware measurement — 'a tablespoon', not abstract grams.",
     "Implication: AI must strengthen the core tracking job first."]}
@@ -948,7 +965,7 @@ const field=document.getElementById('field');
 INSIGHTS.forEach((ins,i)=>{
   const d=document.createElement('div');
   d.className='insight';
-  d.innerHTML='<span class="no">Insight 0'+(i+1)+'</span>'+ins.t+'<span class="peek">Read ↗</span>';
+  d.innerHTML='<span class="no">Insight 0'+(i+1)+'</span>'+ins.short+'<span class="peek">Read ↗</span>';
   const col=i%3,row=Math.floor(i/3);
   const sx=([5,34,62][col]+Math.sin(i*2.3)*2)+'vw';
   const sy=(30+row*19+Math.cos(i*1.7)*2.5)+'vh';
@@ -970,26 +987,37 @@ PROBLEMS.forEach((p,i)=>{
   document.getElementById('s2').appendChild(el);
 });
 
-/* the crowd — 20 people scattered like a real crowd (b0), engineered into 4 cohort columns (b1).
-   Positions are hand-placed: formulas leave streaks, and a crowd must look found, not generated. */
+/* the method — the cohort definitions come first (that's the engineering), then twenty
+   hand-placed people fly in and take the five seats inside each card (that's the recruiting). */
 const people=document.getElementById('people');
+const COHDEF=[
+  {u:"Existing user",os:"iOS",prof:["Product manager","Tax consultant","Film-maker","IT prof."],ai:["ChatGPT","Midjourney","AI-based CRM"],city:["Delhi","Bangalore","Mumbai","Pune"]},
+  {u:"Existing user",os:"Android",prof:["Small-business owner","Travel planner","IT prof."],ai:["ChatGPT","Gemini","Co-Pilot"],city:["Coimbatore","Kochi","Delhi"]},
+  {u:"New user",os:"iOS",prof:["Freelancer","Finance","Corporate prof."],ai:["ChatGPT","Midjourney"],city:["Saharanpur","Visakhapatnam","Kochi"]},
+  {u:"New user",os:"Android",prof:["Teacher","Designer","Small-business owner"],ai:["ChatGPT","WhatsApp AI","Canva"],city:["Noida","Kolkata","Gurugram"]}
+];
+const COHX=[7,29.5,52,74.5]; // card left edges, vw
+COHDEF.forEach((d,c)=>{
+  const el=document.createElement('div');el.className='cohcard';
+  el.style.setProperty('--cx0',COHX[c]+'vw');
+  el.innerHTML='<span class="chn">Cohort 0'+(c+1)+'</span>'
+    +'<div class="cht"><span class="un">'+d.u+'</span><span class="os">'+d.os+'</span></div>'
+    +'<div class="crow"><span class="crl">Profession</span><div class="chips">'+d.prof.map(x=>'<span class="chip2">'+x+'</span>').join('')+'</div></div>'
+    +'<div class="crow"><span class="crl">AI tools</span><div class="chips">'+d.ai.map(x=>'<span class="chip2">'+x+'</span>').join('')+'</div></div>'
+    +'<div class="crow"><span class="crl">Cities</span><div class="chips">'+d.city.map(x=>'<span class="chip2">'+x+'</span>').join('')+'</div></div>'
+    +'<div class="seats"><i></i><i></i><i></i><i></i><i></i></div>';
+  people.appendChild(el);
+});
 const CROWD=[[12,46],[18,63],[23,33],[30,55],[35,70],[40,37],[46,59],[51,29],[56,67],[60,46],
              [65,33],[69,61],[73,44],[77,69],[81,30],[86,55],[27,68],[15,52],[63,72],[85,42]];
-const COHX=[20,40,60,80]; // column centers, vw
 CROWD.forEach(([x,y],i)=>{
   const p=document.createElement('span');p.className='person';
-  const c=i%4, j=Math.floor(i/4);
-  const qx=(COHX[c]+Math.sin(j*2.7)*1.1)+'vw';               // near-tidy columns — engineered, still human
-  const qy=(33+j*6.4)+'vh';
+  const c=Math.floor(i/5), j=i%5;
   p.style.setProperty('--px',x+'vw');p.style.setProperty('--py',y+'vh');
-  p.style.setProperty('--qx',qx);p.style.setProperty('--qy',qy);
-  p.style.transitionDelay=(i*0.035)+'s';
+  p.style.setProperty('--qx','calc('+COHX[c]+'vw + 17px + '+(j*24)+'px)'); // the j-th seat in card c
+  p.style.setProperty('--qy','calc(68vh - 28px)');
+  p.style.transitionDelay=(i*0.045)+'s';
   people.appendChild(p);
-});
-COHX.forEach((x,c)=>{
-  const l=document.createElement('span');l.className='clab';l.textContent='Cohort 0'+(c+1);
-  l.style.setProperty('--lx',(x+0.6)+'vw');l.style.setProperty('--ly','67vh');
-  people.appendChild(l);
 });
 
 /* ---------------- SCENE 3 GRID ---------------- */
@@ -1006,15 +1034,36 @@ const cards=CONCEPTS.map((c,i)=>{
   grid.appendChild(d);
   return d;
 });
-function layout(order){
+/* two layouts: by territory (the sprint's shape, beats 0–1) and by verdict (the roadmap, beats 2–3) */
+const TERR_ROWS=[['mm',[0,1,2]],['pr',[3,4,5,6,7]],['co',[8,9,10,11]]];
+const tlabs=TERR_ROWS.map(([t,idx])=>{
+  const l=document.createElement('span');l.className='tlab';
+  l.textContent=TERR[t]+' · '+idx.length+(idx.length>1?' concepts':' concept');
+  grid.appendChild(l);return l;
+});
+function layoutTerritory(){
   const gw=grid.clientWidth,gh=grid.clientHeight;
-  const cw=(gw-3*18)/4, ch=(gh-2*18)/3-4;
-  order.forEach((ci,slot)=>{
-    const col=slot%4,row=Math.floor(slot/4);
-    cards[ci].style.setProperty('--pos','translate('+(col*(cw+18))+'px,'+(row*(ch+18))+'px)');
+  const bh=gh/3;
+  TERR_ROWS.forEach(([t,idx],r)=>{
+    tlabs[r].style.top=(r*bh)+'px';
+    const n=idx.length,cw=(gw-(n-1)*16)/n,ch=bh-26-16;
+    idx.forEach((ci,k)=>{
+      const el=cards[ci];
+      el.style.width=cw+'px';el.style.height=ch+'px';
+      el.style.setProperty('--pos','translate('+(k*(cw+16))+'px,'+(r*bh+26)+'px)');
+    });
   });
 }
-const ORDER0=[5,9,0,3,10,6,1,11,7,4,2,8];
+function layoutSorted(){
+  const gw=grid.clientWidth,gh=grid.clientHeight;
+  const cw=(gw-3*18)/4, ch=(gh-2*18)/3-4;
+  SORTED.forEach((ci,slot)=>{
+    const col=slot%4,row=Math.floor(slot/4);
+    const el=cards[ci];
+    el.style.width=cw+'px';el.style.height=ch+'px';
+    el.style.setProperty('--pos','translate('+(col*(cw+18))+'px,'+(row*(ch+18))+'px)');
+  });
+}
 const bucket=v=>CONCEPTS.map((c,i)=>[c,i]).filter(([c])=>c.v===v).map(([,i])=>i);
 const SORTED=[...bucket('pri'),...bucket('exp'),...bucket('hold')];
 
@@ -1071,14 +1120,14 @@ const hookS1=(b,silent)=>{headlines(S1,b);
   if(b===4&&!silent)startCountdown();
   if(b<4||b===5)clearInterval(cdTimer);};
 const hookS2=(b)=>{const h=document.getElementById('s2').querySelector('[data-h="0"]');
-  if(b===0)h.textContent='We started with twenty people.';
-  if(b===1)h.textContent='Engineered into four cohorts.';
+  if(b===0)h.textContent='We engineered four cohorts.';
+  if(b===1)h.textContent='Then found the twenty people who fit.';
   if(b===2)h.textContent='Twenty conversations produced seven insights.';
   if(b===3)h.textContent='Seven insights clustered into three patterns.';
   if(b>=4)h.textContent='Three patterns named three problems.';};
 const hookS3=(b)=>{const heads=document.getElementById('s3').querySelectorAll('.hswap');heads.forEach(x=>x.classList.remove('show'));
   if(b===0)heads[0].classList.add('show');else if(b===1)heads[1].classList.add('show');else heads[2].classList.add('show');
-  layout(b>=2?SORTED:ORDER0);};
+  if(b>=2)layoutSorted();else layoutTerritory();};
 const hookS5=(b)=>{const s5=document.getElementById('s5');
   s5.querySelectorAll('.hswap').forEach(x=>x.classList.toggle('show',+x.dataset.h===b));
   s5.querySelectorAll('.shipbeat').forEach(x=>x.classList.toggle('show',+x.dataset.sb===b));};
@@ -1111,7 +1160,7 @@ const BEATCAP=[
   ['Cover'],
   ['Fifty million follow','The AI-first bet','Retention falls','Which part?','The clock','Our role'],
   ['Phase 1 · Research'],
-  ['Twenty people','Four cohorts','Seven insights','Three patterns','Three problems','The turn'],
+  ['Four cohorts','Twenty who fit','Seven insights','Three patterns','Three problems','The turn'],
   ['Phase 2 · Design & Validate'],
   ['Twelve concepts','The verdicts','Sorted into lanes','The roadmap'],
   ['Phase 3 · Refine & Ship'],
@@ -1132,7 +1181,7 @@ function precomputeThumbs(){
     }
     for(let k=0;k<8;k++)sc.classList.remove('b'+k);
   });
-  layout(ORDER0);
+  layoutTerritory();
   show(sS,sB,false);
 }
 const dotprev=document.getElementById('dotprev'),thumbstage=document.getElementById('thumbstage'),thumbcap=document.getElementById('thumbcap');
@@ -1317,14 +1366,14 @@ let tx=null;
 addEventListener('touchstart',e=>tx=e.touches[0].clientX,{passive:true});
 addEventListener('touchend',e=>{if(tx===null||anyOpen())return;const dx=e.changedTouches[0].clientX-tx;if(Math.abs(dx)>55)dx<0?next():prev();tx=null;},{passive:true});
 let rzT=null;
-addEventListener('resize',()=>{if(si===IDX.s3)layout(beat>=2?SORTED:ORDER0);if(si===IDX.s1&&beat>=1)placeMarks();
+addEventListener('resize',()=>{if(si===IDX.s3){if(beat>=2)layoutSorted();else layoutTerritory();}if(si===IDX.s1&&beat>=1)placeMarks();
   if(detail.classList.contains('open'))fitProto();
   hidePreview();clearTimeout(rzT);rzT=setTimeout(precomputeThumbs,250);});
 setTimeout(killHint,8000);
 
 /* ---------------- INIT ---------------- */
 curtain.classList.add('on');
-layout(ORDER0);
+layoutTerritory();
 beatsEl.addEventListener('mouseleave',hidePreview);
 precomputeThumbs();     // capture thumbnails silently first…
 show(0,0,true);         // …then land on the cover
