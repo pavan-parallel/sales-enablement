@@ -67,11 +67,20 @@ body{background:var(--bg);color:var(--text);font-family:var(--fs);-webkit-font-s
              radial-gradient(34% 48% at 50% 26%,rgba(176,124,30,.06),transparent 70%),
              radial-gradient(34% 48% at 78% 40%,rgba(214,81,81,.05),transparent 70%)}
 #d4::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(40% 52% at 34% 34%,rgba(25,219,152,.07),transparent 70%),
+             radial-gradient(40% 52% at 66% 30%,rgba(176,124,30,.05),transparent 70%)}
+#d5::before{content:"";position:absolute;inset:0;pointer-events:none;
   background:radial-gradient(50% 60% at 50% 30%,rgba(25,219,152,.09),transparent 72%)}
 #d2 .dvnum,#d3 .dvnum{color:var(--amber)}
-#d4 .dvnum{color:var(--green)}
+#d4 .dvnum,#d5 .dvnum{color:var(--green)}
 #d2 .dvdot,#d3 .dvdot{color:var(--amber)}
-#d4 .dvdot{color:var(--green)}
+#d4 .dvdot,#d5 .dvdot{color:var(--green)}
+/* the process spine — each chapter divider names its phase and what it produced */
+.divider .dvphase{margin-top:30px;display:flex;align-items:center;gap:12px;font-family:var(--fs);font-size:12.5px;color:var(--faint);
+  opacity:0;transform:translateY(16px);transition:opacity .6s,transform .7s var(--ease)}
+.divider .dvphase b{color:var(--muted);font-weight:500}
+.divider .dvphase .arr{color:var(--faint)}
+.divider.active .dvphase,.thumbscene.divider .dvphase{opacity:1;transform:none;transition-delay:.5s}
 .divider .dvwrap{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:0 8vw}
 .divider .dvnum{font-family:var(--fs);font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:500;margin-bottom:26px}
 .divider .dvtitle{font-family:var(--fd);font-weight:400;font-size:clamp(38px,5.2vw,70px);letter-spacing:-.015em;line-height:1.12}
@@ -96,39 +105,80 @@ body{background:var(--bg);color:var(--text);font-family:var(--fs);-webkit-font-s
 /* growth era wash — hands over to the red wash when retention turns */
 #s1 .greenwash{position:absolute;inset:-8vh -8vw;background:radial-gradient(55% 65% at 26% 58%,rgba(25,219,152,.09),transparent 70%);
   opacity:1;transition:opacity 1.4s;pointer-events:none}
-#s1.b2 .greenwash,#s1.b3 .greenwash,#s1.b4 .greenwash{opacity:0}
+#s1.b3 .greenwash{opacity:0}
 .ghost{stroke:var(--muted);stroke-width:1.25;fill:none;stroke-dasharray:5 8;opacity:0;transition:opacity 1s}
-#s1.b3 .ghost{opacity:.38}
+#s1.b4 .ghost{opacity:.38}
 #shipdot{opacity:0}
 #s1 .gridl{stroke:var(--line)}
 #shipflag{position:absolute;font-family:var(--fs);font-size:12px;font-weight:500;letter-spacing:.01em;color:var(--amber);
   opacity:0;transform:translate(-50%,-14px);transition:opacity .5s,transform .6s var(--ease);white-space:nowrap}
 #shipflag::after{content:"";position:absolute;left:50%;top:calc(100% + 4px);width:1px;height:34px;background:linear-gradient(var(--amber),transparent)}
-#s1.b1 #shipflag,#s1.b2 #shipflag,#s1.b3 #shipflag,#s1.b4 #shipflag{opacity:1;transform:translate(-50%,0)}
+#s1.b2 #shipflag{opacity:1;transform:translate(-50%,0)}
 /* the three possible culprits, pinned to the diverging futures */
 .culprit{position:absolute;font-family:var(--fd);font-size:clamp(13px,1.15vw,16px);color:var(--muted);white-space:nowrap;
   opacity:0;transform:translate(calc(-100% - 10px),-50%) translateX(8px);transition:opacity .7s,transform .8s var(--ease);pointer-events:none}
-#s1.b3 .culprit{opacity:1;transform:translate(calc(-100% - 10px),-50%)}
-#s1.b3 .culprit:nth-of-type(2){transition-delay:.15s}
-#s1.b3 .culprit:nth-of-type(3){transition-delay:.3s}
-#s1.b3 .culprit:nth-of-type(4){transition-delay:.45s}
+#s1.b4 .culprit{opacity:1;transform:translate(calc(-100% - 10px),-50%)}
+#s1.b4 .culprit:nth-of-type(2){transition-delay:.15s}
+#s1.b4 .culprit:nth-of-type(3){transition-delay:.3s}
+#s1.b4 .culprit:nth-of-type(4){transition-delay:.45s}
+/* who-is-Healthify stat strip — the client, in numbers (beats 0–1) */
+#s1 .statrow{position:absolute;top:-6px;left:0;display:flex;gap:3.4vw;opacity:0;transform:translateY(-10px);
+  transition:opacity .7s var(--ease),transform .7s var(--ease);pointer-events:none}
+#s1 .statrow .st .sv{font-family:var(--fd);font-size:clamp(22px,2.2vw,32px);line-height:1;letter-spacing:-.01em}
+#s1 .statrow .st .sl{font-family:var(--fs);font-size:11.5px;color:var(--muted);display:block;margin-top:8px;max-width:15ch;line-height:1.4}
+#s1.b0 .statrow{opacity:1;transform:none}
+#s1.b2 .statrow{opacity:0;transform:translateY(-10px)}
+/* our-role mandates — the brief, over a receding chart (final beat) */
+#s1 .mandates{position:absolute;left:0;right:0;top:50%;transform:translateY(-42%) translateY(14px);display:grid;grid-template-columns:repeat(3,1fr);gap:3vw;
+  opacity:0;transition:opacity .7s .25s,transform .8s .25s var(--ease);pointer-events:none}
+#s1 .mandates .mand{border-top:1px solid var(--line2);padding-top:18px}
+#s1 .mandates .mand .mn{font-family:var(--fs);font-size:11.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--amber);font-weight:600;display:block;margin-bottom:12px}
+#s1 .mandates .mand p{font-family:var(--fd);font-size:clamp(15px,1.4vw,19px);line-height:1.45}
+#s1.b6 .mandates{opacity:1;transform:translateY(-42%)}
+/* chart recedes under the mandates — the countdown stays lit: the clock keeps running while we work */
+#s1.b6 svg,#s1.b6 #retno,#s1.b6 #shipflag,#s1.b6 .culprit{opacity:.13;transition:opacity .7s}
 /* stat blocks share one visual system, one baseline row */
 .statblock{position:absolute;top:-6px}
 .statblock .sv{font-family:var(--fd);font-size:clamp(34px,3.6vw,52px);line-height:1;font-weight:400;letter-spacing:-.01em}
 .statblock .sl{font-family:var(--fs);font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);display:block;margin-top:10px;font-weight:500}
 #retno{right:0;text-align:right;transition:color .8s}
 #launchbox{left:0;text-align:left;opacity:0;transform:translateY(-12px);transition:opacity .7s,transform .7s var(--ease)}
-#s1.b4 #launchbox{opacity:1;transform:none}
+#s1.b5 #launchbox{opacity:1;transform:none}
 #launchbox .sv{color:var(--red);font-family:var(--fs);font-weight:400;font-variant-numeric:tabular-nums;letter-spacing:.01em;font-size:clamp(28px,3vw,44px)}
 #s1 .redwash{position:absolute;inset:-8vh -8vw;background:radial-gradient(60% 60% at 72% 62%,rgba(214,81,81,.07),transparent 70%);
   opacity:0;transition:opacity 1.6s;pointer-events:none}
-#s1.b2 .redwash,#s1.b3 .redwash,#s1.b4 .redwash{opacity:1}
+#s1.b3 .redwash{opacity:1}
 
 /* ============ SCENE 2 · THE DIAGNOSIS ============ */
 #s2 .head{position:absolute;top:7vh;left:7vw;right:7vw;z-index:5;transition:opacity .55s var(--ease)}
-#s2.b3 .head{opacity:0;pointer-events:none}
+#s2.b4 .head{opacity:0;pointer-events:none}
 #s2 .head .big{font-size:clamp(23px,2.7vw,38px);margin-top:14px}
 #s2 .field{position:absolute;inset:0}
+/* the method — who we asked, before what they said (beat 0) */
+#s2 .method{position:absolute;left:7vw;right:7vw;top:32vh;opacity:0;transform:translateY(16px);
+  transition:opacity .6s var(--ease),transform .7s var(--ease)}
+#s2.b0 .method{opacity:1;transform:none}
+#s2.b1 .method{opacity:0;transform:translateY(-14px);pointer-events:none}
+#s2 .method .mrow{display:grid;grid-template-columns:repeat(5,1fr);gap:1.6vw;margin-bottom:5vh}
+#s2 .method .mcohort{border:1px solid var(--line);border-radius:14px;background:var(--bg2);padding:18px 18px 16px;
+  box-shadow:0 14px 34px -14px rgba(17,17,17,.1)}
+#s2 .method .mcohort .cn{font-family:var(--fs);font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--faint);display:block;margin-bottom:10px}
+#s2 .method .mcohort p{font-family:var(--fd);font-size:clamp(13.5px,1.15vw,16px);line-height:1.45}
+#s2 .method .mwhy{display:flex;align-items:baseline;gap:3vw}
+#s2 .method .mwhy .mstats{display:flex;gap:2.6vw;flex:none}
+#s2 .method .mwhy .mst .sv{font-family:var(--fd);font-size:clamp(20px,2vw,28px);line-height:1}
+#s2 .method .mwhy .mst .sl{font-family:var(--fs);font-size:11.5px;color:var(--muted);display:block;margin-top:7px}
+#s2 .method .mwhy blockquote{font-family:var(--fd);font-size:clamp(14px,1.35vw,18px);color:var(--muted);line-height:1.55;max-width:52ch;border-left:2px solid var(--line2);padding-left:20px}
+/* the feature-check artifact — what the diagnosis was used for (beat 3) */
+#s2 .artifact{position:absolute;left:50%;bottom:11vh;transform:translate(-50%,20px);display:flex;align-items:center;gap:14px;
+  border:1px solid var(--line);border-radius:100px;background:var(--bg2);padding:12px 22px 12px 18px;cursor:pointer;
+  font-family:var(--fs);font-size:13px;color:var(--muted);opacity:0;pointer-events:none;
+  box-shadow:0 14px 34px -14px rgba(17,17,17,.14);
+  transition:opacity .6s .5s,transform .7s .5s var(--ease),border-color .25s,box-shadow .25s}
+#s2 .artifact b{color:var(--text);font-weight:500}
+#s2 .artifact:hover{border-color:var(--line3);box-shadow:0 0 0 1px var(--line2),0 20px 44px -16px rgba(17,17,17,.22)}
+#s2.b3 .artifact{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+#s2.b4 .artifact{opacity:0;transform:translate(-50%,-16px);pointer-events:none}
 .insight{position:absolute;width:min(300px,26vw);padding:17px 18px 16px;border:1px solid var(--line);border-radius:14px;background:var(--bg2);overflow:hidden;
   font-family:var(--fd);font-size:14.5px;color:var(--text);line-height:1.42;box-shadow:0 14px 34px -14px rgba(17,17,17,.14);cursor:pointer;opacity:0;
   transition:transform 1s var(--ease),opacity .7s,border-color .3s,box-shadow .3s;
@@ -138,30 +188,41 @@ body{background:var(--bg);color:var(--text);font-family:var(--fs);-webkit-font-s
 .insight:hover{border-color:var(--line3);
   box-shadow:0 0 0 1px var(--line2),0 22px 50px -18px rgba(17,17,17,.24)}
 .insight:hover .peek{opacity:1}
-#s2.b0 .insight,#s2.b1 .insight{opacity:1;transform:translate(var(--sx),var(--sy)) rotate(var(--sr))}
-#s2.b1 .insight{transform:translate(var(--cx),var(--cy)) rotate(0deg) scale(.94);border-color:var(--cc);background:var(--ccbg)}
-#s2.b1 .insight .no{color:var(--cc)}
-#s2.b2 .insight,#s2.b3 .insight{opacity:0;transform:translate(var(--cx),var(--cy)) rotate(0deg) scale(.42);pointer-events:none}
+#s2.b1 .insight{opacity:1;transform:translate(var(--sx),var(--sy)) rotate(var(--sr))}
+#s2.b2 .insight{opacity:1;transform:translate(var(--cx),var(--cy)) rotate(0deg) scale(.94);border-color:var(--cc);background:var(--ccbg)}
+#s2.b2 .insight .no{color:var(--cc)}
+#s2.b3 .insight{opacity:0;transform:translate(var(--cx),var(--cy)) rotate(0deg) scale(.42);pointer-events:none}
 .problem{position:absolute;left:50%;width:min(340px,28vw);text-align:center;opacity:0;transform:translate(-50%,26px) scale(.94);
   pointer-events:none;transition:opacity .6s,transform .8s var(--ease)}
 .problem h3{font-family:var(--fd);font-weight:400;font-size:clamp(19px,1.85vw,26px);margin-bottom:10px;letter-spacing:-.01em}
 .problem .pl{font-family:var(--fs);font-size:11.5px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;margin-bottom:9px;display:block}
 .problem p{font-family:var(--fs);font-size:13px;color:var(--muted);line-height:1.55}
-#s2.b2 .problem{opacity:1;transform:translate(-50%,0) scale(1);pointer-events:auto}
-#s2.b3 .problem{opacity:0;transform:translate(-50%,-34px) scale(.9)}
+#s2.b3 .problem{opacity:1;transform:translate(-50%,0) scale(1);pointer-events:auto}
+#s2.b4 .problem{opacity:0;transform:translate(-50%,-34px) scale(.9);pointer-events:none}
 #s2 .twistwash{position:absolute;inset:0;background:radial-gradient(52% 55% at 50% 46%,rgba(25,219,152,.09),transparent 72%);
   opacity:0;transition:opacity 1.2s .3s;pointer-events:none}
-#s2.b3 .twistwash{opacity:1}
+#s2.b4 .twistwash{opacity:1}
 #s2 .twist{position:absolute;left:8vw;right:8vw;top:50%;transform:translateY(-45%);text-align:center;opacity:0;pointer-events:none;transition:opacity .7s .25s}
 #s2 .twist .big{font-size:clamp(27px,3.7vw,52px);max-width:24ch;margin:0 auto;line-height:1.22}
-#s2.b3 .twist{opacity:1;pointer-events:auto}
+#s2.b4 .twist{opacity:1;pointer-events:auto}
 
 /* ============ SCENE 3 · THE EXPLORATION ============ */
 #s3 .head{position:relative;z-index:5;height:14vh}
 #s3 .head .hswap{position:absolute;top:0;left:0;right:0;opacity:0;transform:translateY(16px);transition:opacity .5s,transform .5s var(--ease)}
 #s3 .head .hswap.show{opacity:1;transform:none}
 #s3 .head .big{font-size:clamp(23px,2.8vw,40px);margin-top:12px}
-#grid{position:relative;margin-top:2vh;height:60vh}
+/* how the concepts were tested — context under the opening head (beat 0 only) */
+#s3 .testnote{position:absolute;bottom:9vh;left:7vw;max-width:70ch;font-family:var(--fs);font-size:13.5px;color:var(--muted);
+  line-height:1.6;opacity:1;transition:opacity .5s}
+#s3.b1 .testnote{opacity:0;pointer-events:none}
+/* what each territory taught us — lands with the verdicts (beats 1–2) */
+#s3 .terrsum{position:absolute;left:7vw;right:7vw;bottom:9vh;display:grid;grid-template-columns:repeat(3,1fr);gap:3vw;
+  opacity:0;transform:translateY(14px);transition:opacity .6s .55s,transform .7s .55s var(--ease);pointer-events:none}
+#s3.b1 .terrsum{opacity:1;transform:none}
+#s3.b3 .terrsum{opacity:0;transition:opacity .4s}
+#s3 .terrsum .ts .tt{font-family:var(--fs);font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;display:block;margin-bottom:8px}
+#s3 .terrsum .ts p{font-family:var(--fs);font-size:12.5px;color:var(--muted);line-height:1.5}
+#grid{position:relative;margin-top:2vh;height:52vh}
 .con{position:absolute;width:calc((100% - 3*18px)/4);height:calc((100% - 2*18px)/3 - 4px);border:1px solid var(--line);border-radius:14px;overflow:hidden;
   background:var(--bg2);padding:16px 17px;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;
   box-shadow:0 10px 26px -14px rgba(17,17,17,.1);
@@ -192,6 +253,46 @@ body{background:var(--bg);color:var(--text);font-family:var(--fs);-webkit-font-s
 #s3 .finale .big{font-size:clamp(22px,2.8vw,38px);line-height:1.25}
 #s3 .finale .fnext{margin-top:16px;font-family:var(--fs);font-size:13px;color:var(--faint)}
 
+/* ============ SCENE 5 · THE SHIP ============ */
+#s5 .head{position:relative;z-index:5;height:13vh}
+#s5 .head .hswap{position:absolute;top:0;left:0;right:0;opacity:0;transform:translateY(16px);transition:opacity .5s,transform .5s var(--ease)}
+#s5 .head .hswap.show{opacity:1;transform:none}
+#s5 .head .big{font-size:clamp(23px,2.8vw,40px);margin-top:12px}
+#s5 .shipstage{position:relative;margin-top:2vh;height:64vh}
+#s5 .shipbeat{position:absolute;inset:0;display:flex;gap:4vw;align-items:center;opacity:0;transform:translateY(18px);
+  transition:opacity .55s var(--ease),transform .65s var(--ease);pointer-events:none;visibility:hidden}
+#s5 .shipbeat.show{opacity:1;transform:none;pointer-events:auto;visibility:visible;transition-delay:.15s}
+#s5 .shipnote{flex:0 0 30%;max-width:30%}
+#s5 .shipnote .dsub2{font-family:var(--fs);font-size:11.5px;font-weight:600;color:var(--faint);letter-spacing:.05em;text-transform:uppercase;margin-bottom:14px}
+#s5 .shipnote ul{list-style:none;display:flex;flex-direction:column;gap:13px}
+#s5 .shipnote li{font-family:var(--fs);font-size:14px;color:var(--muted);line-height:1.55;padding-left:18px;position:relative}
+#s5 .shipnote li::before{content:"";position:absolute;left:0;top:9px;width:6px;height:6px;border-radius:50%;background:var(--line2)}
+#s5 .shipnote .pov{margin-top:26px;font-family:var(--fd);font-size:clamp(14px,1.3vw,17px);line-height:1.55;color:var(--text);
+  border-left:2px solid var(--line2);padding-left:20px}
+#s5 .shipvis{flex:1;height:100%;display:flex;gap:2.2vw;align-items:center;justify-content:center}
+/* placeholder slots — Phase 2 replaces these with real screens */
+.pslot{position:relative;border:1px dashed var(--line2);border-radius:22px;background:var(--bg2);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;overflow:hidden;flex:none}
+.pslot .pk{font-family:var(--fs);font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--faint);font-weight:600}
+.pslot .pt{font-family:var(--fd);font-size:15px;color:var(--muted);text-align:center;padding:0 18px;line-height:1.4}
+.pslot.tall{aspect-ratio:375/780;height:min(56vh,520px)}
+.pslot.mini{aspect-ratio:375/780;height:min(46vh,420px)}
+.pslot .plabel{position:absolute;top:14px;left:16px;font-family:var(--fs);font-size:11.5px;font-weight:600;color:var(--muted);
+  background:var(--bg);border:1px solid var(--line);border-radius:100px;padding:4px 12px}
+/* the shipped-concept cards (final beat) */
+#s5 .shipcards{flex:1;display:grid;grid-template-columns:repeat(4,1fr);gap:18px;height:min(56vh,480px)}
+#s5 .shipcards .sc{border:1px solid rgba(14,138,96,.3);background:#F4FAF7;border-radius:14px;padding:16px 17px;cursor:pointer;
+  display:flex;flex-direction:column;justify-content:space-between;overflow:hidden;position:relative;
+  box-shadow:0 10px 26px -14px rgba(17,17,17,.1);transition:border-color .3s,box-shadow .3s}
+#s5 .shipcards .sc:hover{border-color:rgba(14,138,96,.55);box-shadow:0 0 0 1px rgba(14,138,96,.3),0 22px 50px -18px rgba(17,17,17,.2)}
+#s5 .shipcards .sc .ct{font-family:var(--fs);font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--faint);font-weight:500}
+#s5 .shipcards .sc .cn{font-family:var(--fd);font-size:clamp(14px,1.2vw,18px);line-height:1.3;margin-top:8px}
+#s5 .shipcards .sc .scv{font-family:var(--fs);font-size:12px;font-weight:600;color:var(--green);display:inline-flex;align-items:center;gap:7px}
+#s5 .shipcards .sc .scv .dot{width:8px;height:8px;border-radius:50%;background:currentColor}
+#s5 .shipcards .sc .peek{position:absolute;right:14px;top:14px;font-family:var(--fs);font-size:11px;color:var(--faint);opacity:0;transition:opacity .25s}
+#s5 .shipcards .sc:hover .peek{opacity:1}
+#s5 .shipslot{flex:none;display:flex;flex-direction:column;align-items:center;gap:12px}
+
 /* ============ SCENE 4 · WHAT IT DROVE ============ */
 #s4::before{content:"";position:absolute;inset:0;pointer-events:none;
   background:radial-gradient(52% 62% at 18% 22%,rgba(25,219,152,.08),transparent 72%)}
@@ -209,7 +310,23 @@ body{background:var(--bg);color:var(--text);font-family:var(--fs);-webkit-font-s
 #s4.b1 .ostat:nth-child(4){transition-delay:.36s}
 #s4 .ostat .n{font-family:var(--fd);font-size:clamp(32px,4vw,56px);line-height:1;letter-spacing:-.01em;color:var(--green)}
 #s4 .ostat .l{font-family:var(--fs);font-size:13px;color:var(--muted);margin-top:12px;line-height:1.5}
-#s4 .oacts{margin-top:9vh;display:flex;align-items:center;gap:22px;opacity:0;transition:opacity .7s .5s}
+/* why Parallel — the closing argument (beat 2) */
+#s4 .obig{transition:opacity .6s,transform .7s var(--ease),margin-bottom .7s var(--ease),font-size .7s var(--ease)}
+#s4.b2 .obig{margin-bottom:5vh;font-size:clamp(22px,2.6vw,36px)}
+#s4 .pillars{display:grid;grid-template-columns:repeat(4,1fr);gap:3vw;margin-top:6vh;
+  max-height:0;overflow:hidden;transition:max-height .8s var(--ease)}
+#s4.b2 .pillars{max-height:30vh}
+#s4 .pillar{border-top:1px solid var(--line);padding-top:16px;opacity:0;transform:translateY(16px);transition:opacity .6s,transform .7s var(--ease)}
+#s4.b2 .pillar{opacity:1;transform:none}
+#s4.b2 .pillar:nth-child(2){transition-delay:.1s}
+#s4.b2 .pillar:nth-child(3){transition-delay:.2s}
+#s4.b2 .pillar:nth-child(4){transition-delay:.3s}
+#s4 .pillar .pt{font-family:var(--fd);font-size:clamp(15px,1.4vw,19px);margin-bottom:9px}
+#s4 .pillar .pd{font-family:var(--fs);font-size:12.5px;color:var(--muted);line-height:1.55}
+#s4 .pillarkick{font-family:var(--fs);font-size:11.5px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--green);
+  margin-top:6vh;opacity:0;transition:opacity .6s}
+#s4.b2 .pillarkick{opacity:1}
+#s4 .oacts{margin-top:6vh;display:flex;align-items:center;gap:22px;opacity:0;transition:opacity .7s .5s}
 #s4.b1 .oacts{opacity:1}
 #s4 .figbtn{font-family:var(--fs);font-size:13.5px;font-weight:500;color:var(--bg);background:var(--text);border:0;border-radius:100px;
   padding:13px 24px;cursor:pointer;transition:box-shadow .3s,transform .3s var(--ease)}
@@ -340,6 +457,18 @@ body{background:var(--bg);color:var(--text);font-family:var(--fs);-webkit-font-s
 .protowrap .protoload{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:0 24px;
   font-family:var(--fd);font-size:16px;color:var(--faint)}
 .protowrap iframe{position:relative;width:375px;height:812px;border:0;background:transparent;transform-origin:top left}
+/* single-artifact detail (feature check) — no prev/next browsing */
+#detail.single .darrows{display:none}
+.pmf{width:min(620px,92%);display:flex;flex-direction:column;gap:0;background:var(--bg2);border:1px solid var(--line);border-radius:16px;
+  overflow:hidden;box-shadow:0 20px 50px -18px rgba(17,17,17,.16)}
+.pmf .pr{display:grid;grid-template-columns:30% 19% 1fr;gap:12px;align-items:center;padding:13px 22px 13px 20px;border-bottom:1px solid var(--line)}
+.pmf .pr:last-child{border-bottom:0}
+.pmf .pr .pf{font-family:var(--fd);font-size:14px}
+.pmf .pr .pv{font-family:var(--fs);font-size:11.5px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;display:inline-flex;align-items:center;gap:7px}
+.pmf .pr .pv .dot{width:7px;height:7px;border-radius:50%;background:currentColor;flex:none}
+.pmf .pr .pw{font-family:var(--fs);font-size:12.5px;color:var(--muted);line-height:1.45}
+.pmf .ph{padding:14px 22px 14px 20px;border-bottom:1px solid var(--line);font-family:var(--fs);font-size:11px;font-weight:600;
+  letter-spacing:.05em;text-transform:uppercase;color:var(--faint);display:grid;grid-template-columns:30% 19% 1fr;gap:12px}
 /* insight evidence panel */
 .evidence{width:min(440px,86%);display:flex;flex-direction:column;gap:14px}
 .evidence .ec{background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:16px 18px;
@@ -388,20 +517,33 @@ body{background:var(--bg);color:var(--text);font-family:var(--fs);-webkit-font-s
 </section>
 
 <!-- SCENE 1 · THE BET -->
-<section class="scene" id="s1" data-beats="5">
+<section class="scene" id="s1" data-beats="7">
   <div class="stage">
     <div class="greenwash"></div>
     <div class="redwash"></div>
     <div class="headline">
       <div class="hl-line big" data-b="0"><span class="yr">2018 – 2023</span>Healthify builds the world's first AI nutritionist. <span class="g">Fifty million people</span> follow.</div>
-      <div class="hl-line big" data-b="1"><span class="yr">2024</span>They bet the company on an AI-first redesign.</div>
-      <div class="hl-line big" data-b="2"><span class="yr">Weeks later</span>Retention starts to <span class="r">fall.</span></div>
-      <div class="hl-line big" data-b="3"><span class="yr">The problem</span>No one can tell which part is to blame.</div>
-      <div class="hl-line big" data-b="4"><span class="yr">The clock</span>And the US launch <span class="r">won't wait.</span></div>
+      <div class="hl-line big" data-b="1"><span class="yr">The vision</span>Make health coaching affordable at scale — with AI.</div>
+      <div class="hl-line big" data-b="2"><span class="yr">2024</span>They bet the company on an AI-first redesign.</div>
+      <div class="hl-line big" data-b="3"><span class="yr">Weeks later</span>Retention starts to <span class="r">fall.</span></div>
+      <div class="hl-line big" data-b="4"><span class="yr">The problem</span>No one can tell which part is to blame.</div>
+      <div class="hl-line big" data-b="5"><span class="yr">The clock</span>And the US launch <span class="r">won't wait.</span></div>
+      <div class="hl-line big" data-b="6"><span class="yr">Our role</span>Find where AI serves the core job — and where it gets in the way.</div>
     </div>
     <div class="chartwrap">
       <div class="statblock" id="retno"><span class="sv" id="retval">—</span><span class="sl">Retention index</span></div>
       <div class="statblock" id="launchbox"><span class="sv" id="cd">180 : 00 : 00</span><span class="sl">Days to US launch</span></div>
+      <div class="statrow">
+        <div class="st"><span class="sv">50M</span><span class="sl">User base</span></div>
+        <div class="st"><span class="sv">10 yrs</span><span class="sl">Category leader in nutrition tracking</span></div>
+        <div class="st"><span class="sv">2018</span><span class="sl">World's first AI nutritionist</span></div>
+        <div class="st"><span class="sv">OpenAI</span><span class="sl">Official AI partner</span></div>
+      </div>
+      <div class="mandates">
+        <div class="mand"><span class="mn">Mandate 01</span><p>Use AI to make meal tracking frictionless.</p></div>
+        <div class="mand"><span class="mn">Mandate 02</span><p>Make AI coaching personal.</p></div>
+        <div class="mand"><span class="mn">Mandate 03</span><p>Earn trust with US users at launch.</p></div>
+      </div>
       <svg viewBox="0 0 1000 420" preserveAspectRatio="none" aria-hidden="true">
         <defs>
           <linearGradient id="gRise" x1="0" y1="0" x2="560" y2="0" gradientUnits="userSpaceOnUse">
@@ -435,16 +577,35 @@ body{background:var(--bg);color:var(--text);font-family:var(--fs);-webkit-font-s
     <p class="dvnum">Chapter 02</p>
     <h2 class="dvtitle">The diagnosis<span class="dvdot">.</span></h2>
     <p class="dvsub">Twenty interviews with the people who stayed and the people who left.</p>
+    <p class="dvphase"><b>Phase 1 of 3 · Research</b><span class="arr">→</span>a precise diagnosis</p>
   </div>
 </section>
 
 <!-- SCENE 2 · THE DIAGNOSIS -->
-<section class="scene" id="s2" data-beats="4">
+<section class="scene" id="s2" data-beats="5">
   <div class="head">
     <p class="kicker">The diagnosis</p>
-    <div class="hswap"><h2 class="big" data-h="0">Twenty interviews produced seven insights.</h2></div>
+    <div class="hswap"><h2 class="big" data-h="0">First, the method: twenty users, four engineered cohorts.</h2></div>
+  </div>
+  <div class="method">
+    <div class="mrow">
+      <div class="mcohort"><span class="cn">Axis 01</span><p>Operating system — iOS / Android</p></div>
+      <div class="mcohort"><span class="cn">Axis 02</span><p>User type — new vs existing</p></div>
+      <div class="mcohort"><span class="cn">Axis 03</span><p>Profession</p></div>
+      <div class="mcohort"><span class="cn">Axis 04</span><p>Geography — metros to small towns</p></div>
+      <div class="mcohort"><span class="cn">Axis 05</span><p>AI usage — daily to never</p></div>
+    </div>
+    <div class="mwhy">
+      <div class="mstats">
+        <div class="mst"><span class="sv">20</span><span class="sl">Sessions</span></div>
+        <div class="mst"><span class="sv">60–75</span><span class="sl">Minutes each</span></div>
+        <div class="mst"><span class="sv">5</span><span class="sl">Cohort axes</span></div>
+      </div>
+      <blockquote>A product manager in Delhi on iOS using ChatGPT behaves nothing like a small-business owner in Coimbatore on Android. In these differences is where the key insights live.</blockquote>
+    </div>
   </div>
   <div class="field" id="field"></div>
+  <div class="artifact" id="pmfBtn"><span>And every existing feature got a verdict</span><b>View the feature check ↗</b></div>
   <div class="twistwash"></div>
   <div class="twist">
     <p class="kicker" style="margin-bottom:22px">The turn</p>
@@ -458,6 +619,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--fs);-webkit-font-s
     <p class="dvnum">Chapter 03</p>
     <h2 class="dvtitle">The exploration<span class="dvdot">.</span></h2>
     <p class="dvsub">Twelve AI concepts, put in front of the people who would live with them.</p>
+    <p class="dvphase"><b>Phase 2 of 3 · Design &amp; Validate</b><span class="arr">→</span>a validated build roadmap</p>
   </div>
 </section>
 
@@ -470,23 +632,107 @@ body{background:var(--bg);color:var(--text);font-family:var(--fs);-webkit-font-s
     <div class="hswap" data-h="2"><h2 class="big">So the verdicts rewrote the roadmap.</h2></div>
   </div>
   <div id="grid"></div>
+  <p class="testnote">Tested with a fresh participant mix — existing all-active users, next-gen users, and new users, from metros to small towns — to separate genuine signal from novelty.</p>
+  <div class="terrsum">
+    <div class="ts"><span class="tt" style="color:var(--amber)">Multi-modal &amp; assistive</span><p>Users are loyal to one modality, chosen for accuracy. Every new modality must earn its trust.</p></div>
+    <div class="ts"><span class="tt" style="color:var(--green)">Personalised meal planning</span><p>The clear winner — 'Picked for you' was the most popular concept in the study, 11 of 13 keen.</p></div>
+    <div class="ts"><span class="tt" style="color:var(--red)">Community &amp; social</span><p>Peers' preferences, celebrity diets and polls failed to resonate. Curiosity, not utility.</p></div>
+  </div>
   <div class="finale">
     <h2 class="big">Personal context <span class="g">won.</span> External signals <span class="r">didn't.</span></h2>
-    <p class="fnext">Next chapter · What it drove</p>
+    <p class="fnext">Next chapter · The ship</p>
+  </div>
+</section>
+
+<!-- DIVIDER · THE SHIP -->
+<section class="scene divider" id="d4" data-beats="1">
+  <div class="dvwrap">
+    <p class="dvnum">Chapter 04</p>
+    <h2 class="dvtitle">The ship<span class="dvdot">.</span></h2>
+    <p class="dvsub">Signature AI experiences, designed on the evidence — and shipped.</p>
+    <p class="dvphase"><b>Phase 3 of 3 · Refine &amp; Ship</b><span class="arr">→</span>a trusted, US-ready product</p>
+  </div>
+</section>
+
+<!-- SCENE 5 · THE SHIP -->
+<section class="scene" id="s5" data-beats="4">
+  <div class="head">
+    <p class="kicker">The ship</p>
+    <div class="hswap show" data-h="0"><h2 class="big">Tracking became the one obvious action again.</h2></div>
+    <div class="hswap" data-h="1"><h2 class="big">One fluid flow across voice, text, tap and image.</h2></div>
+    <div class="hswap" data-h="2"><h2 class="big">The AI shows its reasoning — and lets users correct it.</h2></div>
+    <div class="hswap" data-h="3"><h2 class="big">The winning concepts shipped as signature experiences.</h2></div>
+  </div>
+  <div class="shipstage">
+    <div class="shipbeat" data-sb="0">
+      <div class="shipnote">
+        <div class="dsub2">One clear flow</div>
+        <ul>
+          <li>Multiple paths — search, Snap, Ria — now meet at one clear entry point for tracking.</li>
+          <li>The power of defaults: frequently tracked and saved meals follow the user into every modality.</li>
+          <li>Every input lands in one fast tracking moment.</li>
+        </ul>
+      </div>
+      <div class="shipvis">
+        <div class="shipslot"><div class="pslot tall"><span class="plabel">Before</span><span class="pk">Screen slot</span><span class="pt">Tracking buried under the AI-first home</span></div></div>
+        <div class="shipslot"><div class="pslot tall"><span class="plabel">After</span><span class="pk">Screen slot</span><span class="pt">One clear, trusted tracking flow</span></div></div>
+      </div>
+    </div>
+    <div class="shipbeat" data-sb="1">
+      <div class="shipnote">
+        <div class="dsub2">Fluid, multimodal tracking</div>
+        <ul>
+          <li>Track by voice, text, tap or image — and switch without breaking flow.</li>
+          <li>Ria can log multiple meals from different days with a single prompt.</li>
+        </ul>
+        <p class="pov">Parallel's POV on AI: chat demos impress, then stall. Adoption needs clarity, rhythm and taste.</p>
+      </div>
+      <div class="shipvis">
+        <div class="pslot mini"><span class="pk">Screen slot</span><span class="pt">Search</span></div>
+        <div class="pslot mini"><span class="pk">Screen slot</span><span class="pt">Snap</span></div>
+        <div class="pslot mini"><span class="pk">Screen slot</span><span class="pt">Voice</span></div>
+        <div class="pslot mini"><span class="pk">Screen slot</span><span class="pt">Ria chat</span></div>
+      </div>
+    </div>
+    <div class="shipbeat" data-sb="2">
+      <div class="shipnote">
+        <div class="dsub2">Trust, by design</div>
+        <ul>
+          <li>For users to trust AI they have to understand it — so the AI's reasoning is visible and easy to grasp.</li>
+          <li>At every step users confirm, adjust or personalise the input. They stay in control.</li>
+          <li>When the AI is wrong — a misread Snap, an odd Ria log — the design helps users recover and move on.</li>
+        </ul>
+      </div>
+      <div class="shipvis">
+        <div class="shipslot"><div class="pslot tall"><span class="plabel">Reasoning shown</span><span class="pk">Screen slot</span><span class="pt">The work behind a calorie count</span></div></div>
+        <div class="shipslot"><div class="pslot tall"><span class="plabel">Easy recovery</span><span class="pk">Screen slot</span><span class="pt">Correcting a misread Snap</span></div></div>
+      </div>
+    </div>
+    <div class="shipbeat" data-sb="3">
+      <div class="shipnote">
+        <div class="dsub2">Shipped, validated</div>
+        <ul>
+          <li>The concepts users voted to prioritise went from sprint cards to shipped experiences.</li>
+          <li>Each one is rooted in personal context — the signal that won the study.</li>
+        </ul>
+        <p class="pov">Open any card to see the concept, the user verdict, and the design.</p>
+      </div>
+      <div class="shipcards" id="shipcards"></div>
+    </div>
   </div>
 </section>
 
 <!-- DIVIDER · WHAT IT DROVE -->
-<section class="scene divider" id="d4" data-beats="1">
+<section class="scene divider" id="d5" data-beats="1">
   <div class="dvwrap">
-    <p class="dvnum">Chapter 04</p>
+    <p class="dvnum">Chapter 05</p>
     <h2 class="dvtitle">What it drove<span class="dvdot">.</span></h2>
     <p class="dvsub">The numbers after the redesign found its way.</p>
   </div>
 </section>
 
 <!-- SCENE 4 · WHAT IT DROVE -->
-<section class="scene" id="s4" data-beats="2">
+<section class="scene" id="s4" data-beats="3">
   <div class="owrap">
     <p class="kicker okick">What it drove</p>
     <h2 class="obig">Healthify launched in the US and put 10 million new people on a healthier path.</h2>
@@ -495,6 +741,13 @@ body{background:var(--bg);color:var(--text);font-family:var(--fs);-webkit-font-s
       <div class="ostat"><div class="n">10M</div><div class="l">New users</div></div>
       <div class="ostat"><div class="n">$1M</div><div class="l">ARR · post-pilot, US</div></div>
       <div class="ostat"><div class="n">$24.5M</div><div class="l">FY24 revenue, India</div></div>
+    </div>
+    <p class="pillarkick">Why it worked — and why teams keep us embedded</p>
+    <div class="pillars">
+      <div class="pillar"><div class="pt">Evidence-led strategy</div><div class="pd">Research becomes a clear plan — what to build, fix, and cut.</div></div>
+      <div class="pillar"><div class="pt">AI fluency</div><div class="pd">A real point of view on AI beyond chat — designed for trust and adoption.</div></div>
+      <div class="pillar"><div class="pt">Design taste</div><div class="pd">Craft that makes the product feel considered and the AI effortless.</div></div>
+      <div class="pillar"><div class="pt">Embedded velocity</div><div class="pd">We work inside your team and ship in weekly cycles.</div></div>
     </div>
     <div class="oacts">
       <button class="figbtn" id="figBtn">Explore the design file →</button>
@@ -530,14 +783,21 @@ body{background:var(--bg);color:var(--text);font-family:var(--fs);-webkit-font-s
     <div class="mgroup">
       <div class="mnum">01</div>
       <span class="mlink" data-go="1,0">The bet</span>
+      <div class="msub">
+        <span data-go="1,0">Who is Healthify</span>
+        <span data-go="1,3">The fall</span>
+        <span data-go="1,6">Our role</span>
+      </div>
     </div>
     <div class="mgroup">
       <div class="mnum">02</div>
       <span class="mlink" data-go="3,0">The diagnosis</span>
       <div class="msub">
-        <span data-go="3,0">Seven insights</span>
-        <span data-go="3,2">Three problems</span>
-        <span data-go="3,3">The turn</span>
+        <span data-go="3,0">The method</span>
+        <span data-go="3,1">Seven insights</span>
+        <span data-go="3,3">Three problems</span>
+        <span id="mpmf">The feature check</span>
+        <span data-go="3,4">The turn</span>
       </div>
     </div>
     <div class="mgroup">
@@ -551,9 +811,20 @@ body{background:var(--bg);color:var(--text);font-family:var(--fs);-webkit-font-s
     </div>
     <div class="mgroup">
       <div class="mnum">04</div>
-      <span class="mlink" data-go="7,0">What it drove</span>
+      <span class="mlink" data-go="7,0">The ship</span>
       <div class="msub">
-        <span data-go="7,1">The numbers</span>
+        <span data-go="7,0">One clear flow</span>
+        <span data-go="7,1">Fluid tracking</span>
+        <span data-go="7,2">Trust patterns</span>
+        <span data-go="7,3">Shipped concepts</span>
+      </div>
+    </div>
+    <div class="mgroup">
+      <div class="mnum">05</div>
+      <span class="mlink" data-go="9,0">What it drove</span>
+      <div class="msub">
+        <span data-go="9,1">The numbers</span>
+        <span data-go="9,2">Why Parallel</span>
         <span id="mfigma">The design file ↗</span>
       </div>
     </div>
@@ -666,6 +937,20 @@ const CONCEPTS=[
    sig:"No relevant use case; least popular in the study."}
 ];
 const VMETA={pri:{l:"Prioritise",c:"#0E8A60"},exp:{l:"Explore",c:"#B07C1E"},hold:{l:"Hold",c:"#D65151"}};
+/* PMF feature check — every existing feature scored during the diagnosis (deck: 'define what to improve and in what order') */
+const PMF=[
+  {f:"New UI",v:"Ready",r:"3-tab split and progress rings are working well"},
+  {f:"Insights",v:"Priority",r:"What users most want to see; needs deeper personalisation"},
+  {f:"Track with Ria",v:"Priority",r:"Valued feature — improve discoverability and smooth the interaction"},
+  {f:"Active Choices",v:"Refine",r:"Reframe as a support role to calorie tracking with access to Ria"},
+  {f:"Manual Snap",v:"Refine",r:"Establish accuracy, build assurance, and recover from errors"},
+  {f:"Talk to Ria",v:"Refine",r:"Needs engaging copy and valuable, actionable responses"},
+  {f:"Logs (Timeline)",v:"Neutral",r:"Neutral response from users, no strong signal either way"},
+  {f:"Auto Snap",v:"Hold",r:"Heavy privacy concern; users are reluctant to even try it"}
+];
+const PMFC={Ready:"#0F8484",Priority:"#0E8A60",Refine:"#B07C1E",Neutral:"rgba(17,17,17,.38)",Hold:"#D65151"};
+/* the prioritised concepts that shipped (indices into CONCEPTS) */
+const SHIPPED=[5,6,7,4];
 
 /* ---------------- SCENE 2 FIELD ---------------- */
 const field=document.getElementById('field');
@@ -720,6 +1005,19 @@ const ORDER0=[5,9,0,3,10,6,1,11,7,4,2,8];
 const bucket=v=>CONCEPTS.map((c,i)=>[c,i]).filter(([c])=>c.v===v).map(([,i])=>i);
 const SORTED=[...bucket('pri'),...bucket('exp'),...bucket('hold')];
 
+/* ---------------- SCENE 5 SHIP CARDS ---------------- */
+const shipcardsEl=document.getElementById('shipcards');
+SHIPPED.forEach(ci=>{
+  const c=CONCEPTS[ci];
+  const d=document.createElement('div');
+  d.className='sc';
+  d.innerHTML='<div><span class="ct">'+TERR[c.terr].split(' ')[0]+'</span><p class="cn">'+c.name+'</p></div>'
+    +'<span class="scv"><span class="dot"></span>Shipped</span>'
+    +'<span class="peek">Open ↗</span>';
+  d.addEventListener('click',()=>openDetail('concept',ci));
+  shipcardsEl.appendChild(d);
+});
+
 /* ---------------- SCENE HOOKS ---------------- */
 const scenes=[...document.querySelectorAll('.scene')];
 const S1=document.getElementById('s1');
@@ -754,28 +1052,32 @@ const hookS1=(b,silent)=>{headlines(S1,b);
   if(b===0){setLine(fall,0);fall.style.opacity=0;shipdot.style.opacity=0;
     if(!silent){introDraw(rise,0,100,1800);}else{clearInterval(introTimer);setLine(rise,1);retval.textContent='100';}
     retColor('var(--green)');clearInterval(cdTimer);}
-  if(b===1){placeMarks();shipdot.style.opacity=1;fall.style.opacity=1;setLine(fall,0);}
-  if(b===2){fall.style.opacity=1;
+  if(b===2){placeMarks();shipdot.style.opacity=1;fall.style.opacity=1;setLine(fall,0);}
+  if(b===3){fall.style.opacity=1;
     if(!silent){introDraw(fall,100,64,2200);}else{clearInterval(introTimer);setLine(fall,1);retval.textContent='64';}
     retColor('var(--red)');}
-  if(b===4&&!silent)startCountdown();
-  if(b<4)clearInterval(cdTimer);};
+  if(b>=5&&!silent)startCountdown();
+  if(b<5)clearInterval(cdTimer);};
 const hookS2=(b)=>{const h=document.getElementById('s2').querySelector('[data-h="0"]');
-  if(b===0)h.textContent='Twenty interviews produced seven insights.';
-  if(b===1)h.textContent='Seven insights clustered into three patterns.';
-  if(b>=2)h.textContent='Three patterns named three problems.';};
+  if(b===0)h.textContent='First, the method: twenty users, four engineered cohorts.';
+  if(b===1)h.textContent='Twenty interviews produced seven insights.';
+  if(b===2)h.textContent='Seven insights clustered into three patterns.';
+  if(b>=3)h.textContent='Three patterns named three problems.';};
 const hookS3=(b)=>{const heads=document.getElementById('s3').querySelectorAll('.hswap');heads.forEach(x=>x.classList.remove('show'));
   if(b===0)heads[0].classList.add('show');else if(b===1)heads[1].classList.add('show');else heads[2].classList.add('show');
   layout(b>=2?SORTED:ORDER0);};
+const hookS5=(b)=>{const s5=document.getElementById('s5');
+  s5.querySelectorAll('.hswap').forEach(x=>x.classList.toggle('show',+x.dataset.h===b));
+  s5.querySelectorAll('.shipbeat').forEach(x=>x.classList.toggle('show',+x.dataset.sb===b));};
 const noop=()=>{};
-const sceneHooks=[noop,hookS1,noop,hookS2,noop,hookS3,noop,noop];
-const IDX={s1:1,s2:3,s3:5,s4:7};
+const sceneHooks=[noop,hookS1,noop,hookS2,noop,hookS3,noop,hookS5,noop,noop];
+const IDX={s1:1,s2:3,s3:5,s5:7,s4:9};
 
 /* ---------------- BEAT ENGINE ---------------- */
 let si=0,beat=0;
 const beatsEl=document.getElementById('beats');
 const sceneLab=document.getElementById('scenelab');
-const SCENE_NAMES=['Healthify × Parallel','The bet','The diagnosis','The diagnosis','The exploration','The exploration','What it drove','What it drove'];
+const SCENE_NAMES=['Healthify × Parallel','The bet','The diagnosis','The diagnosis','The exploration','The exploration','The ship','The ship','What it drove','What it drove'];
 const hintEl=document.getElementById('hint');let hintGone=false;
 function killHint(){if(!hintGone){hintGone=true;hintEl.style.opacity='0';setTimeout(()=>hintEl.remove(),600);}}
 function drawBeats(){beatsEl.innerHTML='';
@@ -794,13 +1096,15 @@ function drawBeats(){beatsEl.innerHTML='';
 const THUMB_W=280;let THUMBS=[];
 const BEATCAP=[
   ['Cover'],
-  ['Fifty million follow','The AI-first bet','Retention falls','Which part?','The clock'],
-  ['Chapter 02'],
-  ['Seven insights','Three patterns','Three problems','The turn'],
-  ['Chapter 03'],
+  ['Fifty million follow','The vision','The AI-first bet','Retention falls','Which part?','The clock','Our role'],
+  ['Phase 1 · Research'],
+  ['The method','Seven insights','Three patterns','Three problems','The turn'],
+  ['Phase 2 · Design & Validate'],
   ['Twelve concepts','The verdicts','Sorted into lanes','The roadmap'],
-  ['Chapter 04'],
-  ['The headline','The numbers']
+  ['Phase 3 · Refine & Ship'],
+  ['One clear flow','Fluid tracking','Trust patterns','Shipped concepts'],
+  ['Chapter 05'],
+  ['The headline','The numbers','Why Parallel']
 ];
 function precomputeThumbs(){
   const sS=si,sB=beat;
@@ -889,6 +1193,21 @@ function phonePlaceholder(name){
    +'</div></div>';
 }
 function renderDetail(){
+  if(dKind==='pmf'){
+    dleft.innerHTML='<div class="dkick">The diagnosis · Artifact</div>'
+      +'<h2 class="dtitle">The feature check</h2>'
+      +'<p class="ddoes">Before designing anything new, every existing feature was scored against what users actually did in the sessions.</p>'
+      +'<div class="dsub">What it was for</div>'
+      +'<ul class="dsaid"><li>Define what to improve — and in what order.</li>'
+      +'<li>Separate what was already working (the new UI held up) from what was quietly failing (Auto Snap\'s privacy problem).</li>'
+      +'<li>This scoring, plus the three problems, set the agenda for the design sprint that follows.</li></ul>';
+    dright.innerHTML='<div class="pmf"><div class="ph"><span>Feature</span><span>Verdict</span><span>What we recommended</span></div>'
+      +PMF.map(p=>'<div class="pr"><span class="pf">'+p.f+'</span>'
+        +'<span class="pv" style="color:'+PMFC[p.v]+'"><span class="dot"></span>'+p.v+'</span>'
+        +'<span class="pw">'+p.r+'</span></div>').join('')+'</div>';
+    dcount.textContent='Artifact · The PMF feature check';
+    return;
+  }
   if(dKind==='concept'){
     const c=CONCEPTS[dIndex],vm=VMETA[c.v];
     dleft.innerHTML='<div class="dkick">'+TERR[c.terr]+'</div>'
@@ -910,8 +1229,8 @@ function renderDetail(){
     dcount.textContent='Insight '+(dIndex+1)+' / '+INSIGHTS.length+'  ·  ← → to browse';
   }
 }
-function openDetail(kind,i){killHint();dKind=kind;dIndex=i;renderDetail();detail.classList.add('open');}
-function stepDetail(dir){const n=dKind==='concept'?CONCEPTS.length:INSIGHTS.length;dIndex=(dIndex+dir+n)%n;renderDetail();}
+function openDetail(kind,i){killHint();dKind=kind;dIndex=i;detail.classList.toggle('single',kind==='pmf');renderDetail();detail.classList.add('open');}
+function stepDetail(dir){if(dKind==='pmf')return;const n=dKind==='concept'?CONCEPTS.length:INSIGHTS.length;dIndex=(dIndex+dir+n)%n;renderDetail();}
 document.getElementById('dprev').addEventListener('click',()=>stepDetail(-1));
 document.getElementById('dnext').addEventListener('click',()=>stepDetail(1));
 
@@ -928,6 +1247,8 @@ function closeAll(){detail.classList.remove('open');menu.classList.remove('open'
 function anyOpen(){return detail.classList.contains('open')||menu.classList.contains('open')||figmaOv.classList.contains('open');}
 document.getElementById('figBtn').addEventListener('click',openFigma);
 document.getElementById('mfigma').addEventListener('click',openFigma);
+document.getElementById('pmfBtn').addEventListener('click',()=>openDetail('pmf',0));
+document.getElementById('mpmf').addEventListener('click',()=>{closeAll();openDetail('pmf',0);});
 document.getElementById('figLib').addEventListener('click',()=>leaveTo('index.html','Parallel'));
 document.querySelectorAll('[data-go]').forEach(el=>el.addEventListener('click',()=>{const[a,b]=el.dataset.go.split(',').map(Number);goTo(a,b);}));
 document.querySelectorAll('[data-close]').forEach(el=>el.addEventListener('click',closeAll));
@@ -976,7 +1297,8 @@ addEventListener('keydown',e=>{
   else if(['ArrowLeft','ArrowUp','PageUp'].includes(e.key)){e.preventDefault();prev();}
   else if(e.key==='c'||e.key==='C')openMenu();
   else if(e.key==='1')goTo(IDX.s1,0);else if(e.key==='2')goTo(IDX.s2,0);
-  else if(e.key==='3')goTo(IDX.s3,0);else if(e.key==='4')goTo(IDX.s4,0);
+  else if(e.key==='3')goTo(IDX.s3,0);else if(e.key==='4')goTo(IDX.s5,0);
+  else if(e.key==='5')goTo(IDX.s4,0);
 });
 let tx=null;
 addEventListener('touchstart',e=>tx=e.touches[0].clientX,{passive:true});
@@ -994,6 +1316,7 @@ beatsEl.addEventListener('mouseleave',hidePreview);
 precomputeThumbs();     // capture thumbnails silently first…
 show(0,0,true);         // …then land on the cover
 requestAnimationFrame(()=>requestAnimationFrame(()=>curtain.classList.remove('on')));
+setTimeout(()=>curtain.classList.remove('on'),300); // rAF never fires in throttled/hidden tabs — never let the curtain stick
 </script>
 </body>
 </html>
