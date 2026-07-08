@@ -9,9 +9,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Figtree:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#FFFFFF;--ink:#111111;--muted:#66655F;--faint:rgba(17,17,17,.38);
+  --bg:#FFFFFF;--ink:#111111;--muted:#66655F;--faint:rgba(17,17,17,.38);--soft:#F7F7F5;
   --line:rgba(17,17,17,.1);--line2:rgba(17,17,17,.22);--line3:rgba(17,17,17,.45);
-  --green:#0E8A60;--amber:#B07C1E;
+  --green:#0E8A60;--amber:#B07C1E;--red:#8E0B16;
   --sq:#4E61D6;--sq2:#6078EC;
   --fd:'Libre Baskerville',Georgia,serif;
   --fs:'Figtree',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
@@ -25,74 +25,72 @@ body{background:var(--bg);color:var(--ink);font-family:var(--fs);-webkit-font-sm
 
 .slide{position:absolute;inset:0;padding:10vh 9vw 12vh;display:none;flex-direction:column;justify-content:center}
 .slide.active{display:flex;animation:fadein .45s ease both}
+.slide.mid{align-items:center;text-align:center}
 @keyframes fadein{from{opacity:0}to{opacity:1}}
 
 .kick{font-size:12.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:500;margin-bottom:26px}
-h1.hl,h2.hl{font-family:var(--fd);font-weight:400;font-size:clamp(26px,3.2vw,46px);line-height:1.22;letter-spacing:-.012em;max-width:26ch}
-.hs{font-family:var(--fd);font-size:clamp(17px,1.9vw,26px);color:var(--muted);line-height:1.45;margin-top:18px;max-width:40ch}
+h1.hl,h2.hl{font-family:var(--fd);font-weight:400;font-size:clamp(26px,3.1vw,44px);line-height:1.24;letter-spacing:-.012em;max-width:24ch}
+.hs{font-size:clamp(16px,1.55vw,21px);color:var(--muted);line-height:1.5;margin-top:18px;max-width:46ch}
+.slide.mid .hs{margin-left:auto;margin-right:auto}
 .vis{margin-top:5vh}
 
 /* placeholder */
 .ph{position:relative;border:1.5px dashed var(--line2);border-radius:14px;
   background:repeating-linear-gradient(-45deg,transparent,transparent 11px,rgba(17,17,17,.024) 11px,rgba(17,17,17,.024) 12px),var(--bg);
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center;padding:22px}
-.ph .pl{font-family:var(--fd);font-size:14px;color:var(--ink);line-height:1.45;max-width:36ch}
+.ph .pl{font-size:13.5px;color:var(--ink);line-height:1.45;max-width:36ch}
 .ph .pt{font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);font-weight:600}
 
-/* verify tag for reconstructed claims */
 .verify{display:inline-flex;align-items:center;gap:6px;margin-top:22px;font-size:11px;font-weight:600;color:var(--amber);
   border:1px solid rgba(176,124,30,.4);border-radius:100px;padding:4px 12px;width:fit-content}
+.slide.mid .verify{margin-left:auto;margin-right:auto}
 
-/* dividers */
 .divider{align-items:center;text-align:center}
 .divider .dnum{font-size:13px;letter-spacing:.15em;text-transform:uppercase;color:var(--faint);font-weight:600;margin-bottom:22px}
 .divider h2.hl{font-size:clamp(40px,5.4vw,72px);max-width:none}
 .divider .hs{font-style:italic;text-align:center;margin:18px auto 0}
 
-/* cover */
 #cover{align-items:flex-start}
 #cover h1.hl{font-size:clamp(40px,5.4vw,70px)}
 #cover .tags{display:flex;gap:8px;margin-top:30px;flex-wrap:wrap}
 #cover .tag{font-size:12.5px;font-weight:500;color:var(--muted);border:1px solid var(--line);border-radius:100px;padding:6px 14px}
 #cover .hint{margin-top:8vh;font-size:13px;color:var(--faint)}
 
-/* simple layout helpers */
-.row{display:flex;gap:2.5vw;align-items:stretch;flex-wrap:wrap}
-.chips{display:flex;flex-wrap:wrap;gap:12px}
+.chips{display:flex;flex-wrap:wrap;gap:12px;max-width:760px}
 .chip{font-family:var(--fd);font-size:clamp(15px,1.5vw,20px);border:1px solid var(--line2);border-radius:100px;padding:10px 22px;background:var(--bg)}
 .cols2{display:grid;grid-template-columns:1fr 1fr;gap:2.5vw}
 .cols3{display:grid;grid-template-columns:repeat(3,1fr);gap:2vw}
 
-/* architecture diagram (text boxes) */
-.arch{display:flex;gap:12px;align-items:stretch}
+/* ask cards (mandate) */
+.asks{display:flex;gap:2vw;margin-top:5vh}
+.ask{border:1px solid var(--line2);border-radius:16px;padding:26px 28px;text-align:left;max-width:340px;background:var(--bg)}
+.ask .an{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);font-weight:600;margin-bottom:12px}
+.ask .at{font-family:var(--fd);font-size:clamp(17px,1.7vw,22px);line-height:1.3}
+
+/* architecture */
+.arch{display:flex;gap:12px;align-items:stretch;max-width:1080px}
 .arch .lvl{flex:1;border:1px solid var(--line2);border-radius:12px;padding:16px 15px;background:var(--bg)}
 .arch .lvl b{font-family:var(--fd);font-weight:400;font-size:clamp(14px,1.3vw,18px);display:block}
 .arch .lvl span{font-size:12px;color:var(--muted);display:block;margin-top:7px;line-height:1.5}
 .arch .sep{align-self:center;color:var(--faint)}
 
-/* token list */
-.tokens{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:clamp(12px,1.15vw,15px);line-height:2.1;color:var(--muted);
-  border-left:2px solid var(--sq);padding-left:22px}
-.tokens b{color:var(--ink);font-weight:500}
-
-/* states row */
+/* states */
 .states{display:flex;gap:12px;flex-wrap:wrap}
 .st{border:1px solid var(--line2);border-radius:12px;background:var(--bg);padding:12px 16px;display:flex;align-items:center;gap:10px;min-width:150px}
 .st .sn{font-size:10px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;color:var(--muted)}
 .st .bar{flex:1;height:8px;border-radius:4px;background:rgba(17,17,17,.1);min-width:46px}
-.st.err{border-color:rgba(214,81,81,.5)}.st.err .bar{background:rgba(214,81,81,.22)}
+.st.err{border-color:rgba(142,11,22,.5)}.st.err .bar{background:rgba(142,11,22,.22)}
 .st.empty .bar{background:transparent;border:1px dashed var(--line2)}
 .st.dis{opacity:.45}
 
-/* timeline (handoff) */
-.tl{display:flex;flex-direction:column;gap:14px;max-width:760px}
+/* timeline */
+.tl{display:flex;flex-direction:column;gap:12px;max-width:820px}
 .tl .track{display:flex;align-items:center;gap:16px}
-.tl .who{width:110px;font-size:12px;font-weight:600;color:var(--muted);text-align:right}
+.tl .who{width:120px;font-size:12px;font-weight:600;color:var(--muted);text-align:right}
 .tl .bars{flex:1;display:flex;gap:4px}
-.tl .seg{height:26px;border-radius:6px;flex:1;display:grid;place-items:center;font-size:10.5px;font-weight:600;color:var(--bg);background:var(--ink)}
-.tl .seg.lite{background:rgba(17,17,17,.14);color:var(--muted)}
+.tl .seg{height:28px;border-radius:6px;flex:1;display:grid;place-items:center;font-size:10.5px;font-weight:600;color:var(--bg);background:var(--ink)}
+.tl .seg.lite{background:rgba(17,17,17,.12);color:var(--muted)}
 .tl .seg.sq{background:var(--sq)}
-.tl .wk{width:110px}
 .tl .wklabels{flex:1;display:flex;gap:4px}
 .tl .wklabels span{flex:1;text-align:center;font-size:10px;color:var(--faint)}
 
@@ -102,9 +100,44 @@ h1.hl,h2.hl{font-family:var(--fd);font-weight:400;font-size:clamp(26px,3.2vw,46p
 .gcard .where{margin-top:12px}
 .gcard .where i{font-style:normal;display:inline-block;border:1px solid var(--line);border-radius:100px;padding:3px 11px;margin:5px 5px 0 0;font-size:12px;color:var(--muted)}
 
-/* close */
+/* show-it demos */
+.demo{display:flex;gap:34px;align-items:center;flex-wrap:wrap}
+.swatch{width:150px;height:150px;border-radius:18px;display:flex;align-items:flex-end;padding:14px;color:#fff;font-size:12px;font-weight:600;font-family:var(--fs)}
+.mockbtn{background:var(--sq);color:#fff;border-radius:10px;padding:12px 22px;font-size:14px;font-weight:600;display:inline-block}
+.mockrow{border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;min-width:300px;background:var(--bg)}
+.mockrow .pill{background:var(--sq);color:#fff;border-radius:100px;padding:4px 13px;font-size:12px;font-weight:600}
+.stack{display:flex;flex-direction:column;gap:14px}
+/* text tiers */
+.tiers{display:flex;flex-direction:column;gap:12px;font-size:clamp(16px,1.7vw,22px)}
+.tiers .t1{color:#111}.tiers .t2{color:#5a5952}.tiers .t3{color:#8f8e88}.tiers .t4{color:#b6b5af}
+.tiers .terr{color:var(--red);font-weight:600}
+.tiers small{font-family:var(--fs);font-size:11px;color:var(--faint);margin-left:12px;font-weight:500}
+/* spacing compare */
+.spcompare{display:flex;gap:26px;align-items:flex-start}
+.spbox{border:1px solid var(--line2);border-radius:12px;width:230px;overflow:hidden}
+.spbox .lab{font-size:11px;color:var(--faint);padding:9px 12px;border-bottom:1px solid var(--line);letter-spacing:.04em;text-transform:uppercase;font-weight:600}
+.spbox i{display:block;height:10px;background:var(--line);border-radius:4px}
+.spbox.cramped i{margin:5px 10px}
+.spbox.airy i{margin:17px 16px}
+/* responsive frames */
+.frames{display:flex;gap:22px;align-items:flex-start}
+.frame{border:1px solid var(--line2);border-radius:12px;overflow:hidden;flex:none}
+.frame .top{height:26px;background:var(--soft);border-bottom:1px solid var(--line)}
+.frame .bd{padding:12px;display:flex;flex-direction:column;gap:8px}
+.frame .bd i{height:10px;background:var(--line);border-radius:4px;display:block}
+.frame .cap{font-size:11px;color:var(--faint);text-align:center;padding:6px;border-top:1px solid var(--line)}
+/* type specimen */
+.spec{display:flex;gap:30px;align-items:stretch;flex-wrap:wrap}
+.spec .box{border:1px solid var(--line2);border-radius:12px;padding:20px 22px;background:var(--bg)}
+.spec .welcome{font-family:var(--fs);font-weight:600;font-size:clamp(24px,2.6vw,38px);letter-spacing:-.01em}
+.spec .num{font-family:var(--fs);font-variant-numeric:tabular-nums}
+.spec .num .r{display:flex;justify-content:space-between;gap:40px;padding:7px 0;border-top:1px solid var(--line);font-size:14px;color:var(--muted)}
+.spec .num .r:first-child{border-top:0}
+.spec .cap{font-size:11px;color:var(--faint);margin-top:12px}
+
 #end{align-items:center;text-align:center}
 #end h2.hl{max-width:22ch}
+#end .clsub{font-size:clamp(16px,1.55vw,21px);color:var(--muted);margin-top:18px}
 #end .acts{margin-top:6vh;display:flex;gap:22px;align-items:center}
 #end .btnk{font-size:13.5px;font-weight:500;color:var(--bg);background:var(--ink);border:0;border-radius:100px;padding:13px 24px;text-decoration:none}
 #end a.txt{font-size:13.5px;color:var(--muted);text-decoration:none;border-bottom:1px solid var(--line2);padding-bottom:2px}
@@ -121,47 +154,50 @@ h1.hl,h2.hl{font-family:var(--fd);font-weight:400;font-size:clamp(26px,3.2vw,46p
 <body>
 <div id="prog"></div>
 
-<!-- 1 · COVER -->
+<!-- COVER -->
 <section class="slide active" id="cover">
   <p class="kick">Parallel · Case study</p>
   <h1 class="hl">Sequoia</h1>
-  <p class="hs">The design system we built for Sequifi, an HR and payroll platform. From visual language to tokens to documentation, and then across the whole product.</p>
+  <p class="hs">The design system we built for Sequifi, an HR and payroll platform.</p>
   <div class="tags"><span class="tag">Design System</span><span class="tag">HR Tech</span><span class="tag">B2B SaaS</span><span class="tag">Visual Language</span></div>
   <p class="hint">Click, or press →</p>
 </section>
 
-<!-- CH 1 · THE BRIEF -->
+<!-- BRIEF -->
 <section class="slide">
-  <p class="kick">01 · The brief</p>
-  <h2 class="hl">Sequifi runs HR and payroll for home-services companies.</h2>
-  <p class="hs">Roofing, pest control, solar. Sales reps, admins, hiring managers and technicians, all in one product.</p>
+  <p class="kick">The brief</p>
+  <h2 class="hl">Sequifi is HR and payroll software for home-services companies.</h2>
+  <p class="hs">Think roofing, pest control, solar. Everyone from sales reps to hiring managers to admins works out of the same product.</p>
   <div class="vis"><div class="ph" style="width:min(760px,60vw);aspect-ratio:16/8"><div class="pl">The product today, one wide screen</div><div class="pt">Placeholder · screenshot</div></div></div>
 </section>
 
 <section class="slide">
-  <p class="kick">01 · The brief</p>
-  <h2 class="hl">The product had grown for years without a design language.</h2>
-  <p class="hs">Dense screens, each styled its own way. HR teams kept drifting back to spreadsheets.</p>
-  <div class="vis"><div class="ph" style="width:min(760px,60vw);aspect-ratio:16/8"><div class="pl">The old product, shown honestly</div><div class="pt">Placeholder · before screenshot</div></div></div>
+  <p class="kick">The brief</p>
+  <h2 class="hl">Every screen was dense, and no two looked alike.</h2>
+  <p class="hs">Adoption was slipping, and people kept going back to their spreadsheets.</p>
+  <div class="vis"><div class="ph" style="width:min(760px,60vw);aspect-ratio:16/8"><div class="pl">The old product, before we touched it</div><div class="pt">Placeholder · before screenshot</div></div></div>
 </section>
 
-<section class="slide">
-  <p class="kick">01 · The brief</p>
-  <h2 class="hl">The mandate: a visual language, and a design system their team could build on.</h2>
-  <p class="hs">Foundations first. The product would follow.</p>
+<section class="slide mid">
+  <p class="kick">The brief</p>
+  <h2 class="hl">So they asked us for two things.</h2>
+  <div class="asks">
+    <div class="ask"><div class="an">One</div><div class="at">A visual language for the product.</div></div>
+    <div class="ask"><div class="an">Two</div><div class="at">A design system their own team could build on.</div></div>
+  </div>
 </section>
 
-<!-- CH 2 · THE PERSONALITY -->
+<!-- PART ONE · VISUAL LANGUAGE -->
 <section class="slide divider">
   <p class="dnum">Part one</p>
-  <h2 class="hl">The language.</h2>
-  <p class="hs">Why Sequifi looks the way it does.</p>
+  <h2 class="hl">Visual language.</h2>
+  <p class="hs">How we worked out what Sequifi should look like.</p>
 </section>
 
 <section class="slide">
-  <p class="kick">02 · The language</p>
-  <h2 class="hl">This software moves people's pay. The language had to feel like it.</h2>
-  <p class="hs">The brief, in Sequifi's own words:</p>
+  <p class="kick">Visual language</p>
+  <h2 class="hl">We started with the words that describe Sequifi.</h2>
+  <p class="hs">These are the ones we kept coming back to.</p>
   <div class="vis chips">
     <span class="chip">Familiar</span><span class="chip">Approachable</span><span class="chip">Trustworthy</span>
     <span class="chip">Control</span><span class="chip">Order</span><span class="chip">Organized</span>
@@ -170,75 +206,95 @@ h1.hl,h2.hl{font-family:var(--fd);font-weight:400;font-size:clamp(26px,3.2vw,46p
 </section>
 
 <section class="slide">
-  <p class="kick">02 · The language</p>
-  <h2 class="hl">We built two complete directions.</h2>
-  <p class="hs">Gridlock: order, structure, fluidity. Opscape: calm and functional, made for operations. Sequifi chose Opscape.</p>
+  <p class="kick">Visual language</p>
+  <h2 class="hl">From there, we explored two directions.</h2>
   <div class="vis cols2" style="max-width:1000px">
-    <div class="ph" style="aspect-ratio:16/9"><div class="pl">Gridlock, the exploration board</div><div class="pt">Placeholder · Figma board</div></div>
-    <div class="ph" style="aspect-ratio:16/9;border-style:solid;border-color:var(--ink)"><div class="pl">Opscape, the chosen direction</div><div class="pt">Placeholder · Figma board</div></div>
+    <div><div class="ph" style="aspect-ratio:16/9"><div class="pl">Gridlock</div><div class="pt">Placeholder · direction board</div></div><p class="hs" style="font-size:14px;margin-top:12px">Gridlock — order and structure, with a bit of flow.</p></div>
+    <div><div class="ph" style="aspect-ratio:16/9"><div class="pl">Opscape</div><div class="pt">Placeholder · direction board</div></div><p class="hs" style="font-size:14px;margin-top:12px">Opscape — clean and functional, made for operations.</p></div>
   </div>
 </section>
 
 <section class="slide">
-  <p class="kick">02 · The language</p>
-  <h2 class="hl">Nothing in it is decoration.</h2>
-  <p class="hs">Indigo, for calm authority over money. Hanken Grotesk, legible in a table of numbers and friendly in a welcome screen. Generous spacing, because admins live here all day. Every choice traces back to the brief.</p>
-  <div class="vis"><div class="ph" style="width:min(760px,60vw);aspect-ratio:16/8"><div class="pl">A key screen, annotated: each element linked to the personality it serves</div><div class="pt">Placeholder · annotated mockup</div></div></div>
-  <span class="verify">rationale reconstructed · verify with Sandesh</span>
+  <p class="kick">Visual language</p>
+  <h2 class="hl">Sequifi picked Opscape.</h2>
+  <p class="hs">Clean, functional, and built for people who are in the product all day.</p>
+  <div class="vis"><div class="ph" style="width:min(820px,64vw);aspect-ratio:16/9;border-style:solid;border-color:var(--ink)"><div class="pl">Opscape, the chosen direction</div><div class="pt">Placeholder · direction board</div></div></div>
 </section>
 
-<!-- CH 3 · SEQUOIA -->
+<!-- reasoning, shown one at a time -->
+<section class="slide">
+  <p class="kick">Visual language</p>
+  <h2 class="hl">We chose indigo because it feels calm and in control.</h2>
+  <p class="hs">That matters a lot when the screen is about someone's pay.</p>
+  <div class="vis demo">
+    <div class="swatch" style="background:var(--sq)">#4E61D6</div>
+    <div class="stack">
+      <span class="mockbtn">Run payroll</span>
+      <div class="mockrow"><span>March payout</span><span class="pill">Approved</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <p class="kick">Visual language</p>
+  <h2 class="hl">We chose a typeface that works in two very different places.</h2>
+  <p class="hs">Clear in a table full of numbers, and still warm on a welcome screen. That's Hanken Grotesk.</p>
+  <div class="vis spec">
+    <div class="box"><div class="num">
+      <div class="r"><span>Commission</span><span>$1,240.00</span></div>
+      <div class="r"><span>Upfront</span><span>$300.00</span></div>
+      <div class="r"><span>Override</span><span>$85.50</span></div>
+    </div><div class="cap">In a table of numbers</div></div>
+    <div class="box"><div class="welcome">Welcome back, Maria.</div><div class="cap">On a welcome screen</div></div>
+  </div>
+</section>
+
+<section class="slide">
+  <p class="kick">Visual language</p>
+  <h2 class="hl">And we gave everything room to breathe.</h2>
+  <p class="hs">Admins are in these screens all day, so nothing feels cramped. Every choice like this traces back to a reason.</p>
+  <div class="vis spcompare">
+    <div class="spbox cramped"><div class="lab">Cramped</div><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    <div class="spbox airy"><div class="lab">Sequoia</div><i></i><i></i><i></i></div>
+  </div>
+  <span class="verify">reasoning reconstructed · verify with Sandesh</span>
+</section>
+
+<!-- PART TWO · SEQUOIA -->
 <section class="slide divider">
   <p class="dnum">Part two</p>
   <h2 class="hl">Meet Sequoia.</h2>
-  <p class="hs">The design system. Named for the tree: built to stand for a long time.</p>
+  <p class="hs">Our design system. We named it after the tree, because it's built to last.</p>
 </section>
 
 <section class="slide">
-  <p class="kick">03 · Sequoia</p>
-  <h2 class="hl">A design system earns its keep three ways.</h2>
-  <div class="vis cols3" style="max-width:1050px">
-    <div class="gcard"><b>Change once, everywhere.</b><span>One source of truth, so consistency holds as the product grows.</span></div>
-    <div class="gcard"><b>One pattern, many jobs.</b><span>Fewer building blocks, so every new screen is faster than the last.</span></div>
-    <div class="gcard"><b>The team runs it alone.</b><span>Documented and named, so it outlives the people who built it.</span></div>
-  </div>
-  <p class="hs" style="font-size:15px;margin-top:24px">Sequoia does all three. Here's how.</p>
-</section>
-
-<section class="slide">
-  <p class="kick">03 · Sequoia</p>
-  <h2 class="hl">One structure, five levels.</h2>
-  <div class="vis arch" style="max-width:1050px">
-    <div class="lvl"><b>Foundations</b><span>Color, type, spacing, radius, elevation. All tokenised.</span></div>
+  <p class="kick">Sequoia</p>
+  <h2 class="hl">The system is built in layers.</h2>
+  <p class="hs">Small pieces combine into bigger ones, all the way up to full pages.</p>
+  <div class="vis arch">
+    <div class="lvl"><b>Foundations</b><span>Colour, type, spacing.</span></div>
     <span class="sep">→</span>
-    <div class="lvl"><b>Atoms</b><span>Buttons, fields, toggles, tags, icons.</span></div>
+    <div class="lvl"><b>Atoms</b><span>Buttons, fields, toggles.</span></div>
     <span class="sep">→</span>
-    <div class="lvl"><b>Molecules</b><span>Inputs with labels, table rows, list items, menus.</span></div>
+    <div class="lvl"><b>Molecules</b><span>Labelled inputs, rows, menus.</span></div>
     <span class="sep">→</span>
-    <div class="lvl"><b>Components</b><span>Tables, drawers, wizards, date pickers, workspaces.</span></div>
+    <div class="lvl"><b>Components</b><span>Tables, drawers, wizards.</span></div>
     <span class="sep">→</span>
-    <div class="lvl"><b>Templates</b><span>Full page patterns, ready to fill.</span></div>
+    <div class="lvl"><b>Templates</b><span>Full pages, ready to fill.</span></div>
   </div>
 </section>
 
 <section class="slide">
-  <p class="kick">03 · Sequoia</p>
-  <h2 class="hl">Tokens, not hex codes.</h2>
-  <p class="hs">Every decision lives as a named variable. Change it once, it updates everywhere.</p>
-  <div class="vis tokens">
-    <b>Font Family/Primary</b> → Hanken Grotesk<br>
-    <b>Color/Buttons/primary_default</b> → #4E61D6<br>
-    <b>Color/Text/text_error</b> → #8E0B16<br>
-    <b>Spacing/spacing_16</b> → 16 &nbsp;·&nbsp; <b>Radius/full</b> → 9999<br>
-    <b>Paragraph/Small/Medium</b> → Primary · 14 · 500 · 1.5
-  </div>
-  <p class="hs" style="font-size:14px;margin-top:20px">Pulled from the real file. The names are the documentation.</p>
+  <p class="kick">Sequoia</p>
+  <h2 class="hl">Change one thing, and it updates everywhere.</h2>
+  <p class="hs">Colours, type and spacing are saved as reusable settings. Change one, and it flows through the whole product at once.</p>
+  <div class="vis"><div class="ph" style="width:min(760px,58vw);aspect-ratio:16/8"><div class="pl">Sequoia's variables, in Figma</div><div class="pt">Placeholder · variables screenshot</div></div></div>
 </section>
 
 <section class="slide">
-  <p class="kick">03 · Sequoia</p>
-  <h2 class="hl">Every component, in every state a screen can reach.</h2>
-  <p class="hs">Built as Figma variants: one source of truth per component, no redrawing.</p>
+  <p class="kick">Sequoia</p>
+  <h2 class="hl">Every component is ready for real life.</h2>
+  <p class="hs">Loading, empty, error, disabled — we designed them all up front, so the team never has to.</p>
   <div class="vis states">
     <div class="st"><span class="sn">Default</span><span class="bar"></span></div>
     <div class="st"><span class="sn">Hover</span><span class="bar" style="background:rgba(78,97,214,.3)"></span></div>
@@ -250,136 +306,140 @@ h1.hl,h2.hl{font-family:var(--fd);font-weight:400;font-size:clamp(26px,3.2vw,46p
 </section>
 
 <section class="slide">
-  <p class="kick">03 · Sequoia</p>
-  <h2 class="hl">Built to be read, not decoded.</h2>
-  <p class="hs">In payroll, a misread number is a wrong paycheck. The palette is built for clarity.</p>
-  <div class="vis cols3" style="max-width:1050px">
-    <div class="gcard"><b>A five-step text hierarchy</b><span>Primary, secondary, tertiary, ghost, error. Importance is built in, never guessed.</span></div>
-    <div class="gcard"><b>Error at #8E0B16</b><span>A deep, high-contrast red, chosen to read clearly rather than to alarm.</span></div>
-    <div class="gcard"><b>States as tokens</b><span>Disabled, focus and icon colours are defined, never faked with opacity.</span></div>
+  <p class="kick">Sequoia</p>
+  <h2 class="hl">In payroll, one misread number is a wrong paycheck.</h2>
+  <p class="hs">So we made everything easy to read, on purpose.</p>
+  <div class="vis tiers">
+    <div class="t1">Primary text, for what matters most <small>strongest contrast</small></div>
+    <div class="t2">Secondary text, for supporting detail</div>
+    <div class="t3">Tertiary text, for labels and hints</div>
+    <div class="t4">Ghost text, for the quietest things</div>
+    <div class="terr">Error text, in a deep red (#8E0B16) that reads clearly <small>never a bright alarm</small></div>
   </div>
-  <span class="verify">AA contrast pass to confirm · verify with Sandesh</span>
 </section>
 
 <section class="slide">
-  <p class="kick">03 · Sequoia</p>
-  <h2 class="hl">Responsive by default.</h2>
-  <p class="hs">Auto layout everywhere. Components resize, reflow and hold their alignment as content changes, so a screen built today survives the feature added next year.</p>
-  <div class="vis"><div class="ph" style="width:min(700px,56vw);aspect-ratio:16/7"><div class="pl">One component shown at three widths, holding its shape</div><div class="pt">Placeholder · responsive demo</div></div></div>
+  <p class="kick">Sequoia</p>
+  <h2 class="hl">Build a screen today, and it still works a year from now.</h2>
+  <p class="hs">Everything resizes and rearranges on its own, so new features don't break the screens you already shipped.</p>
+  <div class="vis frames">
+    <div class="frame" style="width:160px"><div class="top"></div><div class="bd"><i></i><i style="width:80%"></i><i style="width:60%"></i></div><div class="cap">narrow</div></div>
+    <div class="frame" style="width:230px"><div class="top"></div><div class="bd"><i></i><i style="width:80%"></i><i style="width:60%"></i></div><div class="cap">medium</div></div>
+    <div class="frame" style="width:320px"><div class="top"></div><div class="bd"><i></i><i style="width:80%"></i><i style="width:60%"></i></div><div class="cap">wide</div></div>
+  </div>
 </section>
 
 <section class="slide">
-  <p class="kick">03 · Sequoia</p>
-  <h2 class="hl">One pattern, many jobs.</h2>
-  <p class="hs">The fewer the building blocks, the faster the next screen. Four of Sequoia's patterns each carry the whole product.</p>
+  <p class="kick">Sequoia</p>
+  <h2 class="hl">A few patterns do most of the work.</h2>
+  <p class="hs">We designed a handful of pieces well, then reused them everywhere. Same wizard, same drawer, same table, across the whole product.</p>
   <div class="vis cols2" style="max-width:1000px">
-    <div class="gcard"><b>The multi-step wizard</b><div class="where"><i>Position setup</i><i>Worker onboarding</i></div></div>
-    <div class="gcard"><b>The slide-over drawer</b><div class="where"><i>Redline changes</i><i>Locations filter</i></div></div>
-    <div class="gcard"><b>The view switch</b><div class="where"><i>Table / Org chart</i><i>Table / Map</i></div></div>
+    <div class="gcard"><b>The step-by-step wizard</b><div class="where"><i>Setting up a position</i><i>Onboarding a worker</i></div></div>
+    <div class="gcard"><b>The side panel</b><div class="where"><i>Pay-rate changes</i><i>Location filters</i></div></div>
+    <div class="gcard"><b>The view switch</b><div class="where"><i>Table or org chart</i><i>Table or map</i></div></div>
     <div class="gcard"><b>The data table</b><div class="where"><i>Locations</i><i>Positions</i><i>Departments</i></div></div>
   </div>
 </section>
 
 <section class="slide">
-  <p class="kick">03 · Sequoia</p>
-  <h2 class="hl">The system holds when the brand changes.</h2>
-  <p class="hs">Sequifi is white-labeled: every customer sees their own brand. We ran the same flows under two different skins, and nothing broke.</p>
+  <p class="kick">Sequoia</p>
+  <h2 class="hl">Sequifi is white-label, so every customer sees their own brand.</h2>
+  <p class="hs">The design system handles that. Change the brand, and everything still holds together.</p>
   <div class="vis cols2" style="max-width:1000px">
-    <div class="ph" style="aspect-ratio:16/10"><div class="pl">The same flow, skinned as "aveyo"</div><div class="pt">Placeholder · white-label A</div></div>
-    <div class="ph" style="aspect-ratio:16/10"><div class="pl">The same flow, skinned as "Fulcrum Loans"</div><div class="pt">Placeholder · white-label B</div></div>
+    <div class="ph" style="aspect-ratio:16/10"><div class="pl">The same flow, one customer's brand</div><div class="pt">Placeholder · white-label</div></div>
+    <div class="ph" style="aspect-ratio:16/10"><div class="pl">The same flow, another customer's brand</div><div class="pt">Placeholder · white-label</div></div>
   </div>
-  <p class="hs" style="font-size:15px;margin-top:20px">Change the tokens, change the brand. The structure never moves.</p>
 </section>
 
 <section class="slide">
-  <p class="kick">03 · Sequoia</p>
-  <h2 class="hl">Documentation a new hire can run with.</h2>
-  <p class="hs">"Welcome to Sequoia." Separate guides for designers and developers. Tutorials for variants and auto layout. A feedback loop, so the system keeps improving after we leave.</p>
-  <div class="vis"><div class="ph" style="width:min(760px,60vw);aspect-ratio:16/8"><div class="pl">The real Getting Started pages from the Sequoia file</div><div class="pt">Placeholder · documentation screenshot</div></div></div>
+  <p class="kick">Sequoia</p>
+  <h2 class="hl">We documented it so well, anyone can pick it up.</h2>
+  <p class="hs">A new designer, a developer, even an AI tool can read the system and use it right. That's what keeps it going after we leave.</p>
+  <div class="vis"><div class="ph" style="width:min(760px,60vw);aspect-ratio:16/8"><div class="pl">Sequoia's real "getting started" and usage docs</div><div class="pt">Placeholder · documentation screenshot</div></div></div>
 </section>
 
-<!-- CH 4 · THE PROOF -->
+<!-- PART THREE · PUTTING IT TO WORK -->
 <section class="slide divider">
   <p class="dnum">Part three</p>
-  <h2 class="hl">The stress test.</h2>
-  <p class="hs">A system is only real once it survives the hardest flow.</p>
+  <h2 class="hl">Putting it to work.</h2>
+  <p class="hs">A system only counts once it survives real screens.</p>
 </section>
 
 <section class="slide">
-  <p class="kick">04 · The stress test</p>
-  <h2 class="hl">We rebuilt onboarding, the hardest flow in the product, in Sequoia.</h2>
-  <p class="hs">Commission-based pay, different for every product a rep sells. One product's pay used to live in three separate steps. Sequoia's patterns regrouped it: one page per product, eight steps down to six.</p>
-  <div class="vis"><div class="ph" style="width:min(760px,60vw);aspect-ratio:16/7"><div class="pl">The rebuilt Product payment page</div><div class="pt">Placeholder · screenshot</div></div></div>
+  <p class="kick">Putting it to work</p>
+  <h2 class="hl">We used the system before we trusted it.</h2>
+  <p class="hs">We rebuilt real parts of the product with Sequoia, to find out where it would break.</p>
+  <div class="vis"><div class="ph" style="width:min(760px,60vw);aspect-ratio:16/8"><div class="pl">A real screen, rebuilt with Sequoia</div><div class="pt">Placeholder · screenshot</div></div></div>
 </section>
 
 <section class="slide">
-  <p class="kick">04 · The stress test</p>
-  <h2 class="hl">Where a real screen broke a component, we fixed the system, not the screen.</h2>
-  <p class="hs">Payroll tables, commission wizards, document signing: each one pushed on Sequoia, and each fix landed in the system. Every flow shipped made it sturdier.</p>
-  <span class="verify">method claim · verify with Sandesh</span>
+  <p class="kick">Putting it to work</p>
+  <h2 class="hl">When a screen broke a component, we fixed the system, not the screen.</h2>
+  <p class="hs">Every fix went back into Sequoia, so it got stronger with each flow we built.</p>
+  <div class="vis cols2" style="max-width:1000px">
+    <div class="ph" style="aspect-ratio:16/9"><div class="pl">The component that broke</div><div class="pt">Placeholder</div></div>
+    <div class="ph" style="aspect-ratio:16/9"><div class="pl">The fix, now part of the system</div><div class="pt">Placeholder</div></div>
+  </div>
+  <span class="verify">example to confirm · verify with Sandesh</span>
 </section>
 
-<!-- CH 5 · BEFORE / AFTER -->
 <section class="slide">
-  <p class="kick">05 · Before and after</p>
-  <h2 class="hl">The same product, before and after Sequoia.</h2>
-  <div class="vis cols3" style="max-width:1100px">
-    <div class="ph" style="aspect-ratio:16/10"><div class="pl">Onboarding · before / after</div><div class="pt">Placeholder · pair</div></div>
-    <div class="ph" style="aspect-ratio:16/10"><div class="pl">Dashboard · before / after</div><div class="pt">Placeholder · pair</div></div>
-    <div class="ph" style="aspect-ratio:16/10"><div class="pl">Payroll · before / after</div><div class="pt">Placeholder · pair</div></div>
+  <p class="kick">Putting it to work</p>
+  <h2 class="hl">The same product, before and after.</h2>
+  <p class="hs">This is what the design system did for the screens people use every day.</p>
+  <div class="vis cols2" style="max-width:1040px">
+    <div class="ph" style="aspect-ratio:16/9"><div class="pl">Onboarding — before / after</div><div class="pt">Placeholder · pair</div></div>
+    <div class="ph" style="aspect-ratio:16/9"><div class="pl">Dashboard — before / after</div><div class="pt">Placeholder · pair</div></div>
+    <div class="ph" style="aspect-ratio:16/9"><div class="pl">Payroll — before / after</div><div class="pt">Placeholder · pair</div></div>
+    <div class="ph" style="aspect-ratio:16/9"><div class="pl">Positions — before / after</div><div class="pt">Placeholder · pair</div></div>
   </div>
 </section>
 
-<!-- CH 6 · THE HANDOFF -->
+<!-- PART FOUR · HANDING IT OVER -->
 <section class="slide divider">
   <p class="dnum">Part four</p>
-  <h2 class="hl">The handoff.</h2>
-  <p class="hs">A system is judged by what happens after the designers leave.</p>
+  <h2 class="hl">Handing it over.</h2>
+  <p class="hs">A system is only as good as what happens after we leave.</p>
 </section>
 
 <section class="slide">
-  <p class="kick">06 · The handoff</p>
-  <h2 class="hl">How working with us actually goes.</h2>
-  <p class="hs">The same rhythm that built Sequoia.</p>
+  <p class="kick">Handing it over</p>
+  <h2 class="hl">Here's what working with us actually feels like.</h2>
+  <p class="hs">Our files stay open the whole time. Senior designers do the work, not just the pitch. And you can watch a walkthrough whenever you want, so nothing waits for a meeting.</p>
   <div class="vis arch" style="max-width:1080px">
-    <div class="lvl"><b>Foundations</b><span>Shared in the first week.</span></div>
-    <span class="sep">&rarr;</span>
-    <div class="lvl"><b>Components &amp; patterns</b><span>Reviewed as they land.</span></div>
-    <span class="sep">&rarr;</span>
-    <div class="lvl"><b>Templates &amp; docs</b><span>Handed over, not thrown over.</span></div>
-    <span class="sep">&rarr;</span>
-    <div class="lvl"><b>Real flows</b><span>Onboarding, then the platform.</span></div>
+    <div class="lvl"><b>Week one</b><span>Foundations, shared early.</span></div>
+    <span class="sep">→</span>
+    <div class="lvl"><b>Then</b><span>Components and patterns, reviewed as they land.</span></div>
+    <span class="sep">→</span>
+    <div class="lvl"><b>Then</b><span>Templates and docs, handed over properly.</span></div>
+    <span class="sep">→</span>
+    <div class="lvl"><b>Alongside</b><span>Real flows, built in the system.</span></div>
   </div>
-  <p class="hs" style="font-size:15px;margin-top:24px">Files open throughout. Senior designers on the work, not just the pitch. Walkthroughs you watch on your own time, so nothing waits for a meeting.</p>
 </section>
 
 <section class="slide">
-  <p class="kick">06 · The handoff</p>
-  <h2 class="hl">Developers weren't waiting for us to finish.</h2>
-  <p class="hs">Foundations shipped first, so the build started while the system grew.</p>
+  <p class="kick">Handing it over</p>
+  <h2 class="hl">Your developers don't wait for us to finish.</h2>
+  <p class="hs">We share the foundations first, so the build can start while the rest of the system comes together.</p>
   <div class="vis tl">
     <div class="track"><span class="who"></span><span class="wklabels"><span>Week 1</span><span>Week 2</span><span>Week 3</span><span>Week 4</span></span></div>
-    <div class="track"><span class="who">Parallel</span><span class="bars"><span class="seg">Foundations</span><span class="seg">Components</span><span class="seg">Templates</span><span class="seg">Docs</span></span></div>
-    <div class="track"><span class="who">Sequifi devs</span><span class="bars"><span class="seg lite"></span><span class="seg sq">Building</span><span class="seg sq">Building</span><span class="seg sq">Building</span></span></div>
+    <div class="track"><span class="who">Us, designing</span><span class="bars"><span class="seg">Foundations</span><span class="seg">Components</span><span class="seg">Templates</span><span class="seg">Docs</span></span></div>
+    <div class="track"><span class="who">Your devs</span><span class="bars"><span class="seg lite"></span><span class="seg sq">Building</span><span class="seg sq">Building</span><span class="seg sq">Building</span></span></div>
   </div>
   <span class="verify">timeline reconstructed · verify with Sandesh</span>
 </section>
 
 <section class="slide">
-  <p class="kick">06 · The handoff</p>
-  <h2 class="hl">Built to be extended without us in the room.</h2>
-  <p class="hs">Semantic naming, usage guidance, and a structure that tells you where new things go. The system assumes we won't be there, and is written so nobody has to ask.</p>
-</section>
-
-<section class="slide">
-  <p class="kick">06 · The handoff</p>
-  <h2 class="hl">Then Sequifi extended the engagement to the entire platform.</h2>
-  <p class="hs">After the system and the first flows, they asked us to take Sequoia across every module. The strongest review a design system can get.</p>
+  <p class="kick">Handing it over</p>
+  <h2 class="hl">Your team can keep building on it without us.</h2>
+  <p class="hs">Clear names, clear rules, and a structure that shows exactly where new things belong.</p>
+  <div class="vis"><div class="ph" style="width:min(760px,60vw);aspect-ratio:16/8"><div class="pl">A new screen, put together from existing Sequoia parts</div><div class="pt">Placeholder · assembly example</div></div></div>
 </section>
 
 <!-- CLOSE -->
 <section class="slide" id="end">
-  <h2 class="hl">A design system is a bet on everything you'll build after it. Sequoia is how we place that bet.</h2>
+  <h2 class="hl">A design system is a bet on everything you build after it.</h2>
+  <p class="clsub">If that's a bet you're making, we'd love to help.</p>
   <div class="acts">
     <a class="btnk" href="https://www.figma.com/design/xLeeEwQqzhR7bosn0Do3Il/Sequifi-Design-System-%7C-Final" target="_blank" rel="noopener">Open Sequoia in Figma →</a>
     <a class="txt" href="index.html">← Back to the library</a>
