@@ -49,6 +49,11 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f);
 .head .lead{margin-top:20px}
 .mt{margin-top:22px}
 
+/* consistent heading + top anchor across the five numbered layer slides */
+.slide.layer{justify-content:flex-start;padding:8vh var(--mx) 6vh}
+.slide.layer .lbadge{margin-bottom:14px}
+.slide.layer .h-sec{font-size:clamp(27px,3vw,44px);line-height:1.06;letter-spacing:-.024em;max-width:28ch}
+
 .ph{position:relative;background:var(--panel);border-radius:16px;overflow:hidden;
   display:flex;align-items:center;justify-content:center;text-align:center}
 .ph.soft{background:var(--panel2)}
@@ -303,9 +308,7 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f);
 .mini2 .ph{min-height:0}
 
 /* ATOMS — live components */
-#atoms{padding:9vh var(--mx) 7vh}
 #atoms .lbadge .n{width:26px;height:26px;border-radius:50%;background:var(--indigo-soft);color:var(--indigo);display:inline-flex;align-items:center;justify-content:center;font-size:13px}
-#atoms .h-sec{font-weight:500;font-size:clamp(28px,3.1vw,46px);line-height:1.05;letter-spacing:-.026em;max-width:none}
 #atoms .atoms{margin-top:3.4vh;display:flex;flex-direction:column}
 #atoms .atom{display:grid;grid-template-columns:190px 1fr;gap:44px;align-items:center;padding:3vh 0;border-top:1px solid var(--line)}
 #atoms .atom:first-child{border-top:0}
@@ -350,9 +353,7 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f);
 #atoms .tag .x{color:var(--lab);font-size:15px;line-height:1;margin-top:-1px}
 
 /* MOLECULES — live components */
-#moles{padding:8vh var(--mx) 6vh;justify-content:flex-start}
 #moles .lbadge .n{width:26px;height:26px;border-radius:50%;background:var(--indigo-soft);color:var(--indigo);display:inline-flex;align-items:center;justify-content:center;font-size:13px}
-#moles .h-sec{font-weight:500;font-size:clamp(26px,2.8vw,42px);line-height:1.06;letter-spacing:-.026em;max-width:24ch}
 #moles .mols{margin-top:2.2vh;display:flex;flex-direction:column}
 #moles .mol{display:grid;grid-template-columns:190px 1fr;gap:44px;align-items:center;padding:2vh 0;border-top:1px solid var(--line)}
 #moles .mol:first-child{border-top:0}
@@ -735,7 +736,7 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f);
 </section>
 
 <!-- 17 FOUNDATIONS (editorial) -->
-<section class="slide" id="found">
+<section class="slide layer" id="found">
   <div class="rl">Sequoia</div><div class="rr">Sequifi × Parallel</div>
   <div class="head">
     <div class="lbadge"><span class="st">01</span> Foundations</div>
@@ -797,7 +798,7 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f);
 </section>
 
 <!-- 18 ATOMS (live components) -->
-<section class="slide" id="atoms">
+<section class="slide layer" id="atoms">
   <div class="rl">Sequoia</div><div class="rr">Sequifi × Parallel</div>
   <div>
     <div class="lbadge"><span class="n">02</span> Atoms</div>
@@ -862,7 +863,7 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f);
 </section>
 
 <!-- 19 MOLECULES (live components) -->
-<section class="slide" id="moles">
+<section class="slide layer" id="moles">
   <div class="rl">Sequoia</div><div class="rr">Sequifi × Parallel</div>
   <div>
     <div class="lbadge"><span class="n">03</span> Molecules</div>
@@ -943,7 +944,7 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f);
 </section>
 
 <!-- 20 COMPONENTS -->
-<section class="slide">
+<section class="slide layer">
   <div class="rl">Sequoia</div><div class="rr">Sequifi × Parallel</div>
   <div class="head">
     <div class="lbadge"><span class="st">04</span> Components</div>
@@ -959,7 +960,7 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f);
 </section>
 
 <!-- 21 TEMPLATES -->
-<section class="slide">
+<section class="slide layer">
   <div class="rl">Sequoia</div><div class="rr">Sequifi × Parallel</div>
   <div class="head">
     <div class="lbadge"><span class="st">05</span> Templates</div>
