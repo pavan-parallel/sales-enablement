@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Slide 4 — focus &amp; dim (large)</title>
+<title>Slide 4 — peek &amp; raise</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -22,29 +22,25 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f);-webkit-font-smo
 .stage{position:absolute;inset:0;padding:13vh var(--mx) 0;overflow:hidden}
 .rl{position:absolute;top:5.6vh;left:var(--mx);font-size:14px;font-weight:500;color:var(--lab)}
 .rr{position:absolute;top:5.6vh;right:var(--mx);font-size:14px;font-weight:500;color:var(--lab)}
-h2{font-weight:500;font-size:clamp(34px,4.5vw,70px);line-height:1.05;letter-spacing:-.028em;max-width:19ch}
-.sub{font-size:clamp(17px,1.35vw,21px);color:var(--mut);margin-top:18px}
-.hint{font-size:13px;color:var(--lab);margin-top:10px}
+h2{font-weight:500;font-size:clamp(34px,4.5vw,70px);line-height:1.05;letter-spacing:-.028em;max-width:19ch;position:relative;z-index:30}
+.sub{font-size:clamp(17px,1.35vw,21px);color:var(--mut);margin-top:18px;position:relative;z-index:30}
+.hint{font-size:13px;color:var(--lab);margin-top:10px;position:relative;z-index:30}
 
-/* cards */
-.card{position:absolute;border-radius:14px;overflow:hidden;background:#fff;border:1px solid var(--line);
-  box-shadow:0 26px 64px -38px rgba(0,0,0,.45);cursor:pointer;will-change:transform,opacity;
-  transition:transform .36s cubic-bezier(.25,.9,.3,1),box-shadow .36s ease,filter .36s ease,opacity .36s ease}
+.card{position:absolute;bottom:0;width:52vw;aspect-ratio:8/5;border-radius:16px 16px 0 0;overflow:hidden;
+  background:#fff;border:1px solid var(--line);border-bottom:0;box-shadow:0 30px 70px -42px rgba(0,0,0,.45);
+  transform:translateY(72%) rotate(var(--r,0deg));transform-origin:center bottom;
+  transition:transform .44s cubic-bezier(.25,.9,.3,1),box-shadow .38s ease;
+  cursor:pointer;will-change:transform}
 .card img{width:100%;height:100%;object-fit:cover;object-position:top left;display:block;pointer-events:none}
-
-/* focus & dim — large, end screens bleed off the edges */
-.stage .card{width:52vw;aspect-ratio:8/5;top:40vh}
-.c1{left:-18vw;transform:rotate(-4deg);z-index:1}
-.c2{left:10vw;transform:rotate(-1.5deg);z-index:2}
-.c3{left:38vw;transform:rotate(1.5deg);z-index:3}
-.c4{left:66vw;transform:rotate(4deg);z-index:4}
-.stage.dim .card{opacity:.5;filter:saturate(.92)}
-.stage.dim .c1:hover,.stage.dim .c1.up,
-.stage.dim .c2:hover,.stage.dim .c2.up,
-.stage.dim .c3:hover,.stage.dim .c3.up,
-.stage.dim .c4:hover,.stage.dim .c4.up{opacity:1;filter:none;
-  transform:rotate(0deg) translateY(-22px) scale(1.04);z-index:20;
-  box-shadow:0 50px 110px -34px rgba(0,0,0,.5)}
+.card::after{content:"";position:absolute;inset:0;background:#fff;opacity:0;transition:opacity .38s ease;pointer-events:none}
+.c1{left:-18vw;--r:-5deg;z-index:1}
+.c2{left:10vw;--r:-1.8deg;z-index:2}
+.c3{left:38vw;--r:1.8deg;z-index:3}
+.c4{left:66vw;--r:5deg;z-index:4}
+/* opaque veil on the non-active screens, only while one is raised */
+.stage.focusing .card::after{opacity:.66}
+.card.up{transform:translateY(-2%) rotate(0deg);z-index:20;box-shadow:0 52px 116px -34px rgba(0,0,0,.5)}
+.card.up::after{opacity:0}
 </style>
 </head>
 <body>
@@ -53,7 +49,7 @@ h2{font-weight:500;font-size:clamp(34px,4.5vw,70px);line-height:1.05;letter-spac
   <span class="rl">The brief</span><span class="rr">Sequifi × Parallel</span>
   <h2>Over the years, features piled up.</h2>
   <p class="sub">Screens got dense, and no two looked alike.</p>
-  <p class="hint">Point at any screen — it brightens and lifts while the rest fall back. Hover the exposed edge of one behind to bring it forward.</p>
+  <p class="hint">They rest low, just peeking. Move across the lower band and each screen rises where it sits — even the parts hidden behind another.</p>
   <div class="card c1"><img src="assets/Old%20Screenshot%2001.png" alt=""></div>
   <div class="card c2"><img src="assets/Old%20Screenshot%2002.png" alt=""></div>
   <div class="card c3"><img src="assets/Old%20Screenshot%2003.png" alt=""></div>
@@ -61,16 +57,24 @@ h2{font-weight:500;font-size:clamp(34px,4.5vw,70px);line-height:1.05;letter-spac
 </section>
 
 <script>
-const pile=document.getElementById('pile');
-pile.addEventListener('mouseenter',()=>pile.classList.add('dim'));
-pile.addEventListener('mouseleave',()=>{pile.classList.remove('dim');pile.querySelectorAll('.card').forEach(c=>c.classList.remove('up'));});
-// click / tap to hold focus (for touch)
-pile.querySelectorAll('.card').forEach(c=>c.addEventListener('click',e=>{
+const stage=document.getElementById('pile');
+const cards=[...stage.querySelectorAll('.card')];
+let held=-1;
+function focus(i){stage.classList.add('focusing');cards.forEach((c,k)=>c.classList.toggle('up',k===i));}
+function clear(){stage.classList.remove('focusing');cards.forEach(c=>c.classList.remove('up'));}
+// zone boundaries (vw) between the four screens' centres
+function zone(xvw){return xvw<22?0:xvw<50?1:xvw<78?2:3;}
+stage.addEventListener('mousemove',e=>{
+  if(held>=0)return;                              // a click is holding one open
+  if(e.clientY<innerHeight*0.44){clear();return;} // don't disturb the headline area
+  focus(zone(e.clientX/innerWidth*100));
+});
+stage.addEventListener('mouseleave',()=>{if(held<0)clear();});
+// click / tap to hold a screen up (for touch, and to keep one open)
+cards.forEach((c,i)=>c.addEventListener('click',e=>{
   e.stopPropagation();
-  pile.classList.add('dim');
-  const was=c.classList.contains('up');
-  pile.querySelectorAll('.card').forEach(x=>x.classList.remove('up'));
-  if(!was)c.classList.add('up');
+  if(held===i){held=-1;clear();}
+  else{held=i;focus(i);}
 }));
 </script>
 </body>
