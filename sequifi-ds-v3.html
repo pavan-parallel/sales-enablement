@@ -86,27 +86,42 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f);
 .center .h-state{max-width:20ch}
 .center .lead{max-width:38ch;margin:22px auto 0}
 
-/* slide 4 — fanned peeking screens, hover/tap to bring forward */
+/* slide 4 — screens peek low; scrub the lower band to raise each in place */
 #pileup{justify-content:flex-start;overflow:hidden}
-#pileup .head{position:relative;z-index:5}
+#pileup .head{position:relative;z-index:30}
 .fanhint{display:block;margin-top:12px;font-size:13px;color:var(--lab)}
 .fan{position:absolute;inset:0;pointer-events:none}
-.fan .card{position:absolute;bottom:0;width:46vw;aspect-ratio:8/5;border-radius:16px 16px 0 0;overflow:hidden;
-  background:#fff;border:1px solid var(--line);border-bottom:0;box-shadow:0 30px 70px -42px rgba(0,0,0,.5);
-  transform:translateY(56%) rotate(var(--r,0deg));transform-origin:center bottom;
-  transition:transform .58s cubic-bezier(.34,1.56,.64,1),box-shadow .4s ease;
+.fan .card{position:absolute;bottom:0;width:52vw;aspect-ratio:8/5;border-radius:16px 16px 0 0;overflow:hidden;
+  background:#fff;border:1px solid var(--line);border-bottom:0;box-shadow:0 30px 70px -42px rgba(0,0,0,.45);
+  transform:translateY(48%) rotate(var(--r,0deg));transform-origin:center bottom;
+  transition:transform .44s cubic-bezier(.25,.9,.3,1),box-shadow .38s ease;
   pointer-events:auto;cursor:pointer;will-change:transform}
-.fan .card img{width:100%;height:100%;object-fit:cover;object-position:top left;display:block}
-.fan .c1{left:-10vw;--r:-7deg;z-index:1}
-.fan .c2{left:14vw;--r:-2.5deg;z-index:2}
-.fan .c3{left:38vw;--r:2.5deg;z-index:3}
-.fan .c4{left:62vw;--r:7deg;z-index:4}
-/* raised = spotlight to centre, straighten, lift fully into view, pop */
-.fan .card:hover,.fan .card.up{z-index:20;box-shadow:0 70px 140px -28px rgba(0,0,0,.62)}
-.fan .c1:hover,.fan .c1.up{transform:translate(37vw,-13%) rotate(0deg) scale(1.04)}
-.fan .c2:hover,.fan .c2.up{transform:translate(13vw,-13%) rotate(0deg) scale(1.04)}
-.fan .c3:hover,.fan .c3.up{transform:translate(-11vw,-13%) rotate(0deg) scale(1.04)}
-.fan .c4:hover,.fan .c4.up{transform:translate(-35vw,-13%) rotate(0deg) scale(1.04)}
+.fan .card img{width:100%;height:100%;object-fit:cover;object-position:top left;display:block;pointer-events:none}
+.fan .card::after{content:"";position:absolute;inset:0;background:#fff;opacity:0;transition:opacity .38s ease;pointer-events:none}
+.fan .c1{left:-18vw;--r:-5deg;z-index:1}
+.fan .c2{left:10vw;--r:-1.8deg;z-index:2}
+.fan .c3{left:38vw;--r:1.8deg;z-index:3}
+.fan .c4{left:66vw;--r:5deg;z-index:4}
+/* opaque veil on the non-active screens, only while one is raised */
+.fan.focusing .card::after{opacity:.66}
+.fan .card.up{transform:translateY(-2%) rotate(0deg);z-index:20;box-shadow:0 52px 116px -34px rgba(0,0,0,.5)}
+.fan.focusing .card.up::after{opacity:0}
+
+/* slide 8 — keyword spotlight (headline + cycling word + live list) */
+#kw{padding:0}
+#kw.active{display:grid;grid-template-columns:1.6fr 1fr}
+#kw .stageL{position:relative;display:flex;flex-direction:column;padding:14vh var(--mx) 11vh;overflow:hidden}
+#kw .kwhead{font-weight:500;font-size:clamp(30px,3.5vw,54px);line-height:1.06;letter-spacing:-.024em;max-width:15ch}
+#kw .kwhead .accent{color:var(--indigo)}
+#kw .spot{margin-top:auto;margin-bottom:12vh;min-height:1.1em;display:flex;align-items:flex-end}
+#kw .big{font-weight:500;font-size:clamp(52px,7.4vw,128px);line-height:.9;letter-spacing:-.042em;color:var(--indigo);display:inline-block;will-change:transform,opacity}
+#kw .big.anim{animation:spotIn .5s var(--ease)}
+@keyframes spotIn{0%{opacity:0;transform:translateY(18px)}100%{opacity:1;transform:translateY(0)}}
+#kw .listR{border-left:1px solid var(--line);display:flex;flex-direction:column;justify-content:center;padding:0 var(--mx);gap:.5vh}
+#kw .listR .li{position:relative;display:flex;align-items:center;font-size:clamp(16px,1.5vw,24px);font-weight:500;letter-spacing:-.02em;color:var(--line2);padding:1.1vh 0;cursor:pointer;transition:color .3s var(--ease),transform .3s var(--ease)}
+#kw .listR .li .dot{width:8px;height:8px;border-radius:50%;background:var(--indigo);margin-right:14px;flex:none;opacity:0;transform:scale(.4);transition:opacity .3s var(--ease),transform .3s var(--ease)}
+#kw .listR .li.on{color:var(--ink);transform:translateX(8px)}
+#kw .listR .li.on .dot{opacity:1;transform:scale(1)}
 
 /* DIVIDER */
 .divider{justify-content:center}
@@ -345,7 +360,7 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f);
   <div class="rl">The brief</div><div class="rr">Sequifi × Parallel</div>
   <div class="head">
     <h2 class="h-state">Over the years, features piled up.</h2>
-    <p class="lead">Screens got dense, and no two looked alike.<span class="fanhint">Hover any screen to bring it forward.</span></p>
+    <p class="lead">Screens got dense, and no two looked alike.<span class="fanhint">Move across the screens below — each rises where it sits.</span></p>
   </div>
   <div class="fan">
     <div class="card c1"><img src="assets/Old%20Screenshot%2001.png" alt="Old Sequifi dashboard"></div>
@@ -386,13 +401,21 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f);
 </section>
 
 <!-- 08 KEYWORDS -->
-<section class="slide">
+<section class="slide" id="kw">
   <div class="rl">Visual language</div><div class="rr">Sequifi × Parallel</div>
-  <div class="head"><h2 class="h-sec">We started with the words that describe Sequifi.</h2></div>
-  <div class="chips">
-    <span class="chip">Familiar</span><span class="chip">Approachable</span><span class="chip">Trustworthy</span>
-    <span class="chip">Control</span><span class="chip">Order</span><span class="chip">Organized</span>
-    <span class="chip">Efficient</span><span class="chip">Clean</span>
+  <div class="stageL">
+    <h2 class="kwhead">We started with the words that describe <span class="accent">Sequifi.</span></h2>
+    <div class="spot"><span class="big anim" id="kwbig">Familiar</span></div>
+  </div>
+  <div class="listR" id="kwlist">
+    <div class="li on"><span class="dot"></span>Familiar</div>
+    <div class="li"><span class="dot"></span>Approachable</div>
+    <div class="li"><span class="dot"></span>Trustworthy</div>
+    <div class="li"><span class="dot"></span>Control</div>
+    <div class="li"><span class="dot"></span>Order</div>
+    <div class="li"><span class="dot"></span>Organized</div>
+    <div class="li"><span class="dot"></span>Efficient</div>
+    <div class="li"><span class="dot"></span>Clean</div>
   </div>
 </section>
 
@@ -886,12 +909,40 @@ document.addEventListener('keydown',e=>{
   else if(e.key==='Home'){i=0;render();}
   else if(e.key==='End'){i=slides.length-1;render();}
 });
-document.querySelectorAll('#pileup .card').forEach(c=>c.addEventListener('click',e=>{
-  e.stopPropagation();
-  const up=c.classList.contains('up');
-  document.querySelectorAll('#pileup .card').forEach(x=>x.classList.remove('up'));
-  if(!up)c.classList.add('up');
-}));
+(function(){
+  const stage=document.getElementById('pileup');
+  const fan=stage.querySelector('.fan');
+  const cards=[...fan.querySelectorAll('.card')];
+  let held=-1;
+  const focusCard=i=>{fan.classList.add('focusing');cards.forEach((c,k)=>c.classList.toggle('up',k===i));};
+  const clr=()=>{fan.classList.remove('focusing');cards.forEach(c=>c.classList.remove('up'));};
+  const zone=x=>x<22?0:x<50?1:x<78?2:3;
+  stage.addEventListener('mousemove',e=>{
+    if(held>=0)return;
+    if(e.clientY<innerHeight*0.44){clr();return;}
+    focusCard(zone(e.clientX/innerWidth*100));
+  });
+  stage.addEventListener('mouseleave',()=>{if(held<0)clr();});
+  cards.forEach((c,i)=>c.addEventListener('click',e=>{
+    e.stopPropagation();
+    if(held===i){held=-1;clr();}else{held=i;focusCard(i);}
+  }));
+})();
+(function(){
+  const big=document.getElementById('kwbig');
+  const list=document.getElementById('kwlist');
+  if(!big||!list)return;
+  const items=[...list.querySelectorAll('.li')];
+  const words=items.map(el=>el.textContent.trim());
+  let n=0,timer=null,hovering=false;
+  function show(k){n=k;big.textContent=words[k];big.classList.remove('anim');void big.offsetWidth;big.classList.add('anim');items.forEach((el,j)=>el.classList.toggle('on',j===k));}
+  function loop(){if(!hovering)show((n+1)%words.length);}
+  function start(){stop();timer=setInterval(loop,1800);}
+  function stop(){if(timer){clearInterval(timer);timer=null;}}
+  items.forEach((el,k)=>el.addEventListener('mouseenter',()=>{hovering=true;stop();show(k);}));
+  list.addEventListener('mouseleave',()=>{hovering=false;start();});
+  start();
+})();
 const m=location.hash.match(/^#(\d+)/);
 if(m)i=Math.min(+m[1],slides.length-1);
 render();
