@@ -154,15 +154,24 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f);
 .rzt{display:grid;grid-template-columns:1.05fr .95fr;gap:5vw;align-items:center;height:100%}
 .rzt-right{display:flex;justify-content:center}
 .vtl{margin-top:4vh}
-.vnode{display:flex;gap:22px;align-items:stretch}
+.vnode{display:flex;gap:22px;align-items:stretch;opacity:0;transition:opacity .5s var(--ease)}
 .vrail{flex:none;width:16px;display:flex;flex-direction:column;align-items:center}
 .vdot{width:14px;height:14px;border-radius:50%;background:var(--indigo);flex:none;margin-top:5px}
-.vline{width:2px;flex:1;background:var(--line2);margin:6px 0}
+.vline{width:2px;flex:1;background:var(--line2);margin:6px 0;transform:scaleY(0);transform-origin:top center;transition:transform .55s var(--ease)}
 .vnode:last-child .vline{display:none}
 .vbody{padding-bottom:3.4vh}
 .vnode:last-child .vbody{padding-bottom:0}
 .vbody .vt{font-size:clamp(18px,1.7vw,24px);font-weight:500;line-height:1.28;letter-spacing:-.015em;max-width:27ch}
 .vbody .vd{font-size:14.5px;color:var(--mut);line-height:1.5;margin-top:8px;max-width:36ch}
+/* progressive reveal — one reason at a time, earlier ones dimmed, line falls as the next arrives */
+.reason.beat-1 .vnode:nth-child(1){opacity:1}
+.reason.beat-2 .vnode:nth-child(1){opacity:.38}
+.reason.beat-2 .vnode:nth-child(2){opacity:1}
+.reason.beat-3 .vnode:nth-child(1){opacity:.38}
+.reason.beat-3 .vnode:nth-child(2){opacity:.38}
+.reason.beat-3 .vnode:nth-child(3){opacity:1}
+.reason.beat-2 .vnode:nth-child(1) .vline{transform:scaleY(1)}
+.reason.beat-3 .vnode:nth-child(2) .vline{transform:scaleY(1)}
 .rscreen{width:min(430px,36vw);border:1px solid var(--line);border-radius:18px;overflow:hidden;background:#fff;
   box-shadow:0 44px 100px -58px rgba(20,19,24,.4);transition:box-shadow .3s}
 .rscreen .rbar{background:var(--indigo);color:#fff;padding:16px 20px;font-weight:500;font-size:17px;
@@ -176,6 +185,54 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f);
 .rscreen .rtable .r.tot{background:var(--indigo-soft)}
 .rscreen .rtable .r.tot .k{color:var(--ink);font-weight:500}
 
+/* ── THE DECISION (bridge) ── */
+.decision{justify-content:flex-start}
+.decision .h-sec{font-size:clamp(28px,3vw,46px);max-width:24ch}
+.dtitle{position:relative;min-height:calc(clamp(28px,3vw,46px) * 2.3)}
+.dh{position:absolute;top:0;left:0;transition:opacity .45s var(--ease);will-change:opacity}
+.dh1{opacity:0}
+.decision.beat-1 .dh0{opacity:0}
+.decision.beat-1 .dh1{opacity:1}
+.dsub{margin-top:14px;opacity:0;transform:translateY(6px);transition:opacity .5s var(--ease) .1s,transform .5s var(--ease) .1s}
+.decision.beat-1 .dsub{opacity:1;transform:none}
+.dboards{display:grid;grid-template-columns:1fr 1fr;gap:2.6vw;margin-top:3.4vh;align-items:start}
+.board{transition:transform .6s var(--ease),opacity .6s var(--ease),filter .6s var(--ease)}
+.bname{margin-top:15px;font-weight:500;font-size:clamp(18px,1.55vw,23px);letter-spacing:-.02em}
+.bname small{font-weight:400;color:var(--mut)}
+.scr{height:min(34vh,338px);border:1px solid var(--line2);border-radius:13px;overflow:hidden;background:#fff;transition:box-shadow .6s var(--ease)}
+.scr.dense .sbar{display:flex;align-items:center;gap:7px;background:#3E3E44;color:#fff;padding:8px 11px;font-size:12px}
+.scr.dense .sbar .st{margin-right:auto;font-weight:600}
+.scr.dense .sbar .sctrl{background:rgba(255,255,255,.15);border-radius:5px;padding:3px 8px;font-size:10px;font-weight:500}
+.scr.dense .stabs{display:flex;border-bottom:1px solid var(--line);font-size:10.5px}
+.scr.dense .stabs span{padding:6px 11px;color:var(--mut);border-right:1px solid var(--line)}
+.scr.dense .stabs .on{color:var(--ink);font-weight:600;box-shadow:inset 0 -2px 0 var(--ink)}
+.scr.dense table{width:100%;border-collapse:collapse;font-size:11px;font-variant-numeric:tabular-nums}
+.scr.dense td{padding:4.5px 9px;border:1px solid var(--line);color:#3a3a40;white-space:nowrap}
+.scr.dense .hd td{background:#EDEDEF;font-weight:600;color:var(--mut);font-size:10px}
+.scr.dense tr:nth-child(even):not(.hd):not(.tot) td{background:#FAFAFB}
+.scr.dense .num{text-align:right}
+.scr.dense .tot td{font-weight:700;background:#E7E7EA}
+.scr.dense .sfoot{display:flex;justify-content:space-between;align-items:center;padding:6px 10px;border-top:1px solid var(--line);font-size:10px;color:var(--mut);background:#F6F6F7}
+.scr.dense .sfoot .pg span{padding:0 4px}
+.scr.dense .sfoot .pg b{color:var(--ink)}
+.scr.calm{display:flex;flex-direction:column}
+.scr.calm .cbar{background:var(--indigo);color:#fff;padding:15px 19px;font-weight:500;font-size:16px;display:flex;justify-content:space-between;align-items:center;flex:none}
+.scr.calm .cbar .pill{background:rgba(255,255,255,.22);border-radius:100px;padding:4px 12px;font-size:12px;font-weight:500}
+.scr.calm .cbody{padding:22px;flex:1;display:flex;flex-direction:column;justify-content:center}
+.scr.calm .ctbl{border:1px solid var(--line);border-radius:11px;overflow:hidden}
+.scr.calm .cr{display:flex;justify-content:space-between;padding:14px 17px;border-top:1px solid var(--line);font-size:15px;font-variant-numeric:tabular-nums}
+.scr.calm .cr:first-child{border-top:0}
+.scr.calm .cr .v{font-weight:600}
+.scr.calm .cr.tot{background:var(--indigo-soft)}
+.decision.beat-1 .board.gridlock{filter:grayscale(1);opacity:.34;transform:scale(.95)}
+.decision.beat-1 .board.opscape{transform:scale(1.02)}
+.decision.beat-1 .board.opscape .scr{box-shadow:0 0 0 3px var(--indigo),0 40px 90px -50px rgba(78,97,214,.6)}
+.winchips{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px;opacity:0;transform:translateY(8px);transition:opacity .55s var(--ease) .12s,transform .55s var(--ease) .12s}
+.decision.beat-1 .winchips{opacity:1;transform:none}
+.winchips .chip{font-size:15px;padding:8px 16px}
+.wnote{margin-top:16px;font-size:14px;color:var(--mut);opacity:0;transition:opacity .55s var(--ease) .28s}
+.decision.beat-1 .wnote{opacity:1}
+
 /* ARCHITECTURE FLOW */
 .arch{display:flex;align-items:stretch;gap:10px;margin-top:5.5vh}
 .arch .lvl{flex:1;min-width:0;border:1px solid var(--line);border-radius:14px;padding:20px 18px;background:var(--panel2)}
@@ -188,28 +245,33 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f);
 .lbadge{display:inline-flex;align-items:center;gap:10px;font-size:14px;font-weight:600;color:var(--indigo);margin-bottom:16px}
 .lbadge .st{width:26px;height:26px;border-radius:50%;background:var(--indigo-soft);color:var(--indigo);display:inline-flex;align-items:center;justify-content:center;font-size:13px}
 
-/* FOUNDATIONS */
-.fnd{display:grid;grid-template-columns:repeat(4,1fr);gap:1.3vw;margin-top:4vh;align-items:stretch}
-.fcard{border:1px solid var(--line);border-radius:16px;padding:20px;background:var(--panel2);display:flex;flex-direction:column}
-.fcard .fh{font-size:14px;font-weight:600;color:var(--ink)}
-.fcard .fnote{font-size:12px;color:var(--mut);margin-top:auto;line-height:1.4}
-.swset{margin-top:18px;display:flex;flex-direction:column;gap:8px}
-.swrow{display:flex;gap:6px}
-.swrow span{flex:1;height:24px;border-radius:6px;border:1px solid rgba(20,19,24,.06)}
-.typspec{font-size:52px;font-weight:500;letter-spacing:-.03em;line-height:1;margin-top:12px}
-.typname{font-size:13px;font-weight:500;margin-top:6px;color:var(--mut)}
-.typscale{margin-top:14px;display:flex;flex-direction:column;gap:6px}
-.typscale span{color:var(--mut);font-weight:500;line-height:1}
-.typscale span:nth-child(1){font-size:21px;color:var(--ink)}
-.typscale span:nth-child(2){font-size:17px}
-.typscale span:nth-child(3){font-size:15px}
-.typscale span:nth-child(4){font-size:12px}
-.spset{margin-top:18px;display:flex;flex-direction:column;gap:9px}
-.spset i{display:block;height:13px;background:var(--indigo);border-radius:5px;opacity:.85}
-.elset{margin-top:18px;display:flex;gap:14px;align-items:flex-end;flex:1;min-height:0}
-.el{flex:1;background:#fff;border:1px solid var(--line)}
-.el.e1{border-radius:10px;height:64%;box-shadow:0 8px 20px -12px rgba(20,19,24,.3)}
-.el.e2{border-radius:20px;height:92%;box-shadow:0 26px 50px -22px rgba(20,19,24,.4)}
+/* FOUNDATIONS — editorial columns */
+#found .grid{display:grid;grid-template-columns:repeat(4,1fr);margin-top:6vh}
+#found .col{padding:0 2.6vw;display:flex;flex-direction:column;border-left:1px solid var(--line)}
+#found .col:first-child{padding-left:0;border-left:0}
+#found .col:last-child{padding-right:0}
+#found .speclab{font-size:14px;font-weight:600;letter-spacing:-.01em;margin-bottom:26px}
+#found .specnote{font-size:13px;color:var(--mut);line-height:1.5;margin-top:26px;max-width:24ch}
+#found .body{flex:1}
+#found .ramp{display:flex;height:22px;border-radius:7px;overflow:hidden;margin-bottom:8px}
+#found .ramp span{flex:1}
+#found .tinyc{font-size:11px;color:var(--lab);font-weight:500;margin-top:6px}
+#found .agbig{font-size:76px;font-weight:500;letter-spacing:-.03em;line-height:.9}
+#found .agname{font-size:13px;color:var(--mut);margin-top:8px}
+#found .tscale{margin-top:22px;display:flex;flex-direction:column;gap:11px}
+#found .tscale div{display:flex;align-items:baseline;justify-content:space-between;gap:12px;line-height:1}
+#found .tscale b{font-weight:500;letter-spacing:-.02em}
+#found .tscale em{font-style:normal;font-size:11px;color:var(--lab);font-weight:500}
+#found .ruler{display:flex;flex-direction:column;gap:12px}
+#found .sprow{display:flex;align-items:center;gap:12px}
+#found .sprow i{display:block;height:11px;background:var(--indigo);border-radius:6px}
+#found .sprow em{font-style:normal;font-size:12px;color:var(--mut);font-variant-numeric:tabular-nums;font-weight:500}
+#found .radset{display:flex;gap:14px;align-items:flex-end}
+#found .rtile{flex:1;aspect-ratio:1;background:#fff;border:1px solid var(--line);position:relative}
+#found .rtile em{position:absolute;bottom:8px;left:0;right:0;text-align:center;font-style:normal;font-size:12px;color:var(--mut);font-weight:600}
+#found .rt1{border-radius:6px;box-shadow:0 4px 12px -8px rgba(20,19,24,.4)}
+#found .rt2{border-radius:14px;box-shadow:0 12px 26px -14px rgba(20,19,24,.45)}
+#found .rt3{border-radius:24px;box-shadow:0 24px 46px -20px rgba(20,19,24,.5)}
 
 /* SPLIT (big + small) */
 .split{display:grid;grid-template-columns:1.25fr 1fr;gap:1.4vw;margin-top:4vh;height:44vh}
@@ -422,7 +484,7 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f);
 <!-- 09 TWO DIRECTIONS -->
 <section class="slide">
   <div class="rl">Visual language</div><div class="rr">Sequifi × Parallel</div>
-  <div class="head"><h2 class="h-sec">From there, we explored two directions.</h2></div>
+  <div class="head"><h2 class="h-sec">From the keywords, we explored two directions.</h2></div>
   <div class="duo">
     <div class="cell">
       <div class="ph shot"><img src="Assets/gridlock-moodboard-ui.png" alt="Gridlock — visual direction moodboard"></div>
@@ -452,21 +514,71 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f);
   <div class="rl">Direction two</div><div class="rr">Sequifi × Parallel</div>
   <div class="mbhead">
     <h2 class="h-sec" style="max-width:12ch">Opscape</h2>
-    <p class="desc">Clean and functional, made for operations. <span class="pick">Sequifi picked this</span></p>
+    <p class="desc">Clean and functional, made for operations. Lighter, calmer, more open.</p>
   </div>
   <div class="trip">
-    <div class="ph tint"><span class="tag">Screen</span><span class="pl">Opscape · dashboard</span></div>
-    <div class="ph tint"><span class="tag">Screen</span><span class="pl">Opscape · table view</span></div>
-    <div class="ph tint"><span class="tag">Screen</span><span class="pl">Opscape · detail</span></div>
+    <div class="ph"><span class="tag">Screen</span><span class="pl">Opscape · dashboard</span></div>
+    <div class="ph"><span class="tag">Screen</span><span class="pl">Opscape · table view</span></div>
+    <div class="ph"><span class="tag">Screen</span><span class="pl">Opscape · detail</span></div>
   </div>
 </section>
 
-<!-- 12 REASON · WHY (vertical timeline) -->
-<section class="slide">
+<!-- 12 THE DECISION (bridge) -->
+<section class="slide decision" data-beats="2">
+  <div class="rl">Visual language</div><div class="rr">Sequifi × Parallel</div>
+  <div class="head">
+    <div class="dtitle">
+      <h2 class="h-sec dh dh0">So we built the same screen both ways.</h2>
+      <h2 class="h-sec dh dh1">The one that's easier to work in won.</h2>
+    </div>
+    <p class="lead dsub">HR admins are in payroll all day. The open one is easier to read, and harder to misread.</p>
+  </div>
+  <div class="dboards">
+    <div class="board gridlock">
+      <div class="scr dense">
+        <div class="sbar"><span class="st">Payroll</span><span class="sctrl">Filters</span><span class="sctrl">Export</span><span class="sctrl">•••</span></div>
+        <div class="stabs"><span class="on">Current</span><span>Pending</span><span>History</span><span>Adjustments</span></div>
+        <table>
+          <tr class="hd"><td>Item</td><td>Type</td><td class="num">Amount</td><td>Status</td></tr>
+          <tr><td>Commission</td><td>Variable</td><td class="num">$1,240.00</td><td>Ready</td></tr>
+          <tr><td>Upfront bonus</td><td>Fixed</td><td class="num">$300.00</td><td>Ready</td></tr>
+          <tr><td>Override</td><td>Variable</td><td class="num">$85.50</td><td>Ready</td></tr>
+          <tr><td>Base draw</td><td>Fixed</td><td class="num">$500.00</td><td>Held</td></tr>
+          <tr><td>Clawback</td><td>Adjustment</td><td class="num">-$120.00</td><td>Review</td></tr>
+          <tr><td>Referral bonus</td><td>Variable</td><td class="num">$210.00</td><td>Ready</td></tr>
+          <tr><td>Mileage</td><td>Fixed</td><td class="num">$64.20</td><td>Ready</td></tr>
+          <tr><td>Deduction</td><td>Adjustment</td><td class="num">-$45.00</td><td>Posted</td></tr>
+          <tr class="tot"><td>Total</td><td></td><td class="num">$1,625.50</td><td></td></tr>
+        </table>
+        <div class="sfoot"><span>Showing 1–8 of 128</span><span class="pg"><b>‹</b> 1 2 3 <b>›</b></span></div>
+      </div>
+      <div class="bname">Gridlock <small>— dense</small></div>
+    </div>
+    <div class="board opscape">
+      <div class="scr calm">
+        <div class="cbar">Payroll <span class="pill">March</span></div>
+        <div class="cbody"><div class="ctbl">
+          <div class="cr"><span class="k">Commission</span><span class="v">$1,240.00</span></div>
+          <div class="cr"><span class="k">Upfront bonus</span><span class="v">$300.00</span></div>
+          <div class="cr"><span class="k">Override</span><span class="v">$85.50</span></div>
+          <div class="cr tot"><span class="k">Total</span><span class="v">$1,625.50</span></div>
+        </div></div>
+      </div>
+      <div class="bname">Opscape <small>— calm</small></div>
+      <div class="winchips">
+        <span class="chip hot">Clean</span><span class="chip hot">Efficient</span><span class="chip hot">Order</span>
+      </div>
+      <div class="wnote">The words we started with pointed here.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 13 NONE OF IT WAS RANDOM (progressive reveal) -->
+<section class="slide reason" data-beats="4">
   <div class="rl">Visual language</div><div class="rr">Sequifi × Parallel</div>
   <div class="rzt">
     <div>
-      <h2 class="h-sec" style="font-size:clamp(30px,3.4vw,50px)">None of it was random.</h2>
+      <h2 class="h-sec" style="font-size:clamp(30px,3.4vw,50px)">Every choice inside Opscape had a reason.</h2>
       <div class="vtl">
         <div class="vnode">
           <span class="vrail"><span class="vdot"></span><span class="vline"></span></span>
@@ -527,39 +639,64 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f);
   </div>
 </section>
 
-<!-- 17 FOUNDATIONS -->
-<section class="slide">
+<!-- 17 FOUNDATIONS (editorial) -->
+<section class="slide" id="found">
   <div class="rl">Sequoia</div><div class="rr">Sequifi × Parallel</div>
   <div class="head">
     <div class="lbadge"><span class="st">01</span> Foundations</div>
     <h2 class="h-sec">The decisions every other piece inherits.</h2>
   </div>
-  <div class="fnd">
-    <div class="fcard">
-      <div class="fh">Colour</div>
-      <div class="swset">
-        <div class="swrow"><span style="background:#E4E9FA"></span><span style="background:#AEB9F0"></span><span style="background:#6078EC"></span><span style="background:#4E61D6"></span><span style="background:#253377"></span></div>
-        <div class="swrow"><span style="background:#F7F7F8"></span><span style="background:#D0D6DE"></span><span style="background:#828999"></span><span style="background:#2D3038"></span><span style="background:#0A0D12"></span></div>
-        <div class="swrow"><span style="background:#26BB5C"></span><span style="background:#FFBA1A"></span><span style="background:#F04452"></span></div>
+  <div class="grid">
+    <div class="col">
+      <div class="speclab">Colour</div>
+      <div class="body">
+        <div class="ramp"><span style="background:#E4E9FA"></span><span style="background:#AEB9F0"></span><span style="background:#6078EC"></span><span style="background:#4E61D6"></span><span style="background:#253377"></span></div>
+        <div class="tinyc">Indigo · #4E61D6</div>
+        <div class="ramp" style="margin-top:16px"><span style="background:#F7F7F8"></span><span style="background:#D0D6DE"></span><span style="background:#828999"></span><span style="background:#2D3038"></span><span style="background:#0A0D12"></span></div>
+        <div class="tinyc">Neutral</div>
+        <div class="ramp" style="margin-top:16px"><span style="background:#26BB5C"></span><span style="background:#FFBA1A"></span><span style="background:#F04452"></span></div>
+        <div class="tinyc">Signal · win / attention / error</div>
       </div>
-      <div class="fnote">One brand purple, a full neutral range, and three sentiment colours — win, attention, error.</div>
+      <div class="specnote">One indigo, a full neutral range, and three signal colours.</div>
     </div>
-    <div class="fcard">
-      <div class="fh">Type</div>
-      <div class="typspec">Ag</div>
-      <div class="typname">Hanken Grotesk</div>
-      <div class="typscale"><span>H1 · 72</span><span>H3 · 48</span><span>Body · 16</span><span>Caption · 12</span></div>
-      <div class="fnote">One typeface, one type scale — headings down to caption. Hierarchy is never guessed.</div>
+    <div class="col">
+      <div class="speclab">Type</div>
+      <div class="body">
+        <div class="agbig">Ag</div>
+        <div class="agname">Hanken Grotesk</div>
+        <div class="tscale">
+          <div><b style="font-size:28px">Heading</b><em>H1 · 72</em></div>
+          <div><b style="font-size:21px">Subhead</b><em>H3 · 48</em></div>
+          <div><b style="font-size:15px">Body copy</b><em>Body · 16</em></div>
+          <div><b style="font-size:12px">Caption text</b><em>Caption · 12</em></div>
+        </div>
+      </div>
+      <div class="specnote">One typeface, one scale. Hierarchy is never guessed.</div>
     </div>
-    <div class="fcard">
-      <div class="fh">Spacing</div>
-      <div class="spset"><i style="width:14%"></i><i style="width:26%"></i><i style="width:42%"></i><i style="width:66%"></i><i style="width:100%"></i></div>
-      <div class="fnote">A 4-point scale — 4, 8, 12, 16, 24, 32… everything lines up to the same rhythm.</div>
+    <div class="col">
+      <div class="speclab">Spacing</div>
+      <div class="body">
+        <div class="ruler">
+          <div class="sprow"><i style="width:12.5%"></i><em>4</em></div>
+          <div class="sprow"><i style="width:25%"></i><em>8</em></div>
+          <div class="sprow"><i style="width:37.5%"></i><em>12</em></div>
+          <div class="sprow"><i style="width:50%"></i><em>16</em></div>
+          <div class="sprow"><i style="width:75%"></i><em>24</em></div>
+          <div class="sprow"><i style="width:100%"></i><em>32</em></div>
+        </div>
+      </div>
+      <div class="specnote">A 4-point scale. Everything lines up to one rhythm.</div>
     </div>
-    <div class="fcard">
-      <div class="fh">Radius &amp; elevation</div>
-      <div class="elset"><div class="el e1"></div><div class="el e2"></div></div>
-      <div class="fnote">Radii from 2 up to 24, plus full — with one shadow scale, so depth always reads the same.</div>
+    <div class="col">
+      <div class="speclab">Radius &amp; elevation</div>
+      <div class="body" style="display:flex;align-items:center">
+        <div class="radset" style="width:100%">
+          <div class="rtile rt1"><em>8</em></div>
+          <div class="rtile rt2"><em>16</em></div>
+          <div class="rtile rt3"><em>24</em></div>
+        </div>
+      </div>
+      <div class="specnote">Radii from 2 to 24 plus full, on one shadow scale.</div>
     </div>
   </div>
 </section>
@@ -875,37 +1012,45 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f);
 
 <script>
 const slides=[...document.querySelectorAll('.slide')];
-let i=0;
+let i=0, beat=0;
 const pad=n=>String(n).padStart(2,'0');
+const beatsOf=s=>parseInt(s.dataset.beats||'1',10);
+function applyBeats(){
+  slides.forEach(s=>{for(let k=1;k<=12;k++)s.classList.remove('beat-'+k);});
+  const s=slides[i];
+  for(let k=1;k<=beat;k++)s.classList.add('beat-'+k);
+}
 function render(){
   slides.forEach((s,k)=>s.classList.toggle('active',k===i));
-  const dark=slides[i].classList.contains('dark');
+  applyBeats();
+  const s=slides[i];
+  const dark=s.classList.contains('dark');
   document.getElementById('prog').style.background=dark?'#fff':'var(--ink)';
   const pg=document.getElementById('pgno');
   pg.textContent=pad(i+1)+' / '+pad(slides.length);
   pg.style.color=dark?'var(--dmut)':'var(--lab)';
-  pg.style.visibility=slides[i].classList.contains('bleed')?'hidden':'visible';
+  pg.style.visibility=s.classList.contains('bleed')?'hidden':'visible';
   document.querySelectorAll('.navbtn').forEach(b=>{
     b.style.color=dark?'#fff':'var(--ink)';
     b.style.background=dark?'rgba(255,255,255,.08)':'#fff';
     b.style.borderColor=dark?'var(--dline)':'var(--line)';
   });
-  document.getElementById('chrome').style.display=slides[i].querySelector('.foot')?'none':'flex';
-  document.getElementById('backBtn').disabled=(i===0);
-  document.getElementById('nextBtn').disabled=(i===slides.length-1);
+  document.getElementById('chrome').style.display=s.querySelector('.foot')?'none':'flex';
+  document.getElementById('backBtn').disabled=(i===0&&beat===0);
+  document.getElementById('nextBtn').disabled=(i===slides.length-1&&beat===beatsOf(s)-1);
   document.getElementById('prog').style.width=(i/(slides.length-1)*100)+'%';
-  history.replaceState(null,'','#'+i);
+  history.replaceState(null,'','#'+i+(beat?'.'+beat:''));
 }
-function next(){if(i<slides.length-1){i++;render();}}
-function prev(){if(i>0){i--;render();}}
+function next(){const s=slides[i];if(beat<beatsOf(s)-1){beat++;render();}else if(i<slides.length-1){i++;beat=0;render();}}
+function prev(){if(beat>0){beat--;render();}else if(i>0){i--;beat=beatsOf(slides[i])-1;render();}}
 document.getElementById('nextBtn').addEventListener('click',e=>{e.stopPropagation();next();});
 document.getElementById('backBtn').addEventListener('click',e=>{e.stopPropagation();prev();});
 document.addEventListener('click',e=>{if(e.target.closest('a,button'))return;if(e.clientX<innerWidth*0.12)prev();else next();});
 document.addEventListener('keydown',e=>{
   if(e.key==='ArrowRight'||e.key===' '||e.key==='Enter'){e.preventDefault();next();}
   else if(e.key==='ArrowLeft'){e.preventDefault();prev();}
-  else if(e.key==='Home'){i=0;render();}
-  else if(e.key==='End'){i=slides.length-1;render();}
+  else if(e.key==='Home'){i=0;beat=0;render();}
+  else if(e.key==='End'){i=slides.length-1;beat=beatsOf(slides[i])-1;render();}
 });
 (function(){
   const stage=document.getElementById('pileup');
@@ -941,8 +1086,8 @@ document.addEventListener('keydown',e=>{
   list.addEventListener('mouseleave',()=>{hovering=false;start();});
   start();
 })();
-const m=location.hash.match(/^#(\d+)/);
-if(m)i=Math.min(+m[1],slides.length-1);
+const m=location.hash.match(/^#(\d+)(?:\.(\d+))?/);
+if(m){i=Math.min(+m[1],slides.length-1);beat=Math.min(+(m[2]||0),beatsOf(slides[i])-1);}
 render();
 </script>
 </body>
