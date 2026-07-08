@@ -585,6 +585,33 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f);
 .navbtn:disabled{opacity:.3;cursor:default}
 
 @media (prefers-reduced-motion:reduce){*{transition-duration:.001s!important}}
+
+/* ===== FORK — grounded direction screens (10/11), verdict (12), reason placeholder (13) ===== */
+:root{--stage:linear-gradient(155deg,#F4F5FC 0%,#E7EBF9 100%)}
+.slide.screen{padding:0}
+.scn{display:grid;grid-template-columns:38% 62%;height:100%}
+.scn .txt{padding:0 4vw 0 var(--mx);display:flex;flex-direction:column;justify-content:center}
+.scn .txt .lead{margin-top:18px;max-width:24ch}
+.scn .panel{position:relative;background:var(--stage);overflow:hidden}
+.scn .frame{position:absolute;top:12%;bottom:12%;left:9%;right:0;border-radius:16px 0 0 16px;overflow:hidden;
+  background:#fff;border:1px solid var(--line);border-right:0;box-shadow:0 44px 90px -42px rgba(28,36,86,.42)}
+.frbar{height:38px;background:#F1F1F3;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:7px;padding:0 16px}
+.frbar i{width:10px;height:10px;border-radius:50%;background:#d3d3d7;flex:none}
+.frshot{position:absolute;top:38px;left:0;right:0;bottom:0;overflow:hidden}
+.frshot img{width:100%;height:100%;object-fit:cover;object-position:top left;display:block}
+.slide.verdict{padding:0}
+.vd2{display:grid;grid-template-columns:44% 56%;height:100%}
+.vd2 .txt{padding:0 4vw 0 var(--mx);display:flex;flex-direction:column;justify-content:center}
+.vd2 .chips{margin-top:5vh}
+.vd2 .vchips{opacity:0;transform:translateY(10px);transition:opacity .55s var(--ease),transform .55s var(--ease)}
+.verdict.beat-1 .vchips{opacity:1;transform:none}
+.vd2 .panel{position:relative;background:var(--stage);overflow:hidden}
+.vd2 .riser{position:absolute;left:11%;right:0;bottom:0;top:15%;border-radius:16px 16px 0 0;overflow:hidden;
+  background:#fff;border:1px solid var(--line);border-bottom:0;box-shadow:0 -8px 70px -34px rgba(28,36,86,.4);
+  transform:translateY(42%);opacity:0}
+.slide.verdict.active .riser{animation:riseUp .9s var(--ease) .12s forwards}
+@keyframes riseUp{to{transform:translateY(0);opacity:1}}
+.reason .rzt-right .ph{width:min(420px,34vw);aspect-ratio:4/5;border-radius:18px;margin-left:auto}
 </style>
 </head>
 <body>
@@ -705,115 +732,71 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f);
   </div>
 </section>
 
-<!-- 10 GRIDLOCK MOODBOARD -->
-<section class="slide">
+<!-- 10 GRIDLOCK · screen grounded on a tinted panel -->
+<section class="slide screen">
   <div class="rl">Direction one</div><div class="rr">Sequifi × Parallel</div>
-  <div class="mbhead">
-    <h2 class="h-sec" style="max-width:12ch">Gridlock</h2>
-    <p class="desc">Order and structure, with a bit of flow. Denser, more utilitarian.</p>
-  </div>
-  <div class="trip">
-    <div class="ph"><span class="tag">Screen</span><span class="pl">Gridlock · dashboard</span></div>
-    <div class="ph"><span class="tag">Screen</span><span class="pl">Gridlock · table view</span></div>
-    <div class="ph"><span class="tag">Screen</span><span class="pl">Gridlock · detail</span></div>
+  <div class="scn">
+    <div class="txt">
+      <h2 class="h-sec" style="max-width:12ch">Gridlock</h2>
+      <p class="lead">Order and structure, with a bit of flow. Denser, more utilitarian.</p>
+    </div>
+    <div class="panel">
+      <div class="frame"><div class="frbar"><i></i><i></i><i></i></div>
+        <div class="frshot"><img src="Assets/Visual%20Directions/Gridlock/Option%201.2.png" alt="Gridlock — full dashboard"></div></div>
+    </div>
   </div>
 </section>
 
-<!-- 11 OPSCAPE MOODBOARD -->
-<section class="slide">
+<!-- 11 OPSCAPE · screen grounded on a tinted panel -->
+<section class="slide screen">
   <div class="rl">Direction two</div><div class="rr">Sequifi × Parallel</div>
-  <div class="mbhead">
-    <h2 class="h-sec" style="max-width:12ch">Opscape</h2>
-    <p class="desc">Clean and functional, made for operations. Lighter, calmer, more open.</p>
-  </div>
-  <div class="trip">
-    <div class="ph"><span class="tag">Screen</span><span class="pl">Opscape · dashboard</span></div>
-    <div class="ph"><span class="tag">Screen</span><span class="pl">Opscape · table view</span></div>
-    <div class="ph"><span class="tag">Screen</span><span class="pl">Opscape · detail</span></div>
+  <div class="scn">
+    <div class="txt">
+      <h2 class="h-sec" style="max-width:12ch">Opscape</h2>
+      <p class="lead">Clean and functional, made for operations. Lighter, calmer, more open.</p>
+    </div>
+    <div class="panel">
+      <div class="frame"><div class="frbar"><i></i><i></i><i></i></div>
+        <div class="frshot"><img src="Assets/Visual%20Directions/Opscape/Option%202.2.png" alt="Opscape — full dashboard"></div></div>
+    </div>
   </div>
 </section>
 
-<!-- 12 THE DECISION (bridge) -->
-<section class="slide decision" data-beats="2">
+<!-- 12 THE DECISION · verdict; the chosen Opscape screen rises from the bottom -->
+<section class="slide verdict" data-beats="2">
   <div class="rl">Visual language</div><div class="rr">Sequifi × Parallel</div>
-  <div class="head">
-    <div class="dtitle">
-      <h2 class="h-sec dh dh0">So we built the same screen both ways.</h2>
-      <h2 class="h-sec dh dh1">The one that's easier to work in won.</h2>
+  <div class="vd2">
+    <div class="txt">
+      <h2 class="h-sec">Sequifi chose <span class="accent">Opscape</span>.</h2>
+      <p class="lead">It held up when the screen was full of someone's pay.</p>
+      <div class="chips vchips">
+        <span class="chip hot">Calm under pressure</span><span class="chip hot">Clear at a glance</span><span class="chip hot">Made for all-day use</span>
+      </div>
     </div>
-    <p class="lead dsub">HR admins are in payroll all day. The open one is easier to read, and harder to misread.</p>
-  </div>
-  <div class="dboards">
-    <div class="board gridlock">
-      <div class="scr dense">
-        <div class="sbar"><span class="st">Payroll</span><span class="sctrl">Filters</span><span class="sctrl">Export</span><span class="sctrl">•••</span></div>
-        <div class="stabs"><span class="on">Current</span><span>Pending</span><span>History</span><span>Adjustments</span></div>
-        <table>
-          <tr class="hd"><td>Item</td><td>Type</td><td class="num">Amount</td><td>Status</td></tr>
-          <tr><td>Commission</td><td>Variable</td><td class="num">$1,240.00</td><td>Ready</td></tr>
-          <tr><td>Upfront bonus</td><td>Fixed</td><td class="num">$300.00</td><td>Ready</td></tr>
-          <tr><td>Override</td><td>Variable</td><td class="num">$85.50</td><td>Ready</td></tr>
-          <tr><td>Base draw</td><td>Fixed</td><td class="num">$500.00</td><td>Held</td></tr>
-          <tr><td>Clawback</td><td>Adjustment</td><td class="num">-$120.00</td><td>Review</td></tr>
-          <tr><td>Referral bonus</td><td>Variable</td><td class="num">$210.00</td><td>Ready</td></tr>
-          <tr><td>Mileage</td><td>Fixed</td><td class="num">$64.20</td><td>Ready</td></tr>
-          <tr><td>Deduction</td><td>Adjustment</td><td class="num">-$45.00</td><td>Posted</td></tr>
-          <tr class="tot"><td>Total</td><td></td><td class="num">$1,625.50</td><td></td></tr>
-        </table>
-        <div class="sfoot"><span>Showing 1–8 of 128</span><span class="pg"><b>‹</b> 1 2 3 <b>›</b></span></div>
-      </div>
-      <div class="bname">Gridlock <small>— dense</small></div>
-    </div>
-    <div class="board opscape">
-      <div class="scr calm">
-        <div class="cbar">Payroll <span class="pill">March</span></div>
-        <div class="cbody"><div class="ctbl">
-          <div class="cr"><span class="k">Commission</span><span class="v">$1,240.00</span></div>
-          <div class="cr"><span class="k">Upfront bonus</span><span class="v">$300.00</span></div>
-          <div class="cr"><span class="k">Override</span><span class="v">$85.50</span></div>
-          <div class="cr tot"><span class="k">Total</span><span class="v">$1,625.50</span></div>
-        </div></div>
-      </div>
-      <div class="bname">Opscape <small>— calm</small></div>
-      <div class="winchips">
-        <span class="chip hot">Clean</span><span class="chip hot">Efficient</span><span class="chip hot">Order</span>
-      </div>
-      <div class="wnote">The words we started with pointed here.</div>
+    <div class="panel">
+      <div class="riser"><div class="frbar"><i></i><i></i><i></i></div>
+        <div class="frshot"><img src="Assets/Visual%20Directions/Opscape/Option%202.2.png" alt="Opscape — the chosen dashboard"></div></div>
     </div>
   </div>
 </section>
 
-<!-- 13 NONE OF IT WAS RANDOM (progressive reveal) -->
+<!-- 13 EVERY CHOICE HAD A REASON · placeholder for the real detail screen -->
 <section class="slide reason" data-beats="4">
   <div class="rl">Visual language</div><div class="rr">Sequifi × Parallel</div>
   <div class="rzt">
     <div>
       <h2 class="h-sec" style="font-size:clamp(30px,3.4vw,50px)">Every choice inside Opscape had a reason.</h2>
       <div class="vtl">
-        <div class="vnode">
-          <span class="vrail"><span class="vdot"></span><span class="vline"></span></span>
-          <div class="vbody"><div class="vt">We chose indigo, because it feels calm and in control.</div><div class="vd">Which matters when the screen is about someone's pay.</div></div>
-        </div>
-        <div class="vnode">
-          <span class="vrail"><span class="vdot"></span><span class="vline"></span></span>
-          <div class="vbody"><div class="vt">We chose a typeface that works everywhere.</div><div class="vd">Clear in a table full of numbers, still friendly on a welcome screen.</div></div>
-        </div>
-        <div class="vnode">
-          <span class="vrail"><span class="vdot"></span><span class="vline"></span></span>
-          <div class="vbody"><div class="vt">We gave everything room to breathe.</div><div class="vd">Admins are in these screens all day, so nothing feels cramped.</div></div>
-        </div>
+        <div class="vnode"><span class="vrail"><span class="vdot"></span><span class="vline"></span></span>
+          <div class="vbody"><div class="vt">Calm under pressure, so we chose indigo.</div><div class="vd">It stays quiet when the screen is full of numbers.</div></div></div>
+        <div class="vnode"><span class="vrail"><span class="vdot"></span><span class="vline"></span></span>
+          <div class="vbody"><div class="vt">Clear at a glance, so we set one type scale.</div><div class="vd">Hierarchy is read, never guessed.</div></div></div>
+        <div class="vnode"><span class="vrail"><span class="vdot"></span><span class="vline"></span></span>
+          <div class="vbody"><div class="vt">Made for all-day use, so we gave everything room.</div><div class="vd">Nothing feels cramped for people who never leave these screens.</div></div></div>
       </div>
     </div>
     <div class="rzt-right">
-      <div class="rscreen">
-        <div class="rbar">Payroll <span class="rpill">March</span></div>
-        <div class="rbody"><div class="rtable">
-          <div class="r"><span class="k">Commission</span><span class="v">$1,240.00</span></div>
-          <div class="r"><span class="k">Upfront bonus</span><span class="v">$300.00</span></div>
-          <div class="r"><span class="k">Override</span><span class="v">$85.50</span></div>
-          <div class="r tot"><span class="k">Total</span><span class="v">$1,625.50</span></div>
-        </div></div>
-      </div>
+      <div class="ph"><span class="tag">Screen</span><span class="pl">Opscape &middot; payroll detail</span></div>
     </div>
   </div>
 </section>
