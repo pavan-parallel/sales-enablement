@@ -86,11 +86,10 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f);
 .center .h-state{max-width:20ch}
 .center .lead{max-width:38ch;margin:22px auto 0}
 
-.stack{position:relative;height:44vh}
-.stack .ph{position:absolute;top:2vh;width:38%;height:88%}
-.stack .s1{left:16%;transform:rotate(-3.5deg)}
-.stack .s2{left:31%;transform:rotate(1.5deg);z-index:1}
-.stack .s3{left:46%;transform:rotate(-1deg);z-index:2;box-shadow:0 40px 90px -50px rgba(0,0,0,.45)}
+/* old-screens 2×2 (uniform 8:5) */
+.oldgrid{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:1.1vw;height:50vh;width:min(100%,80vh);margin:4vh auto 0}
+.oldgrid .ph{overflow:hidden;border-radius:14px;background:var(--panel2)}
+.oldgrid img{width:100%;height:100%;object-fit:cover;object-position:top left;display:block}
 
 /* DIVIDER */
 .divider{justify-content:center}
@@ -331,10 +330,11 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f);
     <h2 class="h-state">Over the years, features piled up.</h2>
     <p class="lead">Screens got dense, and no two looked alike.</p>
   </div>
-  <div class="stack">
-    <div class="ph s1 soft"></div>
-    <div class="ph s2 soft"></div>
-    <div class="ph s3"><span class="tag">Asset</span><span class="pl">A dense legacy screen</span></div>
+  <div class="oldgrid">
+    <div class="ph"><img src="assets/Old%20Screenshot%2001.png" alt="Old Sequifi dashboard"></div>
+    <div class="ph"><img src="assets/Old%20Screenshot%2002.png" alt="Old Sequifi referrals"></div>
+    <div class="ph"><img src="assets/Old%20Screenshot%2003.png" alt="Old Sequifi templates"></div>
+    <div class="ph"><img src="assets/Old%20Screenshot%2004.png" alt="Old Sequifi scheduling"></div>
   </div>
 </section>
 
