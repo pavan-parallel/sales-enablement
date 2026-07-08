@@ -115,9 +115,19 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f);
 .trip{display:grid;grid-template-columns:repeat(3,1fr);gap:1.6vw;margin-top:4.5vh}
 .trip .ph{aspect-ratio:3/4}
 
-/* REASONING */
-.rz{display:grid;grid-template-columns:40% 1fr;gap:5vw;align-items:center;height:100%}
-.rz .rside{display:flex;justify-content:center}
+/* REASONING (vertical timeline) */
+.rzt{display:grid;grid-template-columns:1.05fr .95fr;gap:5vw;align-items:center;height:100%}
+.rzt-right{display:flex;justify-content:center}
+.vtl{margin-top:4vh}
+.vnode{display:flex;gap:22px;align-items:stretch}
+.vrail{flex:none;width:16px;display:flex;flex-direction:column;align-items:center}
+.vdot{width:14px;height:14px;border-radius:50%;background:var(--indigo);flex:none;margin-top:5px}
+.vline{width:2px;flex:1;background:var(--line2);margin:6px 0}
+.vnode:last-child .vline{display:none}
+.vbody{padding-bottom:3.4vh}
+.vnode:last-child .vbody{padding-bottom:0}
+.vbody .vt{font-size:clamp(18px,1.7vw,24px);font-weight:500;line-height:1.28;letter-spacing:-.015em;max-width:27ch}
+.vbody .vd{font-size:14.5px;color:var(--mut);line-height:1.5;margin-top:8px;max-width:36ch}
 .rscreen{width:min(430px,36vw);border:1px solid var(--line);border-radius:18px;overflow:hidden;background:#fff;
   box-shadow:0 44px 100px -58px rgba(20,19,24,.4);transition:box-shadow .3s}
 .rscreen .rbar{background:var(--indigo);color:#fff;padding:16px 20px;font-weight:500;font-size:17px;
@@ -130,9 +140,6 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f);
 .rscreen .rtable .r .k{color:var(--mut)}.rscreen .rtable .r .v{font-weight:600}
 .rscreen .rtable .r.tot{background:var(--indigo-soft)}
 .rscreen .rtable .r.tot .k{color:var(--ink);font-weight:500}
-.rz.k1 .rscreen .rbar{box-shadow:0 0 0 3px var(--indigo),0 0 0 9px var(--indigo-soft);position:relative;z-index:2}
-.rz.k2 .rscreen .rtable{box-shadow:0 0 0 3px var(--indigo),0 0 0 9px var(--indigo-soft)}
-.rz.k3 .rscreen{box-shadow:0 0 0 3px var(--indigo),0 0 0 10px var(--indigo-soft),0 44px 100px -58px rgba(20,19,24,.4)}
 
 /* ARCHITECTURE FLOW */
 .arch{display:flex;align-items:stretch;gap:10px;margin-top:5.5vh}
@@ -412,62 +419,28 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f);
   </div>
 </section>
 
-<!-- 12 REASON · INDIGO -->
+<!-- 12 REASON · WHY (vertical timeline) -->
 <section class="slide">
   <div class="rl">Visual language</div><div class="rr">Sequifi × Parallel</div>
-  <div class="rz k1">
+  <div class="rzt">
     <div>
-      <div class="overline">None of it was random</div>
-      <h2 class="h-sec">We chose indigo.</h2>
-      <p class="lead mt">It feels calm and in control — which matters when the screen is about someone's pay.</p>
-    </div>
-    <div class="rside">
-      <div class="rscreen">
-        <div class="rbar">Payroll <span class="rpill">March</span></div>
-        <div class="rbody"><div class="rtable">
-          <div class="r"><span class="k">Commission</span><span class="v">$1,240.00</span></div>
-          <div class="r"><span class="k">Upfront bonus</span><span class="v">$300.00</span></div>
-          <div class="r"><span class="k">Override</span><span class="v">$85.50</span></div>
-          <div class="r tot"><span class="k">Total</span><span class="v">$1,625.50</span></div>
-        </div></div>
+      <h2 class="h-sec" style="font-size:clamp(30px,3.4vw,50px)">None of it was random.</h2>
+      <div class="vtl">
+        <div class="vnode">
+          <span class="vrail"><span class="vdot"></span><span class="vline"></span></span>
+          <div class="vbody"><div class="vt">We chose indigo, because it feels calm and in control.</div><div class="vd">Which matters when the screen is about someone's pay.</div></div>
+        </div>
+        <div class="vnode">
+          <span class="vrail"><span class="vdot"></span><span class="vline"></span></span>
+          <div class="vbody"><div class="vt">We chose a typeface that works everywhere.</div><div class="vd">Clear in a table full of numbers, still friendly on a welcome screen.</div></div>
+        </div>
+        <div class="vnode">
+          <span class="vrail"><span class="vdot"></span><span class="vline"></span></span>
+          <div class="vbody"><div class="vt">We gave everything room to breathe.</div><div class="vd">Admins are in these screens all day, so nothing feels cramped.</div></div>
+        </div>
       </div>
     </div>
-  </div>
-</section>
-
-<!-- 13 REASON · TYPE -->
-<section class="slide">
-  <div class="rl">Visual language</div><div class="rr">Sequifi × Parallel</div>
-  <div class="rz k2">
-    <div>
-      <div class="overline">None of it was random</div>
-      <h2 class="h-sec">A typeface that works everywhere.</h2>
-      <p class="lead mt">Clear in a table full of numbers, still friendly on a welcome screen.</p>
-    </div>
-    <div class="rside">
-      <div class="rscreen">
-        <div class="rbar">Payroll <span class="rpill">March</span></div>
-        <div class="rbody"><div class="rtable">
-          <div class="r"><span class="k">Commission</span><span class="v">$1,240.00</span></div>
-          <div class="r"><span class="k">Upfront bonus</span><span class="v">$300.00</span></div>
-          <div class="r"><span class="k">Override</span><span class="v">$85.50</span></div>
-          <div class="r tot"><span class="k">Total</span><span class="v">$1,625.50</span></div>
-        </div></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- 14 REASON · SPACE -->
-<section class="slide">
-  <div class="rl">Visual language</div><div class="rr">Sequifi × Parallel</div>
-  <div class="rz k3">
-    <div>
-      <div class="overline">None of it was random</div>
-      <h2 class="h-sec">We gave everything room to breathe.</h2>
-      <p class="lead mt">Admins are in these screens all day, so nothing feels cramped.</p>
-    </div>
-    <div class="rside">
+    <div class="rzt-right">
       <div class="rscreen">
         <div class="rbar">Payroll <span class="rpill">March</span></div>
         <div class="rbody"><div class="rtable">
@@ -628,7 +601,7 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f);
     <p class="lead" style="max-width:58ch">We designed a handful of pieces well, then used them everywhere. That's what makes new screens fast — and what you'll see next.</p>
   </div>
   <div class="chips" style="margin-top:6vh">
-    <span class="chip hot">The card</span><span class="chip">The list row</span><span class="chip">The wizard</span><span class="chip">The side panel</span>
+    <span class="chip">The card</span><span class="chip">The list row</span><span class="chip">The wizard</span><span class="chip">The side panel</span>
   </div>
 </section>
 
