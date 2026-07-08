@@ -56,6 +56,9 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f);
 .ph .pl{font-size:14px;color:var(--mut);max-width:34ch;padding:22px;line-height:1.5}
 .ph .tag{position:absolute;top:15px;left:17px;font-size:12px;color:var(--lab);font-weight:500}
 .ph.shot img{position:absolute;top:0;left:0;width:100%;height:auto;display:block}
+.slide.bleed{padding-bottom:0}
+.slide.bleed .stwrap{gap:3.2vh}
+.slide.bleed .ph{border-bottom-left-radius:0;border-bottom-right-radius:0}
 
 /* COVER */
 #cover{justify-content:center}
@@ -274,7 +277,7 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f);
 .ngrp{display:flex;gap:9px}
 .navbtn{width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:rgba(255,255,255,.6);
   color:var(--ink);cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;
-  transition:border-color .2s,background .2s;backdrop-filter:blur(6px)}
+  transition:border-color .2s,background .2s;backdrop-filter:blur(6px);box-shadow:0 2px 10px -3px rgba(0,0,0,.2)}
 .navbtn:hover{border-color:var(--line2)}
 .navbtn:disabled{opacity:.3;cursor:default}
 
@@ -310,7 +313,7 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f);
 </section>
 
 <!-- 03 BRIEF 1 -->
-<section class="slide">
+<section class="slide bleed">
   <div class="rl">The brief</div><div class="rr">Sequifi × Parallel</div>
   <div class="stwrap">
     <div>
@@ -843,9 +846,10 @@ function render(){
   const pg=document.getElementById('pgno');
   pg.textContent=pad(i+1)+' / '+pad(slides.length);
   pg.style.color=dark?'var(--dmut)':'var(--lab)';
+  pg.style.visibility=slides[i].classList.contains('bleed')?'hidden':'visible';
   document.querySelectorAll('.navbtn').forEach(b=>{
     b.style.color=dark?'#fff':'var(--ink)';
-    b.style.background=dark?'rgba(255,255,255,.08)':'rgba(255,255,255,.6)';
+    b.style.background=dark?'rgba(255,255,255,.08)':'#fff';
     b.style.borderColor=dark?'var(--dline)':'var(--line)';
   });
   document.getElementById('chrome').style.display=slides[i].querySelector('.foot')?'none':'flex';
