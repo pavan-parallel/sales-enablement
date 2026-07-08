@@ -93,7 +93,7 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f);
 .fan{position:absolute;inset:0;pointer-events:none}
 .fan .card{position:absolute;bottom:0;width:52vw;aspect-ratio:8/5;border-radius:16px 16px 0 0;overflow:hidden;
   background:#fff;border:1px solid var(--line);border-bottom:0;box-shadow:0 30px 70px -42px rgba(0,0,0,.45);
-  transform:translateY(48%) rotate(var(--r,0deg));transform-origin:center bottom;
+  transform:translateY(30%) rotate(var(--r,0deg));transform-origin:center bottom;
   transition:transform .44s cubic-bezier(.25,.9,.3,1),box-shadow .38s ease;
   pointer-events:auto;cursor:pointer;will-change:transform}
 .fan .card img{width:100%;height:100%;object-fit:cover;object-position:top left;display:block;pointer-events:none}
@@ -1013,6 +1013,7 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f);
 <script>
 const slides=[...document.querySelectorAll('.slide')];
 let i=0, beat=0;
+let kwStart=()=>{}, kwStop=()=>{};
 const pad=n=>String(n).padStart(2,'0');
 const beatsOf=s=>parseInt(s.dataset.beats||'1',10);
 function applyBeats(){
@@ -1024,6 +1025,7 @@ function render(){
   slides.forEach((s,k)=>s.classList.toggle('active',k===i));
   applyBeats();
   const s=slides[i];
+  if(s.id==='kw')kwStart();else kwStop();
   const dark=s.classList.contains('dark');
   document.getElementById('prog').style.background=dark?'#fff':'var(--ink)';
   const pg=document.getElementById('pgno');
@@ -1084,7 +1086,8 @@ document.addEventListener('keydown',e=>{
   function stop(){if(timer){clearInterval(timer);timer=null;}}
   items.forEach((el,k)=>el.addEventListener('mouseenter',()=>{hovering=true;stop();show(k);}));
   list.addEventListener('mouseleave',()=>{hovering=false;start();});
-  start();
+  kwStart=()=>{hovering=false;show(0);start();};   // always begin at Familiar, then cycle
+  kwStop=()=>{stop();};
 })();
 const m=location.hash.match(/^#(\d+)(?:\.(\d+))?/);
 if(m){i=Math.min(+m[1],slides.length-1);beat=Math.min(+(m[2]||0),beatsOf(slides[i])-1);}
