@@ -458,6 +458,60 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f);
 #comps .wfoot{display:flex;justify-content:space-between;margin-top:30px}
 #comps .wfoot .btn{padding:11px 20px;font-size:14px}
 
+/* TEMPLATES — live app pages */
+#tmpl .lbadge .n{width:26px;height:26px;border-radius:50%;background:var(--indigo-soft);color:var(--indigo);display:inline-flex;align-items:center;justify-content:center;font-size:13px}
+#tmpl .stage{margin-top:3.4vh;display:grid;grid-template-columns:1fr 1fr;gap:2.2vw;align-items:stretch;height:54vh}
+#tmpl .obj{display:flex;flex-direction:column;min-width:0}
+#tmpl .cap{font-size:12.5px;color:var(--lab);font-weight:500;margin-top:14px}
+#tmpl .cap b{color:var(--mut);font-weight:600}
+#tmpl .win{flex:1;min-height:0;display:flex;background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 30px 70px -40px rgba(20,19,24,.42);overflow:hidden}
+#tmpl .rail{width:54px;background:#FAFAFB;border-right:1px solid var(--line);display:flex;flex-direction:column;align-items:center;padding:14px 0;gap:7px;flex:none}
+#tmpl .ric{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;color:#A9AAB2}
+#tmpl .ric.on{background:var(--indigo-soft);color:var(--indigo)}
+#tmpl .ric.bot{margin-top:auto}
+#tmpl .rlogo{width:30px;height:30px;border-radius:8px;background:var(--indigo);margin-bottom:8px;flex:none}
+#tmpl .main{flex:1;display:flex;flex-direction:column;min-width:0}
+#tmpl .topbar{height:50px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 18px;flex:none}
+#tmpl .pgtitle{font-size:15px;font-weight:600;letter-spacing:-.01em}
+#tmpl .tbr{display:flex;align-items:center;gap:11px}
+#tmpl .tsearch{width:140px;border:1px solid #D5D8E0;border-radius:8px;padding:6px 10px;font-size:12px;color:var(--lab);display:flex;gap:7px;align-items:center}
+#tmpl .tav{width:29px;height:29px;border-radius:50%;background:var(--indigo-soft);color:var(--indigo);font-size:11.5px;font-weight:600;display:flex;align-items:center;justify-content:center}
+#tmpl .content{padding:18px;flex:1;min-height:0;overflow:hidden}
+#tmpl .badge{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:3px 11px;border-radius:100px}
+#tmpl .badge .dot{width:6px;height:6px;border-radius:50%}
+#tmpl .badge.win2{background:#E9F7EF;color:#1B824A}#tmpl .badge.win2 .dot{background:#26BB5C}
+#tmpl .btn{font-size:13px;font-weight:600;border-radius:9px;padding:8px 15px;border:1px solid var(--line2);background:#fff;color:var(--ink)}
+#tmpl .btn.pri{background:var(--indigo);border-color:var(--indigo);color:#fff}
+#tmpl .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+#tmpl .stat{border:1px solid var(--line);border-radius:12px;padding:13px 14px}
+#tmpl .stat .sl{font-size:10.5px;color:var(--lab);font-weight:600;text-transform:uppercase;letter-spacing:.03em}
+#tmpl .stat .sv{font-size:22px;font-weight:600;letter-spacing:-.02em;margin-top:7px}
+#tmpl .stat .sd{font-size:11.5px;font-weight:600;margin-top:5px;color:#1B824A}
+#tmpl .chartcard{border:1px solid var(--line);border-radius:12px;padding:15px 16px;margin-top:13px}
+#tmpl .chartcard .ct{font-size:13px;font-weight:600}
+#tmpl .chart{display:flex;align-items:flex-end;gap:9px;height:118px;margin-top:14px}
+#tmpl .chart .bar{flex:1;background:var(--indigo-soft);border-radius:5px 5px 0 0}
+#tmpl .chart .bar.hi{background:var(--indigo)}
+#tmpl .xlab{display:flex;gap:9px;margin-top:8px}
+#tmpl .xlab span{flex:1;text-align:center;font-size:10px;color:var(--lab)}
+#tmpl .rhead{display:flex;align-items:center;gap:14px}
+#tmpl .bigav{width:46px;height:46px;border-radius:50%;background:var(--indigo-soft);color:var(--indigo);font-size:16px;font-weight:600;display:flex;align-items:center;justify-content:center;flex:none}
+#tmpl .rname{font-size:18px;font-weight:600;letter-spacing:-.02em}
+#tmpl .rsub{font-size:12.5px;color:var(--mut);margin-top:2px}
+#tmpl .rhead .badge{margin-left:6px}
+#tmpl .rhead .btn{margin-left:auto}
+#tmpl .tabs{display:flex;gap:22px;border-bottom:1px solid var(--line);margin-top:16px}
+#tmpl .tab{font-size:13px;color:var(--mut);font-weight:500;padding-bottom:10px}
+#tmpl .tab.on{color:var(--ink);font-weight:600;box-shadow:inset 0 -2px 0 var(--indigo)}
+#tmpl .igrid{display:grid;grid-template-columns:1fr 1fr;gap:15px 26px;margin-top:17px}
+#tmpl .info .il{font-size:10.5px;color:var(--lab);font-weight:600;text-transform:uppercase;letter-spacing:.03em}
+#tmpl .info .iv{font-size:14px;margin-top:4px}
+#tmpl .rlist{margin-top:16px;border:1px solid var(--line);border-radius:11px;overflow:hidden}
+#tmpl .rlrow{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;font-size:13px}
+#tmpl .rlrow+.rlrow{border-top:1px solid var(--line)}
+#tmpl .rlrow .m{color:var(--mut)}
+#tmpl .rlrow .a{font-weight:600;font-variant-numeric:tabular-nums;margin-left:auto;margin-right:14px}
+
 /* ACCESSIBILITY */
 .a11y{display:grid;grid-template-columns:42% 1fr;gap:5vw;align-items:center;height:100%}
 .a11y .demo{background:var(--panel2);border-radius:20px;padding:5vh 4vw;display:flex;flex-direction:column;gap:2.4vh}
@@ -1070,16 +1124,88 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f);
   </div>
 </section>
 
-<!-- 21 TEMPLATES -->
-<section class="slide layer">
+<!-- 21 TEMPLATES (live pages) -->
+<section class="slide layer" id="tmpl">
   <div class="rl">Sequoia</div><div class="rr">Sequifi × Parallel</div>
-  <div class="head">
-    <div class="lbadge"><span class="st">05</span> Templates</div>
+  <div>
+    <div class="lbadge"><span class="n">05</span> Templates</div>
     <h2 class="h-sec">Whole pages, ready to fill with real content.</h2>
   </div>
-  <div class="duo">
-    <div class="cell"><div class="ph"><span class="tag">Template</span><span class="pl">Dashboard — the everyday landing page</span></div></div>
-    <div class="cell"><div class="ph soft"><span class="tag">Template</span><span class="pl">Record detail — a person, a location, a position</span></div></div>
+  <div class="stage">
+    <!-- DASHBOARD -->
+    <div class="obj">
+      <div class="win">
+        <div class="rail">
+          <div class="rlogo"></div>
+          <div class="ric on"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></div>
+          <div class="ric"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg></div>
+          <div class="ric"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><path d="M15 8a3 3 0 1 1 0 6M3 20a6 6 0 0 1 12 0M15 14a6 6 0 0 1 6 6"/></svg></div>
+          <div class="ric"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 6H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+          <div class="ric bot"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1l2-1.5-2-3.4-2.3 1a7 7 0 0 0-1.7-1l-.3-2.6h-4l-.3 2.6a7 7 0 0 0-1.7 1l-2.3-1-2 3.4 2 1.5a7 7 0 0 0 0 2l-2 1.5 2 3.4 2.3-1a7 7 0 0 0 1.7 1l.3 2.6h4l.3-2.6a7 7 0 0 0 1.7-1l2.3 1 2-3.4-2-1.5c.06-.33.1-.66.1-1Z"/></svg></div>
+        </div>
+        <div class="main">
+          <div class="topbar"><span class="pgtitle">Dashboard</span>
+            <div class="tbr"><span class="tsearch"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg> Search</span><span class="tav">JD</span></div>
+          </div>
+          <div class="content">
+            <div class="stats">
+              <div class="stat"><div class="sl">Active reps</div><div class="sv">1,284</div><div class="sd">▲ 4.2%</div></div>
+              <div class="stat"><div class="sl">Payroll · Mar</div><div class="sv">$2.4M</div><div class="sd">▲ 1.8%</div></div>
+              <div class="stat"><div class="sl">Pending</div><div class="sv">18</div><div class="sd" style="color:var(--lab)">This week</div></div>
+            </div>
+            <div class="chartcard">
+              <div class="ct">Payroll by month</div>
+              <div class="chart">
+                <div class="bar" style="height:46%"></div><div class="bar" style="height:58%"></div>
+                <div class="bar" style="height:52%"></div><div class="bar" style="height:70%"></div>
+                <div class="bar" style="height:64%"></div><div class="bar" style="height:82%"></div>
+                <div class="bar hi" style="height:100%"></div>
+              </div>
+              <div class="xlab"><span>Sep</span><span>Oct</span><span>Nov</span><span>Dec</span><span>Jan</span><span>Feb</span><span>Mar</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="cap"><b>Dashboard</b> — the everyday landing page</div>
+    </div>
+    <!-- RECORD DETAIL -->
+    <div class="obj">
+      <div class="win">
+        <div class="rail">
+          <div class="rlogo"></div>
+          <div class="ric"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></div>
+          <div class="ric"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg></div>
+          <div class="ric on"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><path d="M15 8a3 3 0 1 1 0 6M3 20a6 6 0 0 1 12 0M15 14a6 6 0 0 1 6 6"/></svg></div>
+          <div class="ric"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 6H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+          <div class="ric bot"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1l2-1.5-2-3.4-2.3 1a7 7 0 0 0-1.7-1l-.3-2.6h-4l-.3 2.6a7 7 0 0 0-1.7 1l-2.3-1-2 3.4 2 1.5a7 7 0 0 0 0 2l-2 1.5 2 3.4 2.3-1a7 7 0 0 0 1.7 1l.3 2.6h4l.3-2.6a7 7 0 0 0 1.7-1l2.3 1 2-3.4-2-1.5c.06-.33.1-.66.1-1Z"/></svg></div>
+        </div>
+        <div class="main">
+          <div class="topbar"><span class="pgtitle">People</span>
+            <div class="tbr"><span class="tsearch"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg> Search</span><span class="tav">JD</span></div>
+          </div>
+          <div class="content">
+            <div class="rhead">
+              <span class="bigav">JD</span>
+              <div><div class="rname">Jordan Diaz</div><div class="rsub">Senior Roofer · Roofing</div></div>
+              <span class="badge win2"><span class="dot"></span>Active</span>
+              <span class="btn">Edit</span>
+            </div>
+            <div class="tabs"><span class="tab on">Overview</span><span class="tab">Pay</span><span class="tab">Documents</span></div>
+            <div class="igrid">
+              <div class="info"><div class="il">Location</div><div class="iv">Austin, TX</div></div>
+              <div class="info"><div class="il">Base pay</div><div class="iv">$4,200.00 / month</div></div>
+              <div class="info"><div class="il">Start date</div><div class="iv">Mar 4, 2024</div></div>
+              <div class="info"><div class="il">Manager</div><div class="iv">Sam Cole</div></div>
+            </div>
+            <div class="rlist">
+              <div class="rlrow"><span class="m">March payout</span><span class="a">$4,200.00</span><span class="badge win2"><span class="dot"></span>Paid</span></div>
+              <div class="rlrow"><span class="m">February payout</span><span class="a">$4,050.00</span><span class="badge win2"><span class="dot"></span>Paid</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="cap"><b>Record detail</b> — a person, a location, a position</div>
+    </div>
   </div>
 </section>
 
