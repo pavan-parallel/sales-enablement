@@ -349,6 +349,54 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f);
 #atoms .tag{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:500;padding:5px 11px;border-radius:8px;background:#F1F2F4;color:#3A3A40;border:1px solid var(--line)}
 #atoms .tag .x{color:var(--lab);font-size:15px;line-height:1;margin-top:-1px}
 
+/* MOLECULES — live components */
+#moles{padding:8vh var(--mx) 6vh;justify-content:flex-start}
+#moles .lbadge .n{width:26px;height:26px;border-radius:50%;background:var(--indigo-soft);color:var(--indigo);display:inline-flex;align-items:center;justify-content:center;font-size:13px}
+#moles .h-sec{font-weight:500;font-size:clamp(26px,2.8vw,42px);line-height:1.06;letter-spacing:-.026em;max-width:24ch}
+#moles .mols{margin-top:2.2vh;display:flex;flex-direction:column}
+#moles .mol{display:grid;grid-template-columns:190px 1fr;gap:44px;align-items:center;padding:2vh 0;border-top:1px solid var(--line)}
+#moles .mol:first-child{border-top:0}
+#moles .mname{font-size:16px;font-weight:600;letter-spacing:-.01em}
+#moles .mname .sub{display:block;font-size:12.5px;color:var(--lab);font-weight:400;margin-top:5px;line-height:1.4;max-width:20ch}
+#moles .set{display:flex;flex-wrap:wrap;gap:34px;align-items:flex-start}
+#moles .ctl{border:1px solid #CDD2DA;border-radius:10px;padding:10px 13px;font-size:14px;background:#fff;display:flex;justify-content:space-between;align-items:center}
+#moles .ctl .hint{color:var(--lab)}
+#moles .bt{font-size:14px;font-weight:600;border-radius:9px;padding:10px 18px;border:1px solid transparent;background:var(--indigo);color:#fff;white-space:nowrap}
+#moles .badge{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;padding:4px 11px;border-radius:100px}
+#moles .badge .dot{width:6px;height:6px;border-radius:50%}
+#moles .badge.win{background:#E7F7EE;color:#157F43}#moles .badge.win .dot{background:#26BB5C}
+#moles .badge.att{background:#FFF3D6;color:#8A5A00}#moles .badge.att .dot{background:#E29A00}
+#moles .fg{width:225px}
+#moles .fg label{font-size:12.5px;font-weight:600;display:block;margin-bottom:7px}
+#moles .fg .req{color:#C22A38}
+#moles .fg .helper{font-size:11.5px;color:var(--mut);margin-top:7px}
+#moles .fg.err .ctl{border-color:#F04452;box-shadow:0 0 0 3px rgba(240,68,82,.13)}
+#moles .fg.err .helper{color:#C22A38}
+#moles .cap{font-size:12px;color:var(--lab);font-weight:500;margin-top:12px}
+#moles .list{border:1px solid var(--line);border-radius:13px;overflow:hidden;width:560px;max-width:100%}
+#moles .lrow{display:flex;align-items:center;gap:14px;padding:13px 16px}
+#moles .lrow+.lrow{border-top:1px solid var(--line)}
+#moles .av{width:36px;height:36px;border-radius:50%;background:var(--indigo-soft);color:var(--indigo);font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center;flex:none}
+#moles .who{flex:1;min-width:0}
+#moles .who .nm{font-size:14px;font-weight:600;letter-spacing:-.01em}
+#moles .who .mt{font-size:12.5px;color:var(--mut);margin-top:2px}
+#moles .acts{display:flex;gap:8px;flex:none}
+#moles .ib{width:30px;height:30px;border-radius:8px;border:1px solid var(--line);background:#fff;color:var(--mut);display:flex;align-items:center;justify-content:center}
+#moles .dd{width:250px}
+#moles .sel{border:1px solid #CDD2DA;border-radius:10px;padding:11px 13px;background:#fff;font-size:14px;display:flex;justify-content:space-between;align-items:center}
+#moles .sel .chev{color:var(--lab);font-size:11px}
+#moles .menu{margin-top:8px;border:1px solid var(--line);border-radius:11px;background:#fff;box-shadow:0 22px 44px -26px rgba(20,19,24,.4);overflow:hidden}
+#moles .opt{padding:8px 13px;font-size:14px;display:flex;justify-content:space-between;align-items:center;color:var(--ink)}
+#moles .opt+.opt{border-top:1px solid var(--line)}
+#moles .opt.hi{background:var(--indigo-soft)}
+#moles .opt.on{color:var(--indigo);font-weight:600}
+#moles .opt .ck{color:var(--indigo)}
+#moles .searchbar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;width:100%;max-width:840px}
+#moles .search{flex:1;min-width:230px;border:1px solid #CDD2DA;border-radius:10px;padding:10px 13px;display:flex;align-items:center;gap:10px;background:#fff;color:var(--lab);font-size:14px}
+#moles .filter{border:1px solid #CDD2DA;border-radius:10px;padding:10px 14px;font-size:14px;display:flex;align-items:center;gap:9px;background:#fff}
+#moles .filter .chev{color:var(--lab);font-size:11px}
+#moles .filter.active{border-color:var(--indigo);background:var(--indigo-soft);color:var(--indigo)}
+
 /* ACCESSIBILITY */
 .a11y{display:grid;grid-template-columns:42% 1fr;gap:5vw;align-items:center;height:100%}
 .a11y .demo{background:var(--panel2);border-radius:20px;padding:5vh 4vw;display:flex;flex-direction:column;gap:2.4vh}
@@ -813,18 +861,84 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f);
   </div>
 </section>
 
-<!-- 19 MOLECULES -->
-<section class="slide">
+<!-- 19 MOLECULES (live components) -->
+<section class="slide" id="moles">
   <div class="rl">Sequoia</div><div class="rr">Sequifi × Parallel</div>
-  <div class="head">
-    <div class="lbadge"><span class="st">03</span> Molecules</div>
+  <div>
+    <div class="lbadge"><span class="n">03</span> Molecules</div>
     <h2 class="h-sec">Atoms combined into the pieces you actually use.</h2>
   </div>
-  <div class="quad wide">
-    <div class="ph"><span class="tag">Molecule</span><span class="pl">Labelled input, with help &amp; error</span></div>
-    <div class="ph"><span class="tag">Molecule</span><span class="pl">List row, with actions</span></div>
-    <div class="ph"><span class="tag">Molecule</span><span class="pl">Dropdown menu</span></div>
-    <div class="ph"><span class="tag">Molecule</span><span class="pl">Search &amp; filter bar</span></div>
+  <div class="mols">
+    <!-- 1 · LABELLED INPUT -->
+    <div class="mol">
+      <div class="mname">Labelled input<span class="sub">Label, help text, error</span></div>
+      <div class="set">
+        <div class="fg">
+          <label>Base pay</label>
+          <div class="ctl"><span>$4,200.00</span><span class="hint">/ month</span></div>
+          <div class="helper">Shown on the rep's offer letter.</div>
+          <div class="cap">With help</div>
+        </div>
+        <div class="fg err">
+          <label>Base pay <span class="req">*</span></label>
+          <div class="ctl"><span>$0.00</span><span class="hint">/ month</span></div>
+          <div class="helper">Enter an amount above zero.</div>
+          <div class="cap">With error</div>
+        </div>
+      </div>
+    </div>
+    <!-- 2 · LIST ROW -->
+    <div class="mol">
+      <div class="mname">List row<span class="sub">Detail, status, actions</span></div>
+      <div class="set">
+        <div class="list">
+          <div class="lrow">
+            <span class="av">JD</span>
+            <div class="who"><div class="nm">Jordan Diaz</div><div class="mt">Roofing · Austin, TX</div></div>
+            <span class="badge win"><span class="dot"></span>Active</span>
+            <div class="acts">
+              <span class="ib"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></span>
+              <span class="ib">⋯</span>
+            </div>
+          </div>
+          <div class="lrow">
+            <span class="av">MR</span>
+            <div class="who"><div class="nm">Mia Reyes</div><div class="mt">Solar · Phoenix, AZ</div></div>
+            <span class="badge att"><span class="dot"></span>Pending</span>
+            <div class="acts">
+              <span class="ib"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></span>
+              <span class="ib">⋯</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- 3 · DROPDOWN MENU -->
+    <div class="mol">
+      <div class="mname">Dropdown menu<span class="sub">Trigger and open list</span></div>
+      <div class="set">
+        <div class="dd">
+          <div class="sel"><span>Roofing</span><span class="chev">▾</span></div>
+          <div class="menu">
+            <div class="opt on"><span>Roofing</span><span class="ck">✓</span></div>
+            <div class="opt hi"><span>Solar</span></div>
+            <div class="opt"><span>Pest control</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- 4 · SEARCH & FILTER BAR -->
+    <div class="mol">
+      <div class="mname">Search &amp; filter<span class="sub">Search, filters, action</span></div>
+      <div class="set">
+        <div class="searchbar">
+          <div class="search"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg> Search positions</div>
+          <div class="filter active">Location <span class="chev">▾</span></div>
+          <div class="filter">Status <span class="chev">▾</span></div>
+          <span class="bt">Add position</span>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
 
