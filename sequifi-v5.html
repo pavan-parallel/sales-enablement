@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sequifi × Parallel — Walkthrough (v5)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Figtree:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FFFFFF;--bg2:#FFFFFF;--soft:#F7F7F7;
+  --ink:#111111;--muted:#66655F;--faint:rgba(17,17,17,.38);
+  --line:rgba(17,17,17,.1);--line2:rgba(17,17,17,.22);--line3:rgba(17,17,17,.45);
+  --green:#0E8A60;--red:#D65151;
+  --sq:#4E61D6;--sq2:#6078EC;--sqbg:#F3F5FF;
+  --fd:'Libre Baskerville',Georgia,serif;
+  --fs:'Figtree',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  --ease:cubic-bezier(.22,.9,.24,1);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden}
+body{background:var(--bg);color:var(--ink);font-family:var(--fs);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+.serif{font-family:var(--fd)}
+
+#prog{position:fixed;top:0;left:0;height:2px;background:var(--ink);width:0;z-index:70;transition:width .5s var(--ease)}
+
+/* ============ SCENES ============ */
+.scene{position:absolute;inset:0;padding:7vh 7vw 12vh;opacity:0;visibility:hidden;pointer-events:none;
+  transition:opacity .5s,visibility 0s .5s}
+.scene.active{opacity:1;visibility:visible;pointer-events:auto;transition:opacity .5s}
+
+.kicker{font-size:12.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:500}
+
+/* headline swap */
+.shead{position:relative;height:19vh;z-index:5}
+.shead .hl{position:absolute;left:0;right:6%;bottom:0;font-family:var(--fd);font-weight:400;
+  font-size:clamp(19px,2.25vw,31px);line-height:1.3;letter-spacing:-.01em;max-width:42ch;
+  opacity:0;transform:translateY(20px);transition:opacity .6s var(--ease),transform .65s var(--ease)}
+.shead .hl.show{opacity:1;transform:none}
+.shead .hl.gone{opacity:0;transform:translateY(-20px)}
+.shead .kicker{position:absolute;top:0;left:0}
+
+.stage{position:absolute;left:7vw;right:7vw;top:calc(7vh + 21vh);bottom:10vh}
+.vlayer{position:absolute;inset:0;opacity:0;visibility:hidden;transition:opacity .55s var(--ease),visibility 0s .55s}
+.vlayer.on{opacity:1;visibility:visible;transition:opacity .55s var(--ease)}
+
+/* ============ PLACEHOLDERS ============ */
+.ph{position:relative;border:1.5px dashed var(--line2);border-radius:16px;overflow:hidden;
+  background:repeating-linear-gradient(-45deg,transparent,transparent 11px,rgba(17,17,17,.024) 11px,rgba(17,17,17,.024) 12px),var(--bg2);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;padding:24px}
+.ph .pl{font-family:var(--fd);font-size:clamp(13px,1.2vw,17px);color:var(--ink);line-height:1.45;max-width:36ch}
+.ph .pt{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);font-weight:600}
+.ph.browser{padding-top:56px}
+.ph.browser::before{content:"";position:absolute;top:0;left:0;right:0;height:34px;background:var(--soft);border-bottom:1px solid var(--line)}
+.ph.browser::after{content:"";position:absolute;top:13px;left:16px;width:8px;height:8px;border-radius:50%;background:var(--line2);
+  box-shadow:14px 0 0 var(--line2),28px 0 0 var(--line2)}
+.ph.img{border-style:solid;border-width:1px;background:var(--bg2);padding:0;box-shadow:0 20px 48px -20px rgba(17,17,17,.18)}
+.ph.img>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top}
+.ph.img.browser>img{top:34px;height:calc(100% - 34px)}
+.ph.img.contain>img{object-fit:contain;object-position:center}
+.ph.img .shotlab{position:absolute;left:10px;bottom:9px;z-index:2;font-size:11px;font-weight:500;color:var(--ink);
+  background:rgba(255,255,255,.92);border:1px solid var(--line);border-radius:100px;padding:3px 11px}
+
+/* ============ PRODUCT MAP ============ */
+.map{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;width:min(880px,74vw)}
+.map .t{position:relative;border:1px solid var(--line2);border-radius:12px;background:var(--bg2);
+  min-height:80px;padding:12px 13px;display:flex;flex-direction:column;justify-content:flex-end;
+  color:var(--faint);transition:background .7s var(--ease),color .6s,border-color .6s,box-shadow .8s}
+.map .t .tn{font-family:var(--fd);font-size:clamp(11px,1vw,14.5px);letter-spacing:-.01em;line-height:1.25}
+.map .t .ts{font-size:9.5px;color:currentColor;opacity:.7;margin-top:3px}
+.map .t.lit{background:var(--ink);border-color:var(--ink);color:var(--bg);box-shadow:0 14px 34px -14px rgba(17,17,17,.4)}
+.map.flood .t{background:var(--ink);border-color:var(--ink);color:var(--bg);
+  transition:background .6s var(--fdel),border-color .6s var(--fdel),color .5s var(--fdel),box-shadow .8s var(--fdel)}
+@keyframes tpulse{0%,100%{background:var(--bg2);color:var(--faint)}50%{background:rgba(17,17,17,.85);color:var(--bg)}}
+.map .t.pulse{animation:tpulse 3.2s var(--ease) infinite}
+.mapwrap{position:relative;padding:26px;width:fit-content}
+.mapwrap .dsframe{position:absolute;inset:0;border:1.5px dashed var(--line3);border-radius:20px;opacity:0;transition:opacity .8s var(--ease)}
+.mapwrap .dsframe span{position:absolute;top:-9px;left:26px;background:var(--bg);padding:0 10px;
+  font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.mapwrap .dsframe.solid{border-style:solid;border-color:var(--ink);opacity:1}
+.mapwrap .dsframe.solid span{color:var(--ink)}
+
+/* ============ COVER ============ */
+#cover{padding:0}
+#cover .cwrap{position:absolute;inset:0;display:flex;align-items:center;padding:0 9vw;gap:6vw}
+#cover .cleft{flex:1.1;min-width:0}
+#cover .ck{font-size:13px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:500;margin-bottom:28px}
+#cover h1{font-family:var(--fd);font-weight:400;font-size:clamp(38px,5.2vw,72px);letter-spacing:-.015em;line-height:1.1}
+#cover .csub{margin-top:24px;font-size:16px;color:var(--muted);line-height:1.65;max-width:44ch}
+#cover .ctags{display:flex;gap:8px;margin-top:32px;flex-wrap:wrap}
+#cover .ctag{font-size:12.5px;font-weight:500;color:rgba(17,17,17,.6);border:1px solid var(--line);border-radius:100px;padding:6px 14px}
+#cover .chint{margin-top:7vh;font-size:13px;color:var(--faint)}
+#cover .chint b{font-weight:500;color:var(--muted)}
+#cover .cmap{flex:1}
+#cover .cmap .map{width:100%}
+#cover .cwrap>*{animation:rise .8s var(--ease) both}
+#cover .cleft{animation-delay:.15s}
+#cover .cmap{animation-delay:.4s;animation-name:risefade}
+@keyframes rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+@keyframes risefade{from{opacity:0;transform:translateY(18px)}to{opacity:.65;transform:none}}
+
+/* ============ S1 · THE SETUP ============ */
+#s1 .v0 .ph{position:absolute;right:0;top:0;bottom:0;width:min(46vw,720px)}
+/* crowd */
+#s1 .v1 .crowd{position:absolute;right:0;top:4%;bottom:10%;width:min(48vw,760px);display:grid;
+  grid-template-columns:repeat(8,1fr);gap:4% 6%;align-content:center}
+#s1 .p{justify-self:center;width:clamp(20px,2vw,30px);aspect-ratio:1/2.1;position:relative;opacity:0;transform:translateY(10px);
+  transition:opacity .5s var(--d),transform .55s var(--ease) var(--d)}
+#s1 .p::before{content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);width:62%;aspect-ratio:1;border-radius:50%;background:var(--ink)}
+#s1 .p::after{content:"";position:absolute;bottom:0;left:0;right:0;top:44%;border-radius:40% 40% 22% 22%;background:var(--ink)}
+#s1 .v1.on .p{opacity:1;transform:none}
+#s1 .v1.on .p.gh{opacity:.13;transition:opacity .8s calc(var(--d) + 1.5s),transform .55s var(--ease) var(--d)}
+#s1 .v1 .crowdcap{position:absolute;right:0;bottom:2%;width:min(48vw,760px);text-align:center;font-size:12px;color:var(--faint);
+  opacity:0;transition:opacity .6s 2.3s}
+#s1 .v1.on .crowdcap{opacity:1}
+/* b2: the work lands on HR */
+#s1 .v2{display:flex;align-items:center;justify-content:flex-end;gap:3vw;padding-right:1vw}
+#s1 .v2 .flowin{display:flex;align-items:center;gap:18px}
+#s1 .v2 .heads{display:grid;grid-template-columns:repeat(2,1fr);gap:12px 16px}
+#s1 .v2 .heads .p{width:22px;opacity:0}
+#s1 .v2.on .heads .p{opacity:1;transform:none}
+#s1 .v2 .arrow{width:min(90px,7vw);height:1.5px;background:var(--line3);position:relative;transform:scaleX(0);transform-origin:left;
+  transition:transform .6s var(--ease) .5s}
+#s1 .v2.on .arrow{transform:scaleX(1)}
+#s1 .v2 .arrow::after{content:"";position:absolute;right:-1px;top:-4px;border:5px solid transparent;border-left-color:var(--line3)}
+#s1 .hrdesk{width:min(340px,27vw);border:1px solid var(--line2);border-radius:16px;background:var(--bg2);padding:18px 20px;
+  box-shadow:0 24px 54px -20px rgba(17,17,17,.18);opacity:0;transform:translateY(16px);transition:opacity .55s .7s,transform .6s var(--ease) .7s}
+#s1 .v2.on .hrdesk{opacity:1;transform:none}
+#s1 .hrdesk .who{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+#s1 .hrdesk .av{width:34px;height:34px;border-radius:50%;background:var(--ink);flex:none}
+#s1 .hrdesk .who b{font-family:var(--fd);font-weight:400;font-size:15px;display:block}
+#s1 .hrdesk .who small{font-size:11px;color:var(--muted)}
+#s1 .hrdesk .task{border-top:1px solid var(--line);padding:9px 2px;font-size:12.5px;color:var(--muted);display:flex;justify-content:space-between;
+  opacity:0;transform:translateX(10px)}
+#s1 .v2.on .task{opacity:1;transform:none;transition:opacity .45s var(--td),transform .5s var(--ease) var(--td)}
+#s1 .hrdesk .task b{color:var(--ink);font-weight:500}
+/* b3: spreadsheets */
+#s1 .v3{display:flex;align-items:center;justify-content:flex-end;padding-right:1vw}
+#s1 .v3 .ghostmap{position:absolute;right:2%;top:50%;transform:translateY(-50%) scale(.92);opacity:0;transition:opacity 1s .8s}
+#s1 .v3.on .ghostmap{opacity:.25}
+#s1 .v3 .arts{position:relative;display:flex;gap:22px;z-index:2}
+#s1 .v3 .art{width:min(200px,16vw);aspect-ratio:3.4/4;border:1px solid var(--line2);border-radius:12px;background:var(--bg2);
+  box-shadow:0 24px 54px -20px rgba(17,17,17,.2);padding:14px;opacity:0;transform:translateY(24px) rotate(var(--r,0deg));
+  transition:opacity .55s var(--ease),transform .65s var(--ease)}
+#s1 .v3.on .art{opacity:1;transform:rotate(var(--r,0deg))}
+#s1 .v3.on .art:nth-child(2){transition-delay:.14s}
+#s1 .v3.on .art:nth-child(3){transition-delay:.28s}
+#s1 .art .al{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);font-weight:600;margin-bottom:10px}
+#s1 .art.sheet .g{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line)}
+#s1 .art.sheet .g i{background:var(--bg2);height:15px}
+#s1 .art.chat .b{border-radius:11px;background:rgba(17,17,17,.07);height:22px;margin-bottom:8px;width:82%}
+#s1 .art.chat .b.me{margin-left:auto;background:rgba(17,17,17,.16);width:64%}
+#s1 .art.form .fl{height:7px;border-radius:3px;background:var(--line2);margin-bottom:11px}
+#s1 .art.form .fl.short{width:58%}
+#s1 .art.form .sig{margin-top:18px;height:30px;border-bottom:1px solid var(--line3);position:relative}
+#s1 .art.form .sig::after{content:"✕";position:absolute;left:4px;bottom:4px;font-size:12px;color:var(--faint)}
+
+/* ============ S2 · THE PROBLEM ============ */
+/* linear pay plan */
+#s2 .v0{display:flex;flex-direction:column;justify-content:center;align-items:center;gap:26px}
+#s2 .plan{display:flex;align-items:flex-start;gap:0}
+#s2 .pstep{width:min(160px,12.5vw);border:1px solid var(--line2);border-radius:13px;background:var(--bg2);padding:13px 14px;
+  box-shadow:0 14px 34px -18px rgba(17,17,17,.16);opacity:0;transform:translateY(16px);
+  transition:opacity .5s var(--pd),transform .55s var(--ease) var(--pd)}
+#s2.b0 .pstep{opacity:1;transform:none}
+#s2 .pstep .pn{font-size:10px;font-weight:600;color:var(--faint);letter-spacing:.04em}
+#s2 .pstep .pt2{font-family:var(--fd);font-size:clamp(13px,1.2vw,16px);margin-top:8px;letter-spacing:-.01em}
+#s2 .parr{align-self:center;width:min(34px,2.6vw);height:1.5px;background:var(--line2);margin:0 4px;position:relative;
+  transform:scaleX(0);transition:transform .4s var(--ease) var(--pd)}
+#s2.b0 .parr{transform:scaleX(1)}
+#s2 .parr::after{content:"";position:absolute;right:-1px;top:-3.5px;border:4.5px solid transparent;border-left-color:var(--line2)}
+/* per-product sub-rows */
+#s2 .prods{margin-top:11px;display:flex;flex-direction:column;gap:5px}
+#s2 .prods i{font-style:normal;display:flex;justify-content:space-between;font-size:10.5px;color:var(--muted);
+  border:1px solid var(--line);border-radius:7px;padding:4px 8px;background:var(--soft);
+  opacity:0;transform:translateY(-6px);transition:opacity .4s var(--qd),transform .45s var(--ease) var(--qd)}
+#s2.b1 .prods i{opacity:1;transform:none}
+#s2 .prods i b{font-weight:600;color:var(--ink)}
+#s2 .plancap{font-size:12.5px;color:var(--muted);opacity:0;transition:opacity .6s .9s}
+#s2.b1 .plancap{opacity:1}
+#s2.b0 .plancap.c0{opacity:1}
+#s2.b1 .plancap.c0{opacity:0;position:absolute}
+#s2 .plancap.c1{opacity:0}
+#s2.b1 .plancap.c1{opacity:1}
+/* b2 legacy */
+#s2 .v2{display:grid;place-items:center}
+#s2 .v2 .ph{width:min(860px,64vw);aspect-ratio:16/9}
+/* b3 brief */
+#s2 .v3{display:flex;align-items:center;justify-content:center;gap:5vw}
+#s2 .asklist{width:min(300px,24vw);display:flex;flex-direction:column;gap:18px}
+#s2 .ask{border-left:2px solid var(--line2);padding:2px 0 2px 16px;opacity:0;transform:translateX(-10px);
+  transition:opacity .5s var(--ad),transform .55s var(--ease) var(--ad),border-color .5s}
+#s2 .v3.on .ask{opacity:1;transform:none;border-color:var(--ink)}
+#s2 .ask .an{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);font-weight:600;margin-bottom:5px}
+#s2 .ask .at{font-family:var(--fd);font-size:clamp(14px,1.35vw,18px);line-height:1.35}
+#s2 .v3 .dsframe{transition-delay:1.5s}
+#s2 .v3.on .dsframe{opacity:1}
+#s2 .v3.on .t[data-mod="Hiring"]{background:var(--ink);border-color:var(--ink);color:var(--bg);transition-delay:.9s}
+#s2 .v3.on .t[data-mod="Positions"]{background:var(--ink);border-color:var(--ink);color:var(--bg);transition-delay:2.1s}
+
+/* ============ S3 · ONBOARDING ============ */
+#s3 .flowzone{position:relative;width:min(1020px,86vw);margin:0 auto;display:flex;flex-direction:column;gap:20px;height:100%;justify-content:center}
+#s3 .steps{display:flex;gap:8px;align-items:flex-start}
+#s3 .ostp{flex:1;border:1px solid var(--line2);border-radius:11px;background:var(--bg2);padding:10px 11px;
+  transition:opacity .5s,border-color .5s,background .5s}
+#s3 .ostp .n{font-size:9.5px;font-weight:600;color:var(--faint)}
+#s3 .ostp .t{font-family:var(--fd);font-size:clamp(10.5px,.95vw,13.5px);line-height:1.2;letter-spacing:-.01em;margin-top:5px;min-height:2.4em}
+#s3 .ostp .rows{display:flex;flex-direction:column;gap:4px;margin-top:8px;max-height:0;overflow:hidden;transition:max-height .7s var(--ease)}
+#s3.b1 .v0 .ostp .rows{max-height:120px}
+#s3 .ostp .rows i{font-style:normal;font-size:10px;color:var(--muted);border:1px solid var(--line);border-radius:6px;padding:3px 7px;background:var(--soft);
+  transition:background .5s,color .5s,border-color .5s}
+/* b2 scatter: highlight product 1 everywhere */
+#s3.b2 .v0 .ostp .rows i.p1{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+#s3.b2 .v0 .ostp .rows i:not(.p1){opacity:.4}
+#s3 .scattercap{align-self:center;font-size:12.5px;color:var(--muted);opacity:0;transition:opacity .5s .6s}
+#s3.b2 .scattercap{opacity:1}
+#s3 .scattercap b{color:var(--ink);font-weight:600}
+/* under-screen */
+#s3 .underph{width:100%;transition:opacity .5s}
+#s3 .underph .ph{width:100%;aspect-ratio:16/4.6}
+/* b3 audit: dim flow, cards appear below (in place of the screenshot) */
+#s3.b3 .v0 .steps{opacity:.3}
+#s3.b3 .scattercap{opacity:.25}
+#s3.b3 .v0 .underph{opacity:0;visibility:hidden}
+#s3 .notes{position:absolute;left:0;right:0;bottom:4%;display:flex;gap:16px;justify-content:center;pointer-events:none;
+  opacity:0;transition:opacity .5s}
+#s3.b3 .notes{opacity:1}
+#s3 .note{width:min(300px,26vw);background:var(--bg2);border:1px solid var(--line2);border-radius:13px;padding:15px 17px;
+  box-shadow:0 20px 48px -18px rgba(17,17,17,.18);transform:translateY(18px);opacity:0}
+#s3.b3 .note{opacity:1;transform:none;transition:opacity .5s var(--nd),transform .6s var(--ease) var(--nd)}
+#s3 .note .nk{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);font-weight:600;margin-bottom:8px}
+#s3 .note .nt{font-family:var(--fd);font-size:clamp(13px,1.1vw,15px);line-height:1.45}
+/* b4 rebuilt flow */
+#s3 .v4 .steps .ostp{opacity:0;transform:translateY(14px)}
+#s3 .v4.on .steps .ostp{opacity:1;transform:none;transition:opacity .5s var(--sd),transform .55s var(--ease) var(--sd),border-color .5s,background .5s}
+#s3 .v4 .ostp.merge{flex:2.2;border-color:var(--ink);background:var(--soft)}
+#s3 .ptabs{display:flex;gap:5px;margin-top:8px}
+#s3 .ptabs i{font-style:normal;font-size:9.5px;font-weight:600;border:1px solid var(--line2);border-radius:100px;padding:2px 9px;color:var(--muted)}
+#s3 .ptabs i.a{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+#s3 .inrows{display:flex;gap:5px;margin-top:7px}
+#s3 .inrows i{font-style:normal;flex:1;font-size:9.5px;color:var(--muted);border:1px solid var(--line);border-radius:6px;padding:4px 6px;background:var(--bg2);text-align:center}
+#s3 .count{position:absolute;right:0;top:-8.5vh;display:flex;align-items:baseline;gap:12px;font-family:var(--fd)}
+#s3 .count .c8{font-size:clamp(28px,3.2vw,44px);color:var(--faint);position:relative}
+#s3 .count .c8::after{content:"";position:absolute;left:-6%;right:-6%;top:52%;height:1.5px;background:var(--red);transform:scaleX(0);transform-origin:left;
+  transition:transform .5s var(--ease) .9s}
+#s3 .v4.on .count .c8::after{transform:scaleX(1)}
+#s3 .count .ar{font-size:15px;color:var(--muted)}
+#s3 .count .c6{font-size:clamp(36px,4.2vw,58px);letter-spacing:-.01em}
+#s3 .count .cl{font-size:12px;color:var(--muted);font-family:var(--fs)}
+/* b5 forgiving */
+#s3 .v5{display:flex;align-items:center;justify-content:center;gap:3.5vw}
+#s3 .v5 .ph{width:min(760px,56vw);aspect-ratio:16/10}
+#s3 .badges{display:flex;flex-direction:column;gap:12px}
+#s3 .badge{font-size:13px;font-weight:500;color:var(--ink);border:1px solid var(--line2);border-radius:100px;background:var(--bg2);
+  padding:10px 18px;opacity:0;transform:translateX(18px);transition:opacity .5s var(--bd),transform .55s var(--ease) var(--bd);
+  box-shadow:0 10px 26px -14px rgba(17,17,17,.12);white-space:nowrap}
+#s3 .v5.on .badge{opacity:1;transform:none}
+
+/* ============ S4 · THE DESIGN SYSTEM ============ */
+#s4 .v0{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px}
+#s4 .kws{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;max-width:min(720px,60vw)}
+#s4 .kw{font-family:var(--fd);font-size:clamp(16px,1.8vw,24px);border:1px solid var(--line2);border-radius:100px;padding:12px 26px;
+  background:var(--bg2);opacity:0;transform:translateY(14px) scale(.94);
+  transition:opacity .5s var(--kd),transform .55s var(--ease) var(--kd)}
+#s4 .v0.on .kw{opacity:1;transform:none}
+#s4 .kwcap{font-size:12.5px;color:var(--muted);opacity:0;transition:opacity .6s 1.4s}
+#s4 .v0.on .kwcap{opacity:1}
+#s4 .v1{display:flex;align-items:center;justify-content:center;gap:3vw}
+#s4 .dir{position:relative;opacity:0;transform:translateY(20px);transition:opacity .55s var(--ease),transform .6s var(--ease)}
+#s4 .v1.on .dir{opacity:1;transform:none}
+#s4 .v1.on .dir.d2{transition-delay:.16s}
+#s4 .dir .ph{width:min(430px,33vw);aspect-ratio:4/2.9}
+#s4 .dname{margin-top:14px;display:flex;align-items:center;justify-content:space-between;font-family:var(--fd);font-size:17px}
+#s4 .dname small{font-family:var(--fs);font-size:11.5px;color:var(--muted);display:block;margin-top:3px}
+#s4 .dir.chosen .ph{border-style:solid;border-color:var(--ink);box-shadow:0 0 0 1px var(--ink),0 26px 60px -22px rgba(17,17,17,.25)}
+#s4 .pick{font-family:var(--fs);font-size:11px;font-weight:600;color:#fff;background:var(--green);border-radius:100px;padding:4px 11px;
+  opacity:0;transform:scale(.7);transition:opacity .4s 1s,transform .45s var(--ease) 1s}
+#s4 .v1.on .chosen .pick{opacity:1;transform:none}
+#s4 .v2{display:flex;align-items:stretch;justify-content:center;gap:2.5vw}
+#s4 .col{display:flex;flex-direction:column;gap:14px;opacity:0;transform:translateY(18px);
+  transition:opacity .55s var(--cd),transform .6s var(--ease) var(--cd)}
+#s4 .v2.on .col{opacity:1;transform:none}
+#s4 .spec{width:min(250px,19vw);border:1px solid var(--line2);border-radius:14px;background:var(--bg2);padding:20px;flex:1;
+  display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 16px 40px -18px rgba(17,17,17,.12)}
+#s4 .spec .aa{font-family:var(--fs);font-weight:600;font-size:clamp(52px,5.4vw,84px);letter-spacing:-.03em;line-height:1}
+#s4 .spec .sl{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:600}
+#s4 .spec .sw{display:flex;gap:6px;margin-top:14px}
+#s4 .spec .sw i{width:26px;height:26px;border-radius:8px;border:1px solid var(--line)}
+#s4 .comps{width:min(480px,37vw);border:1px solid var(--line2);border-radius:14px;background:var(--bg2);padding:18px;flex:1;
+  display:flex;flex-direction:column;gap:13px;box-shadow:0 16px 40px -18px rgba(17,17,17,.12)}
+#s4 .comps .cl{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:600}
+#s4 .comps .row{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
+#s4 .cbtn{font-size:12px;font-weight:600;border-radius:9px;padding:8px 15px;background:var(--sq);color:#fff}
+#s4 .cbtn.sec{background:transparent;color:var(--ink);border:1px solid var(--line2)}
+#s4 .cinput{flex:1;min-width:120px;border:1px solid var(--line2);border-radius:9px;padding:8px 11px;font-size:12px;color:var(--faint)}
+#s4 .ctog{width:34px;height:20px;border-radius:100px;background:var(--sq);position:relative}
+#s4 .ctog::after{content:"";position:absolute;top:3px;right:3px;width:14px;height:14px;border-radius:50%;background:#fff}
+#s4 .ctr{border:1px solid var(--line);border-radius:9px;overflow:hidden}
+#s4 .ctr .h{background:var(--soft);height:22px;border-bottom:1px solid var(--line)}
+#s4 .ctr .r{height:24px;border-top:1px solid var(--line)}
+#s4 .ctr .r:first-of-type{border-top:0}
+#s4 .states{width:min(250px,19vw);display:flex;flex-direction:column;gap:10px;flex:1;justify-content:center}
+#s4 .st{border:1px solid var(--line2);border-radius:12px;background:var(--bg2);padding:11px 13px;display:flex;align-items:center;gap:10px;
+  box-shadow:0 10px 26px -14px rgba(17,17,17,.1)}
+#s4 .st .sn{font-size:10px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;color:var(--muted);width:58px;flex:none}
+#s4 .st .bar{flex:1;height:8px;border-radius:4px;background:rgba(17,17,17,.1)}
+#s4 .st.load .bar{background:linear-gradient(90deg,rgba(17,17,17,.07),rgba(17,17,17,.18),rgba(17,17,17,.07));background-size:200% 100%;
+  animation:sh 1.6s linear infinite}
+@keyframes sh{from{background-position:200% 0}to{background-position:-200% 0}}
+#s4 .st.empty .bar{background:transparent;border:1px dashed var(--line2)}
+#s4 .st.err{border-color:rgba(214,81,81,.55)}
+#s4 .st.err .bar{background:rgba(214,81,81,.22)}
+#s4 .st.err .sn{color:var(--red)}
+#s4 .st.dis{opacity:.45}
+
+/* ============ S5 · THE MODULE ============ */
+#s5 .v0{display:flex;align-items:center;justify-content:center;gap:3vw}
+#s5 .shotw{opacity:0;transform:translateY(20px);transition:opacity .55s var(--ease),transform .6s var(--ease)}
+#s5 .v0.on .shotw{opacity:1;transform:none}
+#s5 .v0.on .shotw.s2{transition-delay:.16s}
+#s5 .shotw .ph{width:min(460px,36vw);aspect-ratio:16/10.5}
+#s5 .shotw .cap{margin-top:12px;font-size:12px;color:var(--muted);text-align:center}
+#s5 .marrow{width:min(70px,5vw);height:1.5px;background:var(--ink);position:relative;transform:scaleX(0);transform-origin:left;
+  transition:transform .6s var(--ease) .7s}
+#s5 .v0.on .marrow{transform:scaleX(1)}
+#s5 .marrow::after{content:"";position:absolute;right:-1px;top:-4px;border:5px solid transparent;border-left-color:var(--ink)}
+
+/* ============ S6 · THE EXTENSION ============ */
+#s6 .vlayer{display:flex;align-items:center;justify-content:center}
+#s6 .mapwrap{transition:transform 1.2s var(--ease)}
+#s6.b1 .mapwrap{transform:scale(1.04)}
+#s6 .t[data-mod="Hiring"],#s6 .t[data-mod="Positions"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+#s6 .t[data-mod="Positions"]::after{content:"";position:absolute;inset:9px 9px 32px;border-radius:6px;border:1px dashed rgba(255,255,255,.5)}
+
+/* ============ S7 · THE REBUILD ============ */
+#s7 .v0{display:flex;flex-wrap:wrap;gap:14px;align-content:center;justify-content:center}
+#s7 .v0 .ph{width:min(238px,17.5vw);aspect-ratio:16/9.6;padding-top:44px;opacity:0;transform:translateY(20px);
+  transition:opacity .5s var(--md),transform .55s var(--ease) var(--md)}
+#s7 .v0.on .ph{opacity:1;transform:none}
+
+/* ============ END ============ */
+#end{padding:0}
+#end .ewrap{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:0 10vw}
+#end .emap{transform:scale(.5);margin:-7vh 0 -5vh}
+#end .emap .t{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+#end h2{font-family:var(--fd);font-weight:400;font-size:clamp(28px,3.6vw,52px);letter-spacing:-.015em;line-height:1.18;max-width:24ch}
+#end .acts{margin-top:5vh;display:flex;align-items:center;gap:22px}
+#end .btnk{font-size:13.5px;font-weight:500;color:var(--bg);background:var(--ink);border:0;border-radius:100px;padding:13px 24px;cursor:pointer;
+  text-decoration:none;transition:box-shadow .3s,transform .3s var(--ease)}
+#end .btnk:hover{transform:translateY(-1px);box-shadow:0 14px 34px -12px rgba(17,17,17,.4)}
+#end .acts a.txt{font-size:13.5px;color:var(--muted);text-decoration:none;border-bottom:1px solid var(--line2);padding-bottom:2px;transition:color .2s,border-color .2s}
+#end .acts a.txt:hover{color:var(--ink);border-color:var(--ink)}
+#end .ewrap>*{opacity:0;transform:translateY(16px);transition:opacity .6s var(--ease),transform .7s var(--ease)}
+#end.active .ewrap>*{opacity:1;transform:none}
+#end.active .ewrap .emap{transition-delay:.1s;transform:scale(.5)}
+#end.active .ewrap h2{transition-delay:.28s}
+#end.active .ewrap .acts{transition-delay:.46s}
+
+/* ============ CHROME ============ */
+#chrome{position:fixed;bottom:0;left:0;right:0;display:flex;justify-content:space-between;align-items:center;padding:16px 26px;z-index:60}
+.navbtn{font-family:var(--fs);font-size:13px;font-weight:500;color:var(--muted);background:var(--bg2);border:1px solid var(--line);border-radius:100px;
+  padding:9px 16px;cursor:pointer;transition:color .2s,border-color .2s}
+.navbtn:hover{color:var(--ink);border-color:var(--line3)}
+.navbtn:disabled{opacity:.35;cursor:default}
+.navgrp{display:flex;gap:9px;align-items:center;min-width:210px}
+.navgrp.right{justify-content:flex-end}
+#center{display:flex;flex-direction:column;align-items:center;gap:8px;flex:1}
+#beats{display:flex;gap:6px;align-items:center}
+#beats .bd{width:7px;height:7px;border-radius:50%;background:var(--line);cursor:pointer;transition:background .3s,transform .3s}
+#beats .bd.done{background:var(--line3)}
+#beats .bd.now{background:var(--ink);transform:scale(1.4)}
+#scenelab{font-size:12px;color:var(--faint);letter-spacing:.02em}
+#brand{font-size:12px;color:var(--faint)}
+
+@media (pointer:fine){
+  *{cursor:none!important}
+  #cursor{position:fixed;left:0;top:0;width:10px;height:10px;border-radius:50%;background:#fff;mix-blend-mode:difference;
+    pointer-events:none;z-index:2000;opacity:0;transform:translate(-50%,-50%);
+    transition:width .3s var(--ease),height .3s var(--ease),opacity .25s}
+  #cursor.on{opacity:1}
+  #cursor.hot{width:34px;height:34px}
+}
+@media (prefers-reduced-motion:reduce){*{transition-duration:.001s!important;animation-duration:.001s!important;transition-delay:0s!important;animation-delay:0s!important}}
+</style>
+</head>
+<body>
+
+<div id="prog"></div>
+
+<!-- ================= COVER ================= -->
+<section class="scene active" id="cover" data-beats="1" data-ch="">
+  <div class="cwrap">
+    <div class="cleft">
+      <p class="ck">Parallel · Case study</p>
+      <h1>Sequifi × Parallel</h1>
+      <p class="csub">HR software for industries that hire door to door, redesigned from the language up.</p>
+      <div class="ctags"><span class="ctag">HR Tech</span><span class="ctag">B2B SaaS</span><span class="ctag">Design System</span><span class="ctag">Product Redesign</span></div>
+      <p class="chint"><b>→</b> or click to begin</p>
+    </div>
+    <div class="cmap"><div class="map" data-map="cover"></div></div>
+  </div>
+</section>
+
+<!-- ================= S1 · THE SETUP ================= -->
+<section class="scene" id="s1" data-beats="4" data-ch="01 · The setup">
+  <div class="shead">
+    <p class="kicker">Chapter 01 · The setup</p>
+    <div class="hl" data-b="0">Sequifi makes HR and payroll software for home-services companies. Roofing, pest control, solar, lawn care.</div>
+    <div class="hl" data-b="1">These companies hire door-to-door sales crews. People join in batches, and most don't stay long.</div>
+    <div class="hl" data-b="2">Every rep is paid on commission. So every hire means building a pay plan from scratch. That work lands on HR.</div>
+    <div class="hl" data-b="3">Sequifi had the customers. The problem was usage: HR still did most of this work in spreadsheets. To grow, the product had to be easier than the spreadsheet.</div>
+  </div>
+  <div class="stage">
+    <div class="vlayer v0" data-vb="0">
+      <div class="ph"><div class="pl">Wide industry photo. A roofing or solar crew at work, documentary style</div><div class="pt">Placeholder · full-bleed photo</div></div>
+    </div>
+    <div class="vlayer v1" data-vb="1">
+      <div class="crowd" id="crowd"></div>
+      <div class="crowdcap">hired in batches · many gone within the season</div>
+    </div>
+    <div class="vlayer v2" data-vb="2">
+      <div class="flowin">
+        <div class="heads">
+          <div class="p" style="--d:.1s"></div><div class="p" style="--d:.2s"></div>
+          <div class="p" style="--d:.3s"></div><div class="p" style="--d:.4s"></div>
+        </div>
+        <div class="arrow"></div>
+        <div class="hrdesk">
+          <div class="who"><span class="av"></span><span><b>HR admin</b><small>the user, throughout</small></span></div>
+          <div class="task" style="--td:.9s"><span>New hire pay plan</span><b>× every hire</b></div>
+          <div class="task" style="--td:1.05s"><span>Commission setup, per product</span><b>× every product</b></div>
+          <div class="task" style="--td:1.2s"><span>Offer letter &amp; documents</span><b>× every batch</b></div>
+        </div>
+      </div>
+    </div>
+    <div class="vlayer v3" data-vb="3">
+      <div class="ghostmap"><div class="map" data-map="s1" style="width:min(560px,44vw)"></div></div>
+      <div class="arts">
+        <div class="art sheet" style="--r:-2deg"><div class="al">Spreadsheet</div>
+          <div class="g"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div>
+        <div class="art chat" style="--r:1.5deg"><div class="al">Text thread</div>
+          <div class="b"></div><div class="b me"></div><div class="b"></div><div class="b me"></div></div>
+        <div class="art form" style="--r:-1deg"><div class="al">Paper form</div>
+          <div class="fl"></div><div class="fl"></div><div class="fl short"></div><div class="sig"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= S2 · THE PROBLEM ================= -->
+<section class="scene" id="s2" data-beats="4" data-ch="02 · The problem">
+  <div class="shead">
+    <p class="kicker">Chapter 02 · The problem</p>
+    <div class="hl" data-b="0">A rep's pay plan has five parts, set up in order. Wages, commission, upfront bonus, overrides, milestones.</div>
+    <div class="hl" data-b="1">Commission isn't one number. Every product has its own rate. The same goes for upfronts and overrides.</div>
+    <div class="hl" data-b="2">And the product itself had aged. Years of new features, with no design language holding them together.</div>
+    <div class="hl" data-b="3">So Sequifi came to Parallel with three asks. Make onboarding simple. Build a design system. Redesign one module to show the way.</div>
+  </div>
+  <div class="stage">
+    <div class="vlayer v0" data-vb="0-1">
+      <div class="plan">
+        <div class="pstep" style="--pd:.05s"><span class="pn">1</span><div class="pt2">Wages</div></div>
+        <div class="parr" style="--pd:.2s"></div>
+        <div class="pstep" style="--pd:.3s"><span class="pn">2</span><div class="pt2">Commission</div>
+          <div class="prods"><i style="--qd:.1s"><span>Product 1</span><b>rate</b></i><i style="--qd:.2s"><span>Product 2</span><b>rate</b></i><i style="--qd:.3s"><span>Product 3</span><b>rate</b></i></div></div>
+        <div class="parr" style="--pd:.45s"></div>
+        <div class="pstep" style="--pd:.55s"><span class="pn">3</span><div class="pt2">Upfront bonus</div>
+          <div class="prods"><i style="--qd:.25s"><span>Product 1</span><b>rate</b></i><i style="--qd:.35s"><span>Product 2</span><b>rate</b></i><i style="--qd:.45s"><span>Product 3</span><b>rate</b></i></div></div>
+        <div class="parr" style="--pd:.7s"></div>
+        <div class="pstep" style="--pd:.8s"><span class="pn">4</span><div class="pt2">Overrides</div>
+          <div class="prods"><i style="--qd:.4s"><span>Product 1</span><b>rate</b></i><i style="--qd:.5s"><span>Product 2</span><b>rate</b></i><i style="--qd:.6s"><span>Product 3</span><b>rate</b></i></div></div>
+        <div class="parr" style="--pd:.95s"></div>
+        <div class="pstep" style="--pd:1.05s"><span class="pn">5</span><div class="pt2">Milestones</div></div>
+      </div>
+      <div class="plancap c0">five parts, in order, for every single hire</div>
+      <div class="plancap c1">every product, its own rate, at every step</div>
+    </div>
+    <div class="vlayer v2" data-vb="2">
+      <div class="ph browser"><div class="pl">The legacy product. A real screen, dense and dated, shown honestly</div><div class="pt">Placeholder · legacy screenshot</div></div>
+    </div>
+    <div class="vlayer v3" data-vb="3">
+      <div class="asklist">
+        <div class="ask" style="--ad:.9s"><div class="an">01</div><div class="at">Make onboarding simple</div></div>
+        <div class="ask" style="--ad:1.5s"><div class="an">02</div><div class="at">Build a design system</div></div>
+        <div class="ask" style="--ad:2.1s"><div class="an">03</div><div class="at">Redesign one module to show the way</div></div>
+      </div>
+      <div class="mapwrap">
+        <div class="dsframe"><span>the design system</span></div>
+        <div class="map" data-map="s2" style="width:min(640px,50vw)"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= S3 · ONBOARDING ================= -->
+<section class="scene" id="s3" data-beats="6" data-ch="03 · Onboarding">
+  <div class="shead">
+    <p class="kicker">Chapter 03 · Onboarding</p>
+    <div class="hl" data-b="0">Onboarding one worker took eight steps.</div>
+    <div class="hl" data-b="1">Three of those steps were about pay. Each one listed every product the rep could sell.</div>
+    <div class="hl" data-b="2">Which meant one product's pay lived in three different places. Nobody could see it in one go.</div>
+    <div class="hl" data-b="3">The audit turned up more. Small things, but HR hit them every single day.</div>
+    <div class="hl" data-b="4">We regrouped the flow by product. One page now holds everything a product pays. Eight steps became six.</div>
+    <div class="hl" data-b="5">And we made it forgiving. Drafts save. Steps can wait. Errors point at the exact field.</div>
+  </div>
+  <div class="stage">
+    <!-- beats 0–3: old flow -->
+    <div class="vlayer v0" data-vb="0-3">
+      <div class="flowzone">
+        <div class="steps">
+          <div class="ostp"><span class="n">1</span><div class="t">Personal details</div></div>
+          <div class="ostp"><span class="n">2</span><div class="t">Organisation</div></div>
+          <div class="ostp"><span class="n">3</span><div class="t">Wages</div></div>
+          <div class="ostp pay"><span class="n">4</span><div class="t">Commission</div>
+            <div class="rows"><i class="p1">Product 1</i><i>Product 2</i><i>Product 3</i></div></div>
+          <div class="ostp pay"><span class="n">5</span><div class="t">Upfront</div>
+            <div class="rows"><i class="p1">Product 1</i><i>Product 2</i><i>Product 3</i></div></div>
+          <div class="ostp pay"><span class="n">6</span><div class="t">Overrides</div>
+            <div class="rows"><i class="p1">Product 1</i><i>Product 2</i><i>Product 3</i></div></div>
+          <div class="ostp"><span class="n">7</span><div class="t">Agreement</div></div>
+          <div class="ostp"><span class="n">8</span><div class="t">Review</div></div>
+        </div>
+        <div class="scattercap"><b>Product 1's pay:</b> three steps apart, never on one screen</div>
+        <div class="underph"><div class="ph img" style="aspect-ratio:16/5"><img src="assets/sequifi/old-commission.jpg" alt="The old Commission step"><span class="shotlab">The old Commission step · every product inside one step</span></div></div>
+      </div>
+      <div class="notes">
+        <div class="note" style="--nd:.05s"><div class="nk">From the audit</div><div class="nt">The step tabs look clickable. They aren't. Only Back and Continue work.</div></div>
+        <div class="note" style="--nd:.2s"><div class="nk">From the audit</div><div class="nt">Errors show as a toast. No field is ever marked.</div></div>
+        <div class="note" style="--nd:.35s"><div class="nk">From the audit</div><div class="nt">Leave the flow, and it starts you from step one again.</div></div>
+      </div>
+    </div>
+    <!-- beat 4: rebuilt flow -->
+    <div class="vlayer v4" data-vb="4">
+      <div class="flowzone">
+        <div class="count"><span class="c8">8</span><span class="ar">→</span><span class="c6">6</span><span class="cl">steps</span></div>
+        <div class="steps">
+          <div class="ostp" style="--sd:.05s"><span class="n">1</span><div class="t">Personal details</div></div>
+          <div class="ostp" style="--sd:.15s"><span class="n">2</span><div class="t">Organisation</div></div>
+          <div class="ostp" style="--sd:.25s"><span class="n">3</span><div class="t">Wages</div></div>
+          <div class="ostp merge" style="--sd:.35s"><span class="n">4</span><div class="t">Product payment</div>
+            <div class="ptabs"><i class="a">Product 1</i><i>Product 2</i><i>Product 3</i></div>
+            <div class="inrows"><i>Commission</i><i>Upfront</i><i>Overrides</i></div></div>
+          <div class="ostp" style="--sd:.45s"><span class="n">5</span><div class="t">Agreement</div></div>
+          <div class="ostp" style="--sd:.55s"><span class="n">6</span><div class="t">Review</div></div>
+        </div>
+        <div class="underph"><div class="ph img" style="aspect-ratio:16/5"><img src="assets/sequifi/product-payment.jpg" alt="The rebuilt Product payment page"><span class="shotlab">The rebuilt step · one product's commission, upfront &amp; overrides together</span></div></div>
+      </div>
+    </div>
+    <!-- beat 5: forgiving -->
+    <div class="vlayer v5" data-vb="5">
+      <div class="ph img contain browser" style="width:min(760px,56vw);aspect-ratio:16/10"><img src="assets/sequifi/product-payment.jpg" alt="The rebuilt Product payment page, whole page"><span class="shotlab">Product payments · Pest Control, the whole page</span></div>
+      <div class="badges">
+        <div class="badge" style="--bd:.4s">Drafts save</div>
+        <div class="badge" style="--bd:.55s">Jump to any step</div>
+        <div class="badge" style="--bd:.7s">Skip and come back</div>
+        <div class="badge" style="--bd:.85s">Errors point at the field</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= S4 · THE DESIGN SYSTEM ================= -->
+<section class="scene" id="s4" data-beats="3" data-ch="04 · The design system">
+  <div class="shead">
+    <p class="kicker">Chapter 04 · The design system</p>
+    <div class="hl" data-b="0">The design system had a clear brief, in Sequifi's own words. Familiar, trustworthy, organized, clean.</div>
+    <div class="hl" data-b="1">We built two complete directions. Sequifi chose Opscape: clear, functional, made for operations.</div>
+    <div class="hl" data-b="2">Then the system itself. Hanken Grotesk for type, a restrained palette, and every component in every state a screen can reach.</div>
+  </div>
+  <div class="stage">
+    <div class="vlayer v0" data-vb="0">
+      <div class="kws">
+        <span class="kw" style="--kd:.05s">Familiar</span>
+        <span class="kw" style="--kd:.15s">Approachable</span>
+        <span class="kw" style="--kd:.25s">Trustworthy</span>
+        <span class="kw" style="--kd:.35s">Control</span>
+        <span class="kw" style="--kd:.45s">Order</span>
+        <span class="kw" style="--kd:.55s">Organized</span>
+        <span class="kw" style="--kd:.65s">Efficient</span>
+        <span class="kw" style="--kd:.75s">Clean</span>
+      </div>
+      <div class="kwcap">the keywords that guided the direction, for reps, admins, hiring managers and technicians alike</div>
+    </div>
+    <div class="vlayer v1" data-vb="1">
+      <div class="dir d1">
+        <div class="ph"><div class="pl">Direction one, Gridlock. The exploration board</div><div class="pt">Placeholder · Figma board</div></div>
+        <div class="dname"><span>Gridlock<small>order, structure &amp; fluidity</small></span></div>
+      </div>
+      <div class="dir d2 chosen">
+        <div class="ph"><div class="pl">Direction two, Opscape. The exploration board</div><div class="pt">Placeholder · Figma board</div></div>
+        <div class="dname"><span>Opscape<small>clear &amp; functional, for operations</small></span><span class="pick">chosen</span></div>
+      </div>
+    </div>
+    <div class="vlayer v2" data-vb="2">
+      <div class="col" style="--cd:.05s">
+        <div class="spec">
+          <div><div class="aa">Aa</div><div class="sw"><i style="background:var(--sq)"></i><i style="background:var(--sq2)"></i><i style="background:#E4E9FA"></i><i style="background:#F5F5F5"></i><i style="background:#111"></i></div></div>
+          <div class="sl">Hanken Grotesk · palette</div>
+        </div>
+      </div>
+      <div class="col" style="--cd:.2s">
+        <div class="comps">
+          <div class="cl">Components</div>
+          <div class="row"><span class="cbtn">Primary</span><span class="cbtn sec">Secondary</span><span class="ctog"></span></div>
+          <div class="row"><span class="cinput">Text field</span><span class="cinput" style="flex:.6">Select</span></div>
+          <div class="ctr"><div class="h"></div><div class="r"></div><div class="r"></div><div class="r"></div></div>
+        </div>
+      </div>
+      <div class="col" style="--cd:.35s">
+        <div class="states">
+          <div class="st load"><span class="sn">Loading</span><span class="bar"></span></div>
+          <div class="st empty"><span class="sn">Empty</span><span class="bar"></span></div>
+          <div class="st err"><span class="sn">Error</span><span class="bar"></span></div>
+          <div class="st dis"><span class="sn">Disabled</span><span class="bar"></span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= S5 · THE MODULE ================= -->
+<section class="scene" id="s5" data-beats="1" data-ch="05 · The module">
+  <div class="shead">
+    <p class="kicker">Chapter 05 · The module</p>
+    <div class="hl" data-b="0">The third ask: one module, redesigned in the new language, to prove it on the real product.</div>
+  </div>
+  <div class="stage">
+    <div class="vlayer v0" data-vb="0" style="display:flex;align-items:center;justify-content:center;gap:3vw">
+      <div class="shotw s1">
+        <div class="ph browser"><div class="pl">The module before. A real screen from the old product</div><div class="pt">Placeholder · screenshot</div></div>
+        <div class="cap">before</div>
+      </div>
+      <div class="marrow"></div>
+      <div class="shotw s2">
+        <div class="ph img browser"><img src="assets/sequifi/positions.jpg" alt="Positions module in the new design system"><span class="shotlab">Positions · rebuilt in the system</span></div>
+        <div class="cap">after, in the new system</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= S6 · THE EXTENSION ================= -->
+<section class="scene" id="s6" data-beats="2" data-ch="06 · The extension">
+  <div class="shead">
+    <p class="kicker">Chapter 06 · The extension</p>
+    <div class="hl" data-b="0">That was the brief, delivered. New onboarding, a design system, and the module that showed the way. The engagement ended there.</div>
+    <div class="hl" data-b="1">Then Sequifi came back: extend the engagement, and apply the design system to the entire platform.</div>
+  </div>
+  <div class="stage">
+    <div class="vlayer on" data-vb="0-1">
+      <div class="mapwrap">
+        <div class="dsframe solid"><span>the design system</span></div>
+        <div class="map" data-map="s6" style="width:min(720px,58vw)"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= S7 · THE REBUILD ================= -->
+<section class="scene" id="s7" data-beats="1" data-ch="07 · The rebuild">
+  <div class="shead">
+    <p class="kicker">Chapter 07 · The rebuild</p>
+    <div class="hl" data-b="0">Fifteen modules, one language. Everything fell into place.</div>
+  </div>
+  <div class="stage">
+    <div class="vlayer v0" data-vb="0">
+      <div class="ph img browser" style="--md:.05s"><img src="assets/sequifi/positions.jpg" alt="Positions"><span class="shotlab">Positions</span></div>
+      <div class="ph img browser" style="--md:.15s"><img src="assets/sequifi/wizard.jpg" alt="Position setup"><span class="shotlab">Position setup</span></div>
+      <div class="ph img browser" style="--md:.25s"><img src="assets/sequifi/orgchart.jpg" alt="Org chart"><span class="shotlab">Org chart</span></div>
+      <div class="ph img browser" style="--md:.35s"><img src="assets/sequifi/hiring.jpg" alt="Hiring"><span class="shotlab">Hiring</span></div>
+      <div class="ph img browser" style="--md:.45s"><img src="assets/sequifi/locations.jpg" alt="Locations"><span class="shotlab">Locations</span></div>
+      <div class="ph img browser" style="--md:.55s"><img src="assets/sequifi/locations-map.jpg" alt="Locations map"><span class="shotlab">Locations · map</span></div>
+      <div class="ph img browser" style="--md:.65s"><img src="assets/sequifi/setup.jpg" alt="Company setup"><span class="shotlab">Company setup</span></div>
+      <div class="ph img browser" style="--md:.75s"><img src="assets/sequifi/departments.jpg" alt="Departments"><span class="shotlab">Departments</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= END ================= -->
+<section class="scene" id="end" data-beats="1" data-ch="">
+  <div class="ewrap">
+    <div class="emap"><div class="map" data-map="end" style="width:min(560px,46vw)"></div></div>
+    <h2>The brief was three things. Sequifi came back for the whole platform.</h2>
+    <div class="acts">
+      <a class="btnk" href="https://www.figma.com/design/ZcfD8yTkWrGEpPerZ0B66W/-Final--Sequifi-Redesign" target="_blank" rel="noopener">Explore the design file →</a>
+      <a class="txt" href="index.html">← Back to the library</a>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CHROME ================= -->
+<div id="chrome">
+  <div class="navgrp"><span id="brand">Sequifi × Parallel</span></div>
+  <div id="center">
+    <div id="beats"></div>
+    <span id="scenelab"></span>
+  </div>
+  <div class="navgrp right">
+    <button class="navbtn" id="backBtn">← Back</button>
+    <button class="navbtn" id="nextBtn">Next →</button>
+  </div>
+</div>
+
+<div id="cursor"></div>
+
+<script>
+/* ---------- product map ---------- */
+const MODS=[
+  ['Dashboard',''],['Positions','roles & commission'],['Payroll',''],['Hiring','& onboarding'],['Locations',''],
+  ['Departments',''],['Tiers',''],['Products',''],['Milestones',''],['Reports',''],
+  ['Automations',''],['Permissions',''],['Integrations',''],['SequiDocs','documents'],['Alert Center','']
+];
+document.querySelectorAll('.map').forEach(m=>{
+  MODS.forEach((mod,i)=>{
+    const t=document.createElement('div');t.className='t';t.dataset.mod=mod[0];
+    const r=Math.floor(i/5),c=i%5;
+    const d=Math.hypot(r-0,c-1);
+    t.style.setProperty('--fdel',(0.15+d*0.14).toFixed(2)+'s');
+    t.innerHTML='<span class="tn">'+mod[0]+'</span>'+(mod[1]?'<span class="ts">'+mod[1]+'</span>':'');
+    m.appendChild(t);
+  });
+  if(m.dataset.map==='cover'){m.querySelector('[data-mod="Positions"]').classList.add('pulse');}
+});
+
+/* ---------- s1 crowd ---------- */
+const crowd=document.getElementById('crowd');
+const GHOSTS=[2,5,7,11,12,17,20,23,26,28,31];
+for(let i=0;i<32;i++){
+  const p=document.createElement('div');p.className='p'+(GHOSTS.includes(i)?' gh':'');
+  p.style.setProperty('--d',(0.05+((i*7)%32)*0.035).toFixed(2)+'s');
+  crowd.appendChild(p);
+}
+
+/* ---------- engine ---------- */
+const scenes=[...document.querySelectorAll('.scene')];
+const meta=scenes.map(s=>({el:s,beats:+s.dataset.beats}));
+let si=0,beat=0;
+const TOTAL=meta.reduce((a,m)=>a+m.beats,0);
+const stepIndex=()=>{let n=0;for(let k=0;k<si;k++)n+=meta[k].beats;return n+beat;};
+
+function applyBeat(sc,b){
+  for(let k=0;k<+sc.dataset.beats;k++) sc.classList.toggle('b'+k,k<=b);
+  sc.querySelectorAll('.shead .hl').forEach(h=>{
+    const hb=+h.dataset.b;
+    h.classList.toggle('show',hb===b);
+    h.classList.toggle('gone',hb<b);
+  });
+  sc.querySelectorAll('.vlayer').forEach(l=>{
+    const r=(l.dataset.vb||'').split('-');
+    const a=+r[0],z=r.length>1?+r[1]:+r[0];
+    l.classList.toggle('on',b>=a&&b<=z);
+  });
+  if(sc.id==='s6') sc.querySelector('.map').classList.toggle('flood',b>=1);
+}
+
+function render(){
+  meta.forEach((m,idx)=>{
+    m.el.classList.toggle('active',idx===si);
+    if(idx!==si){for(let k=0;k<m.beats;k++)m.el.classList.remove('b'+k);}
+  });
+  applyBeat(meta[si].el,beat);
+  document.getElementById('scenelab').textContent=meta[si].el.dataset.ch||'';
+  document.getElementById('backBtn').disabled=(si===0&&beat===0);
+  document.getElementById('nextBtn').disabled=(si===meta.length-1&&beat===meta[si].beats-1);
+  document.getElementById('prog').style.width=(stepIndex()/(TOTAL-1)*100)+'%';
+  const bc=document.getElementById('beats');bc.innerHTML='';
+  if(meta[si].beats>1){
+    for(let k=0;k<meta[si].beats;k++){
+      const d=document.createElement('div');d.className='bd'+(k===beat?' now':(k<beat?' done':''));
+      d.addEventListener('click',e=>{e.stopPropagation();beat=k;render();});
+      bc.appendChild(d);
+    }
+  }
+}
+function next(){if(beat<meta[si].beats-1)beat++;else if(si<meta.length-1){si++;beat=0;}render();}
+function prev(){if(beat>0)beat--;else if(si>0){si--;beat=meta[si].beats-1;}render();}
+document.getElementById('nextBtn').addEventListener('click',e=>{e.stopPropagation();next();});
+document.getElementById('backBtn').addEventListener('click',e=>{e.stopPropagation();prev();});
+document.addEventListener('click',e=>{if(e.target.closest('a,button,.bd'))return;next();});
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key===' '||e.key==='Enter'){e.preventDefault();next();}
+  else if(e.key==='ArrowLeft'){e.preventDefault();prev();}
+  else if(e.key==='Home'){si=0;beat=0;render();}
+  else if(e.key==='End'){si=meta.length-1;beat=0;render();}
+});
+
+/* ---------- cursor ---------- */
+const cur=document.getElementById('cursor');
+if(matchMedia('(pointer:fine)').matches){
+  addEventListener('mousemove',e=>{
+    cur.classList.add('on');
+    cur.style.left=e.clientX+'px';cur.style.top=e.clientY+'px';
+    cur.classList.toggle('hot',!!e.target.closest('a,button,.bd'));
+  });
+  addEventListener('mouseleave',()=>cur.classList.remove('on'));
+}
+
+render();
+</script>
+</body>
+</html>
