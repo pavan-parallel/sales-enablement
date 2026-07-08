@@ -398,6 +398,66 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f);
 #moles .filter .chev{color:var(--lab);font-size:11px}
 #moles .filter.active{border-color:var(--indigo);background:var(--indigo-soft);color:var(--indigo)}
 
+/* COMPONENTS — live table + drawer + wizard */
+#comps .lbadge .n{width:26px;height:26px;border-radius:50%;background:var(--indigo-soft);color:var(--indigo);display:inline-flex;align-items:center;justify-content:center;font-size:13px}
+#comps .stage{margin-top:3.4vh;display:grid;grid-template-columns:1.62fr 1fr;gap:2.2vw;align-items:center}
+#comps .obj{display:flex;flex-direction:column;min-width:0}
+#comps .cap{font-size:12.5px;color:var(--lab);font-weight:500;margin-top:14px;letter-spacing:-.005em}
+#comps .cap b{color:var(--mut);font-weight:600}
+#comps .btn{font-size:13px;font-weight:600;border-radius:9px;padding:9px 16px;border:1px solid transparent;white-space:nowrap}
+#comps .btn.pri{background:var(--indigo);color:#fff}
+#comps .btn.sec{background:#fff;border-color:var(--line2);color:var(--ink)}
+#comps .badge{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:3px 11px;border-radius:100px}
+#comps .badge .dot{width:6px;height:6px;border-radius:50%}
+#comps .badge.win{background:#E9F7EF;color:#1B824A}#comps .badge.win .dot{background:#26BB5C}
+#comps .badge.att{background:#FEF4DA;color:#8A5A00}#comps .badge.att .dot{background:#E7A008}
+#comps .cbx{width:18px;height:18px;border-radius:5px;border:1.5px solid #C4C8D2;background:#fff;flex:none;display:inline-flex;align-items:center;justify-content:center}
+#comps .cbx.on{background:var(--indigo);border-color:var(--indigo)}
+#comps .av{width:30px;height:30px;border-radius:50%;background:var(--indigo-soft);color:var(--indigo);font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center;flex:none}
+#comps .screen{position:relative;background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:0 30px 70px -40px rgba(20,19,24,.42);overflow:hidden}
+#comps .tbar{display:flex;align-items:center;gap:12px;padding:16px 18px}
+#comps .search{flex:1;border:1px solid #D5D8E0;border-radius:10px;padding:9px 13px;color:var(--lab);font-size:13.5px;display:flex;align-items:center;gap:9px}
+#comps .fchip{font-size:12.5px;font-weight:500;border:1px solid var(--indigo);color:var(--indigo);background:var(--indigo-soft);border-radius:100px;padding:6px 13px;display:flex;align-items:center;gap:8px}
+#comps .fchip .x{opacity:.6}
+#comps .fbtn{font-size:12.5px;font-weight:600;border:1px solid var(--line2);border-radius:9px;padding:8px 14px;color:var(--ink)}
+#comps table{width:100%;border-collapse:collapse}
+#comps thead td{font-size:11px;font-weight:600;color:var(--lab);text-transform:uppercase;letter-spacing:.04em;padding:10px 18px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+#comps tbody td{padding:13px 18px;font-size:13.5px;vertical-align:middle}
+#comps tbody tr+tr td{border-top:1px solid var(--line)}
+#comps .num{text-align:right;font-variant-numeric:tabular-nums}
+#comps .sortcol{color:var(--indigo)}
+#comps .nmcell{display:flex;align-items:center;gap:11px}
+#comps .nmcell .nm{font-weight:600;letter-spacing:-.01em}
+#comps tr.sel td{background:var(--indigo-soft)}
+#comps tr.sel td:first-child{box-shadow:inset 3px 0 0 var(--indigo)}
+#comps .tfoot{display:flex;justify-content:space-between;align-items:center;padding:13px 18px;border-top:1px solid var(--line);font-size:12px;color:var(--mut)}
+#comps .pg{display:flex;gap:5px;align-items:center}#comps .pg b{color:var(--ink)}
+#comps .pg .cur{background:var(--indigo);color:#fff;border-radius:6px;padding:1px 8px}
+#comps .scrim{position:absolute;inset:0;background:rgba(23,22,26,.22);backdrop-filter:blur(1px)}
+#comps .drawer{position:absolute;top:0;right:0;bottom:0;width:340px;max-width:64%;background:#fff;box-shadow:-30px 0 60px -30px rgba(20,19,24,.45);display:flex;flex-direction:column}
+#comps .dhead{display:flex;justify-content:space-between;align-items:center;padding:18px 20px;border-bottom:1px solid var(--line)}
+#comps .dhead .dt{font-size:16px;font-weight:600;letter-spacing:-.01em}
+#comps .dhead .x{color:var(--lab);font-size:19px;line-height:1}
+#comps .dbody{padding:20px;display:flex;flex-direction:column;gap:18px}
+#comps .fg label{font-size:12.5px;font-weight:600;display:block;margin-bottom:7px}
+#comps .fld{border:1px solid #D5D8E0;border-radius:10px;padding:11px 13px;font-size:14px;display:flex;justify-content:space-between}
+#comps .fld.focus{border-color:var(--indigo);box-shadow:0 0 0 3px rgba(78,97,214,.15)}
+#comps .fld .hint{color:var(--lab)}
+#comps .dfoot{margin-top:auto;display:flex;justify-content:flex-end;gap:10px;padding:18px 20px;border-top:1px solid var(--line)}
+#comps .card{background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:0 30px 70px -40px rgba(20,19,24,.42);padding:30px 30px}
+#comps .steps{display:flex;align-items:center;gap:10px;margin-bottom:26px}
+#comps .step{display:flex;align-items:center;gap:9px;font-size:13px;color:var(--lab);font-weight:500}
+#comps .step .sc{width:24px;height:24px;border-radius:50%;border:1.5px solid #CBCED7;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600}
+#comps .step.done{color:var(--ink)}#comps .step.done .sc{background:var(--indigo);border-color:var(--indigo);color:#fff}
+#comps .step.on{color:var(--ink)}#comps .step.on .sc{border-color:var(--indigo);color:var(--indigo)}
+#comps .wline{flex:1;height:1.5px;background:var(--line2);min-width:16px;opacity:.6}
+#comps .wt{font-size:20px;font-weight:600;letter-spacing:-.02em}
+#comps .wsub{font-size:13.5px;color:var(--mut);margin-top:5px}
+#comps .card .fg{margin-top:22px}
+#comps .card .fld{padding:12px 14px}
+#comps .wfoot{display:flex;justify-content:space-between;margin-top:30px}
+#comps .wfoot .btn{padding:11px 20px;font-size:14px}
+
 /* ACCESSIBILITY */
 .a11y{display:grid;grid-template-columns:42% 1fr;gap:5vw;align-items:center;height:100%}
 .a11y .demo{background:var(--panel2);border-radius:20px;padding:5vh 4vw;display:flex;flex-direction:column;gap:2.4vh}
@@ -943,18 +1003,69 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f);
   </div>
 </section>
 
-<!-- 20 COMPONENTS -->
-<section class="slide layer">
+<!-- 20 COMPONENTS (live components) -->
+<section class="slide layer" id="comps">
   <div class="rl">Sequoia</div><div class="rr">Sequifi × Parallel</div>
-  <div class="head">
-    <div class="lbadge"><span class="st">04</span> Components</div>
+  <div>
+    <div class="lbadge"><span class="n">04</span> Components</div>
     <h2 class="h-sec">The workhorses the product is built from.</h2>
   </div>
-  <div class="feat">
-    <div class="ph big"><span class="tag">Component</span><span class="pl">The data table — sort, filter, paginate, select</span></div>
-    <div class="col2">
-      <div class="ph"><span class="tag">Component</span><span class="pl">Side drawer</span></div>
-      <div class="ph"><span class="tag">Component</span><span class="pl">Step-by-step wizard</span></div>
+  <div class="stage">
+    <!-- HERO: data table with side drawer open -->
+    <div class="obj">
+      <div class="screen">
+        <div class="tbar">
+          <div class="search"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg> Search positions</div>
+          <span class="fchip">Location: TX <span class="x">×</span></span>
+          <span class="fbtn">Filters</span>
+        </div>
+        <table>
+          <thead><tr>
+            <td style="width:32px"><span class="cbx on"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg></span></td>
+            <td class="sortcol">Name ↓</td><td>Location</td><td class="num">Base pay</td><td>Status</td>
+          </tr></thead>
+          <tbody>
+            <tr class="sel"><td><span class="cbx on"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg></span></td>
+              <td><div class="nmcell"><span class="av">JD</span><span class="nm">Jordan Diaz</span></div></td><td>Austin, TX</td><td class="num">$4,200.00</td><td><span class="badge win"><span class="dot"></span>Active</span></td></tr>
+            <tr><td><span class="cbx"></span></td>
+              <td><div class="nmcell"><span class="av">SC</span><span class="nm">Sam Cole</span></div></td><td>Dallas, TX</td><td class="num">$4,000.00</td><td><span class="badge win"><span class="dot"></span>Active</span></td></tr>
+            <tr><td><span class="cbx"></span></td>
+              <td><div class="nmcell"><span class="av">MR</span><span class="nm">Mia Reyes</span></div></td><td>Phoenix, AZ</td><td class="num">$3,800.00</td><td><span class="badge att"><span class="dot"></span>Pending</span></td></tr>
+            <tr><td><span class="cbx"></span></td>
+              <td><div class="nmcell"><span class="av">PS</span><span class="nm">Priya Shah</span></div></td><td>Denver, CO</td><td class="num">$4,500.00</td><td><span class="badge win"><span class="dot"></span>Active</span></td></tr>
+            <tr><td><span class="cbx"></span></td>
+              <td><div class="nmcell"><span class="av">LP</span><span class="nm">Leo Park</span></div></td><td>Houston, TX</td><td class="num">$3,950.00</td><td><span class="badge att"><span class="dot"></span>Pending</span></td></tr>
+          </tbody>
+        </table>
+        <div class="tfoot"><span>1 row selected · 128 total</span><span class="pg"><b>‹</b> <span class="cur">1</span> 2 3 <b>›</b></span></div>
+        <div class="scrim"></div>
+        <div class="drawer">
+          <div class="dhead"><span class="dt">Edit position</span><span class="x">×</span></div>
+          <div class="dbody">
+            <div class="fg"><label>Title</label><div class="fld"><span>Senior Roofer</span></div></div>
+            <div class="fg"><label>Base pay</label><div class="fld focus"><span>$4,200.00</span><span class="hint">/ month</span></div></div>
+          </div>
+          <div class="dfoot"><span class="btn sec">Cancel</span><span class="btn pri">Save</span></div>
+        </div>
+      </div>
+      <div class="cap"><b>Data table</b> — sort, filter, paginate, select, with a side drawer open</div>
+    </div>
+    <!-- WIZARD -->
+    <div class="obj">
+      <div class="card">
+        <div class="steps">
+          <div class="step done"><span class="sc"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg></span> Details</div>
+          <div class="wline"></div>
+          <div class="step on"><span class="sc">2</span> Pay plan</div>
+          <div class="wline"></div>
+          <div class="step"><span class="sc">3</span> Review</div>
+        </div>
+        <div class="wt">Set the pay plan</div>
+        <div class="wsub">How this role is paid.</div>
+        <div class="fg"><label>Base pay</label><div class="fld"><span>$4,200.00</span><span class="hint">/ month</span></div></div>
+        <div class="wfoot"><span class="btn sec">Back</span><span class="btn pri">Continue</span></div>
+      </div>
+      <div class="cap"><b>Step-by-step wizard</b> — guided, multi-step flows</div>
     </div>
   </div>
 </section>
