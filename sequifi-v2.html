@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sequifi × Parallel — Walkthrough (v2)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Figtree:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#ffffff;--ink:#111111;--muted:#666666;--faint:#9c9c9c;
+  --line:rgba(17,17,17,.13);--line2:rgba(17,17,17,.28);--line3:rgba(17,17,17,.5);
+  --box:#fafaf9;--box2:#f1f0ed;
+  --fd:'Libre Baskerville',Georgia,serif;
+  --fs:'Figtree',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  --ease:cubic-bezier(.22,.9,.24,1);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden}
+body{background:var(--bg);color:var(--ink);font-family:var(--fs);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;cursor:default}
+.serif{font-family:var(--fd)}
+
+#prog{position:fixed;top:0;left:0;height:2px;background:var(--ink);width:0;z-index:70;transition:width .5s var(--ease)}
+
+#stage{position:absolute;inset:0}
+.scene{position:absolute;inset:0;opacity:0;visibility:hidden;transition:opacity .5s var(--ease),visibility 0s .5s;overflow:hidden}
+.scene.active{opacity:1;visibility:visible;transition:opacity .5s var(--ease)}
+
+.kick{font-family:var(--fs);font-size:12.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:500;display:block}
+.rise{opacity:0;transform:translateY(14px);transition:opacity .55s var(--ease),transform .65s var(--ease)}
+.scene.active .rise{opacity:1;transform:none}
+.scene.active .rise.d1{transition-delay:.08s}
+.scene.active .rise.d2{transition-delay:.18s}
+.scene.active .rise.d3{transition-delay:.28s}
+
+/* ===== COVER ===== */
+#cover .cwrap{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;padding:0 9vw}
+#cover h1{font-family:var(--fd);font-weight:400;font-size:clamp(40px,6vw,84px);letter-spacing:-.015em;line-height:1.08;margin-top:26px}
+#cover .sub{margin-top:26px;font-family:var(--fd);font-style:italic;font-size:clamp(17px,1.6vw,21px);color:var(--muted);line-height:1.6;max-width:32ch}
+#cover .tags{display:flex;gap:8px;margin-top:34px;flex-wrap:wrap}
+#cover .tag{font-size:12.5px;font-weight:500;color:var(--muted);border:1px solid var(--line);border-radius:100px;padding:6px 14px}
+#cover .hint{margin-top:9vh;font-size:13px;color:var(--faint)}
+#cover .hint b{font-weight:600;color:var(--muted)}
+
+/* ===== DIVIDER ===== */
+.divider .dwrap{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:0 10vw}
+.divider .dnum{font-family:var(--fs);font-size:13px;letter-spacing:.15em;text-transform:uppercase;color:var(--faint);font-weight:600;margin-bottom:24px}
+.divider .dtitle{font-family:var(--fd);font-weight:400;font-size:clamp(40px,5.4vw,76px);letter-spacing:-.015em;line-height:1.08}
+.divider .dsub{margin-top:20px;font-family:var(--fd);font-style:italic;font-size:clamp(15px,1.5vw,19px);color:var(--muted);line-height:1.6;max-width:44ch}
+
+/* ===== STATEMENT scenes (s1 setup, s4 turn) ===== */
+.stmt .swrap{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:0 11vw}
+.stmt .sline{position:absolute;left:11vw;right:11vw;text-align:center;font-family:var(--fd);font-weight:400;
+  font-size:clamp(23px,2.9vw,40px);line-height:1.34;letter-spacing:-.01em;
+  opacity:0;transform:translateY(16px);transition:opacity .55s var(--ease),transform .6s var(--ease);pointer-events:none}
+.stmt .sline.show{opacity:1;transform:none;pointer-events:auto}
+.stmt .sline.gone{opacity:0;transform:translateY(-16px)}
+.stmt .sline small{display:block;font-family:var(--fs);font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);font-weight:600;margin-bottom:22px}
+#s1 .foot{position:absolute;left:0;right:0;bottom:8vh;display:flex;justify-content:center;flex-wrap:wrap;gap:0 0}
+#s1 .foot .fi{padding:4px 26px;border-left:1px solid var(--line);font-family:var(--fs);font-size:12.5px;color:var(--muted);line-height:1.5;max-width:210px}
+#s1 .foot .fi:first-child{border-left:0}
+#s1 .foot .fi b{display:block;font-family:var(--fd);color:var(--ink);font-size:14.5px;margin-bottom:4px;font-weight:400}
+
+/* ===== BUILT scenes shared ===== */
+.build{display:flex;flex-direction:column;justify-content:center;padding:8vh 8vw 13vh;overflow-y:auto}
+.build .wrap{width:100%;max-width:1080px;margin:0 auto}
+.shead .sh-line{font-family:var(--fd);font-weight:400;font-size:clamp(20px,2.3vw,31px);line-height:1.34;letter-spacing:-.01em;max-width:30ch;margin-top:12px;min-height:2.7em}
+.cols{display:grid;gap:38px;margin-top:4.5vh;align-items:start}
+.cols.c46{grid-template-columns:46% 1fr}
+.cols.c40{grid-template-columns:40% 1fr}
+.cols .right{border-left:1px solid var(--line);padding-left:38px;min-height:44vh;position:relative}
+@media(max-width:820px){
+  .cols{grid-template-columns:1fr!important;gap:24px}
+  .cols .right{border-left:0;border-top:1px solid var(--line);padding-left:0;padding-top:24px;min-height:0}
+}
+
+/* ===== SCENE 2 · ONBOARDING (vertical stepper) ===== */
+.stepwrap{position:relative;min-height:min(48vh,430px)}
+.stepper{position:absolute;inset:0;display:flex;flex-direction:column;gap:7px;opacity:0;transition:opacity .55s var(--ease);pointer-events:none}
+.stepper.on{opacity:1;pointer-events:auto}
+.srow{display:flex;align-items:center;gap:14px;border:1px solid var(--line2);border-radius:10px;padding:10px 14px;background:var(--bg);transition:border-color .5s,background .5s}
+.srow .sn{font-family:var(--fs);font-size:11px;color:var(--faint);font-weight:600;min-width:18px}
+.srow .st{font-family:var(--fd);font-size:15px;letter-spacing:-.01em}
+.srow .st span{font-family:var(--fs);font-size:11px;color:var(--muted);margin-left:2px}
+#s2.b1 #oldstep .srow.pay,#s2.b2 #oldstep .srow.pay{border-color:var(--ink);background:var(--box)}
+.srow.merge{border-color:var(--ink);background:var(--box2)}
+#s2 .paynote{margin-top:16px;font-family:var(--fs);font-size:12.5px;color:var(--muted);line-height:1.5;padding-left:2px;
+  opacity:0;transform:translateY(6px);transition:opacity .5s var(--ease),transform .55s var(--ease)}
+#s2 .paynote b{font-weight:600;color:var(--ink)}
+#s2.b1 .paynote,#s2.b2 .paynote{opacity:1;transform:none}
+#s2.b3 .paynote,#s2.b4 .paynote{opacity:0}
+/* right column content */
+#s2 .pains{opacity:0;transform:translateY(8px);transition:opacity .5s var(--ease),transform .55s var(--ease);display:flex;flex-direction:column;gap:12px}
+#s2.b2 .pains{opacity:1;transform:none}
+#s2.b3 .pains,#s2.b4 .pains{opacity:0;pointer-events:none}
+#s2 .pcard{border:1px solid var(--line);border-radius:12px;background:var(--box);padding:13px 16px;font-family:var(--fs);font-size:13px;color:var(--muted);line-height:1.5}
+#s2 .pcard .pq{font-family:var(--fd);color:var(--ink);font-size:14px;line-height:1.4;margin-bottom:6px}
+#s2 .fixes{position:absolute;top:0;left:38px;right:0;opacity:0;transform:translateY(8px);transition:opacity .5s var(--ease) .1s,transform .55s var(--ease) .1s}
+#s2.b4 .fixes{opacity:1;transform:none}
+#s2 .fixes .fl{font-family:var(--fs);font-size:12px;color:var(--muted);margin-bottom:14px}
+#s2 .fixes .chips{display:flex;flex-wrap:wrap;gap:9px}
+#s2 .fixes .fx{font-family:var(--fs);font-size:12.5px;color:var(--ink);border:1px solid var(--line2);border-radius:100px;padding:8px 15px;background:var(--bg)}
+#s2 .fixes .fx b{font-weight:600}
+@media(max-width:820px){#s2 .fixes{position:static;left:0}#s2 .pains{position:static}}
+
+/* ===== SCENE 3 · DESIGN SYSTEM ===== */
+#s3 .princ{border-left:2px solid var(--ink);padding:2px 0 2px 18px;margin-bottom:22px;opacity:0;transform:translateX(-8px);transition:opacity .5s var(--ease),transform .55s var(--ease)}
+#s3.b1 .princ,#s3.b2 .princ,#s3.b3 .princ{opacity:1;transform:none}
+#s3.b1 .princ:nth-child(2),#s3.b2 .princ:nth-child(2),#s3.b3 .princ:nth-child(2){transition-delay:.12s}
+#s3 .princ .pk{font-family:var(--fs);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);font-weight:600;margin-bottom:7px}
+#s3 .princ .pt{font-family:var(--fd);font-size:clamp(16px,1.5vw,20px);line-height:1.36}
+#s3 .dirs{display:flex;gap:16px;opacity:0;transform:translateY(10px);transition:opacity .5s var(--ease),transform .55s var(--ease);margin-bottom:26px}
+#s3.b2 .dirs,#s3.b3 .dirs{opacity:1;transform:none}
+#s3 .dir{flex:1;border:1px solid var(--line2);border-radius:12px;background:var(--box);overflow:hidden}
+#s3 .dir .dbox{height:96px;display:grid;place-items:center;border-bottom:1px solid var(--line);
+  background:repeating-linear-gradient(-45deg,transparent,transparent 10px,rgba(17,17,17,.02) 10px,rgba(17,17,17,.02) 11px),var(--box);
+  font-family:var(--fs);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);text-align:center;padding:0 8px}
+#s3 .dir .dl{padding:11px 14px;font-family:var(--fd);font-size:15px;display:flex;justify-content:space-between;align-items:center}
+#s3 .dir.chosen{border-color:var(--ink)}
+#s3 .dir.chosen .dl::after{content:"chosen";font-family:var(--fs);font-size:11px;color:var(--ink);border:1px solid var(--ink);border-radius:100px;padding:2px 9px}
+#s3 .inv{opacity:0;transform:translateY(10px);transition:opacity .5s var(--ease) .1s,transform .55s var(--ease) .1s}
+#s3.b3 .inv{opacity:1;transform:none}
+#s3 .inv .il{font-family:var(--fs);font-size:12px;color:var(--muted);margin-bottom:12px}
+#s3 .inv .toks{display:flex;flex-wrap:wrap;gap:8px}
+#s3 .inv .tok{font-family:var(--fs);font-size:12px;color:var(--ink);border:1px solid var(--line2);border-radius:8px;padding:7px 12px;background:var(--bg)}
+
+/* ===== SCENE 5 · REBUILD ===== */
+#s5 .modmap{display:grid;grid-template-columns:1fr 1fr;gap:9px;opacity:0;transform:translateY(10px);transition:opacity .55s var(--ease),transform .6s var(--ease)}
+#s5.b0 .modmap,#s5.b1 .modmap,#s5.b2 .modmap,#s5.b3 .modmap,#s5.b4 .modmap{opacity:1;transform:none}
+#s5 .mod{border:1px solid var(--line2);border-radius:10px;background:var(--bg);padding:12px 14px;font-family:var(--fd);font-size:14px;letter-spacing:-.01em}
+#s5 .mod small{display:block;font-family:var(--fs);font-size:11px;color:var(--faint);margin-top:3px}
+#s5 .callout{position:absolute;top:0;left:38px;right:0;opacity:0;transform:translateY(12px);transition:opacity .5s var(--ease),transform .55s var(--ease);pointer-events:none}
+#s5 .callout.show{opacity:1;transform:none;pointer-events:auto}
+#s5 .callout .ck{font-family:var(--fs);font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:12px}
+#s5 .callout .ctitle{font-family:var(--fd);font-size:clamp(19px,1.9vw,26px);line-height:1.3;letter-spacing:-.01em;margin-bottom:13px}
+#s5 .callout .cbody{font-family:var(--fs);font-size:14px;color:var(--muted);line-height:1.6;max-width:40ch}
+#s5 .callout .cph{margin-top:20px;border:1px dashed var(--line2);border-radius:12px;background:
+   repeating-linear-gradient(-45deg,transparent,transparent 10px,rgba(17,17,17,.02) 10px,rgba(17,17,17,.02) 11px),var(--box);
+   padding:15px;font-family:var(--fs);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);font-weight:600;text-align:center}
+@media(max-width:820px){#s5 .callout{position:static;left:0}}
+
+/* ===== CLOSE ===== */
+#end .clwrap{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:0 11vw}
+#end h2{font-family:var(--fd);font-weight:400;font-size:clamp(30px,4vw,58px);letter-spacing:-.015em;line-height:1.14;max-width:20ch}
+#end .clnote{margin-top:22px;font-family:var(--fd);font-style:italic;font-size:clamp(15px,1.5vw,19px);color:var(--muted);max-width:38ch;line-height:1.6}
+#end .acts{margin-top:6vh;display:flex;align-items:center;gap:22px;flex-wrap:wrap;justify-content:center}
+#end .btnk{font-family:var(--fs);font-size:13.5px;font-weight:500;color:var(--bg);background:var(--ink);border:0;border-radius:100px;padding:13px 24px;cursor:pointer;text-decoration:none;transition:box-shadow .3s var(--ease),transform .3s var(--ease)}
+#end .btnk:hover{transform:translateY(-1px);box-shadow:0 14px 34px -12px rgba(17,17,17,.4)}
+#end .acts a.text{font-family:var(--fs);font-size:13.5px;color:var(--muted);text-decoration:none;border-bottom:1px solid var(--line2);padding-bottom:2px;transition:color .2s,border-color .2s}
+#end .acts a.text:hover{color:var(--ink);border-color:var(--ink)}
+
+/* ===== CHROME ===== */
+#chrome{position:fixed;bottom:0;left:0;right:0;display:flex;justify-content:space-between;align-items:center;padding:15px 26px;z-index:60}
+#chrome .side{display:flex;align-items:center;gap:12px;min-width:200px}
+#chrome .side.right{justify-content:flex-end}
+.meta{font-family:var(--fs);font-size:12px;color:var(--faint);letter-spacing:.02em}
+.navbtn{font-family:var(--fs);font-size:13px;font-weight:500;color:var(--muted);background:var(--bg);border:1px solid var(--line);border-radius:100px;padding:9px 16px;cursor:pointer;transition:color .2s,border-color .2s}
+.navbtn:hover{color:var(--ink);border-color:var(--line3)}
+.navbtn:disabled{opacity:.3;cursor:default}
+#beats{display:flex;gap:6px;align-items:center;justify-content:center}
+#beats .bd{width:7px;height:7px;border-radius:50%;background:var(--line);transition:background .3s,transform .3s;cursor:pointer}
+#beats .bd.now{background:var(--ink);transform:scale(1.35)}
+#beats .bd.done{background:var(--line3)}
+#chapmeta{font-family:var(--fs);font-size:12px;color:var(--muted);letter-spacing:.02em;margin-left:14px}
+
+@media (prefers-reduced-motion:reduce){*{transition-duration:.001s!important}}
+</style>
+</head>
+<body>
+
+<div id="prog"></div>
+<div id="stage">
+
+  <!-- COVER -->
+  <section class="scene active" id="cover" data-beats="1">
+    <div class="cwrap">
+      <p class="kick rise">Parallel · Case study</p>
+      <h1 class="rise d1">Sequifi × Parallel</h1>
+      <p class="sub rise d2">A design system for HR software that turned into a rebuild of the whole product.</p>
+      <div class="tags rise d3"><span class="tag">HR Tech</span><span class="tag">B2B SaaS</span><span class="tag">Design System</span><span class="tag">Product Design</span></div>
+      <p class="hint rise d3">Click, or press <b>→</b>, to move through</p>
+    </div>
+  </section>
+
+  <!-- SCENE 1 · THE SETUP -->
+  <section class="scene stmt" id="s1" data-beats="4">
+    <div class="swrap">
+      <div class="sline" data-b="0">Sequifi makes the software home-services companies use to hire, pay, and manage their workers. Roofing, pest control, solar.</div>
+      <div class="sline" data-b="1">Its users are field sales reps and the people who manage them. Usually young, often on a first job, rarely sitting at a desk.</div>
+      <div class="sline" data-b="2">They live in social apps and drop anything that feels like old software. Sequifi had to feel as easy as the apps they already use.</div>
+      <div class="sline" data-b="3">The product had found its market. But a lot of HR still ran off the platform, in spreadsheets. To grow, Sequifi came to Parallel for a design system, and a simpler way to onboard workers.</div>
+    </div>
+    <div class="foot rise">
+      <div class="fi"><b>Home services</b>Roofing, pest control, solar, lawn care</div>
+      <div class="fi"><b>The workforce</b>Young, high turnover, little formal training</div>
+      <div class="fi"><b>The goal</b>Adoption — get the work onto the platform</div>
+    </div>
+  </section>
+
+  <!-- DIVIDER 02 -->
+  <section class="scene divider" id="d2" data-beats="1">
+    <div class="dwrap">
+      <p class="dnum rise">Chapter 02</p>
+      <h2 class="dtitle rise d1">Onboarding</h2>
+      <p class="dsub rise d2">Every worker's pay had to be set up before they could start. The old flow made that harder than it needed to be.</p>
+    </div>
+  </section>
+
+  <!-- SCENE 2 · ONBOARDING -->
+  <section class="scene build" id="s2" data-beats="5">
+    <div class="wrap">
+      <div class="shead">
+        <span class="kick">Chapter 02 · Onboarding</span>
+        <div class="sh-line" id="s2line"></div>
+      </div>
+      <div class="cols c46">
+        <div>
+        <div class="stepwrap">
+          <div class="stepper" id="oldstep">
+            <div class="srow"><span class="sn">1</span><span class="st">Personal details</span></div>
+            <div class="srow"><span class="sn">2</span><span class="st">Organisation</span></div>
+            <div class="srow"><span class="sn">3</span><span class="st">Wages</span></div>
+            <div class="srow pay"><span class="sn">4</span><span class="st">Commission</span></div>
+            <div class="srow pay"><span class="sn">5</span><span class="st">Upfront</span></div>
+            <div class="srow pay"><span class="sn">6</span><span class="st">Overrides</span></div>
+            <div class="srow"><span class="sn">7</span><span class="st">Agreement</span></div>
+            <div class="srow"><span class="sn">8</span><span class="st">Review</span></div>
+          </div>
+          <div class="stepper" id="newstep">
+            <div class="srow"><span class="sn">1</span><span class="st">Personal details</span></div>
+            <div class="srow"><span class="sn">2</span><span class="st">Organisation</span></div>
+            <div class="srow"><span class="sn">3</span><span class="st">Wages</span></div>
+            <div class="srow merge"><span class="sn">4</span><span class="st">Product Payment <span>· commission, upfront &amp; overrides, per product</span></span></div>
+            <div class="srow"><span class="sn">5</span><span class="st">Agreement</span></div>
+            <div class="srow"><span class="sn">6</span><span class="st">Review</span></div>
+          </div>
+        </div>
+        <div class="paynote"><b>Steps 4, 5 and 6</b> were set up again for every product a worker could sell.</div>
+        </div>
+        <div class="right">
+          <div class="pains">
+            <div class="pcard"><div class="pq">"The same pay fields, filled again for every product."</div>Unnecessary, repeated clicks.</div>
+            <div class="pcard"><div class="pq">"You can't move between steps."</div>Only Back and Continue worked — no jumping around.</div>
+            <div class="pcard"><div class="pq">"Errors gave no sense of what was wrong."</div>Nothing was marked on the form.</div>
+          </div>
+          <div class="fixes">
+            <div class="fl">The rebuilt flow:</div>
+            <div class="chips">
+              <span class="fx"><b>Eight steps → six</b></span>
+              <span class="fx">A product's pay, all on one page</span>
+              <span class="fx">Skip a section, finish later</span>
+              <span class="fx">Jump to any step</span>
+              <span class="fx">Plainer language</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DIVIDER 03 -->
+  <section class="scene divider" id="d3" data-beats="1">
+    <div class="dwrap">
+      <p class="dnum rise">Chapter 03</p>
+      <h2 class="dtitle rise d1">The design system</h2>
+      <p class="dsub rise d2">One visual language for a product with many kinds of users.</p>
+    </div>
+  </section>
+
+  <!-- SCENE 3 · DESIGN SYSTEM -->
+  <section class="scene build" id="s3" data-beats="4">
+    <div class="wrap">
+      <div class="shead">
+        <span class="kick">Chapter 03 · The design system</span>
+        <div class="sh-line" id="s3line"></div>
+      </div>
+      <div class="cols c40">
+        <div class="left">
+          <div class="princ"><div class="pk">Authority</div><div class="pt">Money handled exactly right. Structure, order, control.</div></div>
+          <div class="princ"><div class="pk">Care</div><div class="pt">Someone looking out for the people getting paid.</div></div>
+        </div>
+        <div class="right">
+          <div class="dirs">
+            <div class="dir"><div class="dbox">Direction — Gridlock</div><div class="dl">Gridlock</div></div>
+            <div class="dir chosen"><div class="dbox">Direction — Opscape</div><div class="dl">Opscape</div></div>
+          </div>
+          <div class="inv">
+            <div class="il">Then codified past colour and type, into:</div>
+            <div class="toks">
+              <span class="tok">Icons</span><span class="tok">Buttons</span><span class="tok">Loading states</span><span class="tok">Empty states</span>
+              <span class="tok">Progress bars</span><span class="tok">Type — Haffer</span><span class="tok">Usage manuals</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DIVIDER 04 -->
+  <section class="scene divider" id="d4" data-beats="1">
+    <div class="dwrap">
+      <p class="dnum rise">Chapter 04</p>
+      <h2 class="dtitle rise d1">The turn</h2>
+      <p class="dsub rise d2">The plan was to hand it off.</p>
+    </div>
+  </section>
+
+  <!-- SCENE 4 · THE TURN -->
+  <section class="scene stmt" id="s4" data-beats="4">
+    <div class="swrap">
+      <div class="sline" data-b="0"><small>The turn</small>The plan was for Sequifi to take the system and redesign the product themselves.</div>
+      <div class="sline" data-b="1"><small>The turn</small>It didn't go that way. Years of features had piled up, and applying a clean system to a complicated product was harder than it looked.</div>
+      <div class="sline" data-b="2"><small>The turn</small>So they came back with a smaller ask. Could we redesign one module, as an example?</div>
+      <div class="sline" data-b="3"><small>The turn</small>That one module became the entire platform.</div>
+    </div>
+  </section>
+
+  <!-- DIVIDER 05 -->
+  <section class="scene divider" id="d5" data-beats="1">
+    <div class="dwrap">
+      <p class="dnum rise">Chapter 05</p>
+      <h2 class="dtitle rise d1">The rebuild</h2>
+      <p class="dsub rise d2">The whole product, module by module, in the new language.</p>
+    </div>
+  </section>
+
+  <!-- SCENE 5 · REBUILD -->
+  <section class="scene build" id="s5" data-beats="5">
+    <div class="wrap">
+      <div class="shead">
+        <span class="kick">Chapter 05 · The rebuild</span>
+        <div class="sh-line" id="s5line"></div>
+      </div>
+      <div class="cols c46">
+        <div class="modmap">
+          <div class="mod">Dashboard</div>
+          <div class="mod">Positions<small>roles &amp; commission plans</small></div>
+          <div class="mod">Payroll</div>
+          <div class="mod">Hiring</div>
+          <div class="mod">Locations<small>branches &amp; franchises</small></div>
+          <div class="mod">SequiDocs<small>documents &amp; signing</small></div>
+          <div class="mod">Reports</div>
+          <div class="mod">Permissions</div>
+        </div>
+        <div class="right">
+          <div class="callout" data-b="2">
+            <div class="ck">Commission setup</div>
+            <div class="ctitle">One wizard, not a maze.</div>
+            <div class="cbody">A single flow walks through wages, commission, upfront, overrides, and settlements, per product and per role, without losing you along the way.</div>
+            <div class="cph">Placeholder — position setup wizard, per-product commission</div>
+          </div>
+          <div class="callout" data-b="3">
+            <div class="ck">Redline changes</div>
+            <div class="ctitle">Every change, on the record.</div>
+            <div class="cbody">Each commission edit is logged: the amount, the date it takes effect, and who made it.</div>
+            <div class="cph">Placeholder — redline changes drawer, edit history</div>
+          </div>
+          <div class="callout" data-b="4">
+            <div class="ck">More than one view</div>
+            <div class="ctitle">An org chart. A map.</div>
+            <div class="cbody">Reporting lines read better as an org chart. Locations read better on a map. Same data, seen the way each job needs it. And we fixed the design system wherever the real product broke it.</div>
+            <div class="cph">Placeholder — org chart &amp; US locations map</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CLOSE -->
+  <section class="scene" id="end" data-beats="1">
+    <div class="clwrap">
+      <h2 class="rise">Sequifi came for a design system. They handed over the whole product.</h2>
+      <p class="clnote rise d1">When they came back, the brief was bigger than the first.</p>
+      <div class="acts rise d2">
+        <a class="btnk" href="https://www.figma.com/design/ZcfD8yTkWrGEpPerZ0B66W/-Final--Sequifi-Redesign" target="_blank" rel="noopener">Explore the design file →</a>
+        <a class="text" href="index.html">← Back to the library</a>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<div id="chrome">
+  <div class="side left"><span class="meta">Sequifi × Parallel</span><span id="chapmeta"></span></div>
+  <div class="side" style="flex:1;justify-content:center;min-width:0"><div id="beats"></div></div>
+  <div class="side right">
+    <button class="navbtn" id="backBtn">← Back</button>
+    <button class="navbtn" id="nextBtn">Next →</button>
+  </div>
+</div>
+
+<script>
+const scenes=[...document.querySelectorAll('.scene')];
+const meta=scenes.map(s=>({el:s,beats:+s.dataset.beats}));
+const CHAP={s1:'The setup',d2:'Chapter 02 · Onboarding',s2:'Chapter 02 · Onboarding',
+  d3:'Chapter 03 · The design system',s3:'Chapter 03 · The design system',
+  d4:'Chapter 04 · The turn',s4:'Chapter 04 · The turn',
+  d5:'Chapter 05 · The rebuild',s5:'Chapter 05 · The rebuild'};
+let si=0,beat=0;
+
+const S2LINES=[
+  "Onboarding one worker meant setting up how they'd be paid.",
+  "Wages, commission, upfront bonuses, overrides — and you did it again for every product they could sell.",
+  "The flow fought the people using it.",
+  "So we grouped everything by product. A product's commission, upfront, and overrides now live together, on one page.",
+  "Eight steps became six, and the worst of the friction went with them."
+];
+const S3LINES=[
+  "One product served reps, hiring managers, admins, and technicians. It needed a single language.",
+  "We built it on two things the product has to hold at once.",
+  "We showed two directions, and built out the one the team chose.",
+  "Then we took it past colour and type, and wrote the manuals so Sequifi could keep building in it."
+];
+const S5LINES=[
+  "We rebuilt Sequifi module by module.",
+  "The hard parts were the ones specific to this industry.",
+  "Commission plans change by product and by role.",
+  "Pay rates change, and people need to know what changed.",
+  "Some of the data reads better a different way."
+];
+
+const hooks={
+  s1(b){swap('#s1',b);},
+  s2(b){setLine('s2line',S2LINES[b]);
+    document.getElementById('oldstep').classList.toggle('on',b<3);
+    document.getElementById('newstep').classList.toggle('on',b>=3);},
+  s3(b){setLine('s3line',S3LINES[b]);},
+  s4(b){swap('#s4',b);},
+  s5(b){setLine('s5line',S5LINES[b]);
+    document.querySelectorAll('#s5 .callout').forEach(c=>c.classList.toggle('show',+c.dataset.b===b));}
+};
+function setLine(id,txt){const l=document.getElementById(id);if(l)l.textContent=txt;}
+function swap(sel,b){
+  document.querySelectorAll(sel+' .sline').forEach(el=>{
+    const eb=+el.dataset.b;
+    el.classList.toggle('show',eb===b);
+    el.classList.toggle('gone',eb<b);
+  });
+}
+
+const TOTAL=meta.reduce((a,m)=>a+m.beats,0);
+function stepIndex(){let n=0;for(let k=0;k<si;k++)n+=meta[k].beats;return n+beat;}
+
+function render(){
+  meta.forEach((m,idx)=>{
+    m.el.classList.toggle('active',idx===si);
+    for(let k=0;k<m.beats;k++) m.el.classList.remove('b'+k);
+    if(idx===si) for(let k=0;k<=beat;k++) m.el.classList.add('b'+k);
+  });
+  const s=meta[si].el;
+  if(hooks[s.id]) hooks[s.id](beat);
+  document.getElementById('chapmeta').textContent=CHAP[s.id]||'';
+  document.getElementById('backBtn').disabled=(si===0&&beat===0);
+  document.getElementById('nextBtn').disabled=(si===meta.length-1&&beat===meta[si].beats-1);
+  document.getElementById('prog').style.width=(stepIndex()/(TOTAL-1)*100)+'%';
+  const bc=document.getElementById('beats');bc.innerHTML='';
+  if(meta[si].beats>1){
+    for(let k=0;k<meta[si].beats;k++){
+      const d=document.createElement('div');d.className='bd'+(k===beat?' now':(k<beat?' done':''));
+      d.addEventListener('click',e=>{e.stopPropagation();beat=k;render();});
+      bc.appendChild(d);
+    }
+  }
+}
+function next(){if(beat<meta[si].beats-1)beat++;else if(si<meta.length-1){si++;beat=0;}render();}
+function prev(){if(beat>0)beat--;else if(si>0){si--;beat=meta[si].beats-1;}render();}
+document.getElementById('nextBtn').addEventListener('click',e=>{e.stopPropagation();next();});
+document.getElementById('backBtn').addEventListener('click',e=>{e.stopPropagation();prev();});
+document.addEventListener('click',e=>{if(e.target.closest('a,button,.bd'))return;next();});
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key===' '||e.key==='Enter'){e.preventDefault();next();}
+  else if(e.key==='ArrowLeft'){e.preventDefault();prev();}
+});
+render();
+</script>
+</body>
+</html>

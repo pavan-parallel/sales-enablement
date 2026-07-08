@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sequifi × Parallel — Narrative Draft</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Figtree:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#ffffff;--ink:#111111;--muted:#6b6b6b;--faint:#a0a0a0;
+  --line:rgba(17,17,17,.14);--line2:rgba(17,17,17,.30);--line3:rgba(17,17,17,.5);
+  --box:#fafaf9;
+  --fd:'Libre Baskerville',Georgia,serif;
+  --fs:'Figtree',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  --ease:cubic-bezier(.22,.9,.24,1);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden}
+body{background:var(--bg);color:var(--ink);font-family:var(--fs);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;cursor:default}
+.serif{font-family:var(--fd)}
+
+/* progress bar */
+#prog{position:fixed;top:0;left:0;height:2px;background:var(--ink);width:0;z-index:70;transition:width .5s var(--ease)}
+
+/* stage + slides */
+#stage{position:absolute;inset:0}
+.slide{position:absolute;inset:0;opacity:0;visibility:hidden;transition:opacity .5s var(--ease),visibility 0s .5s}
+.slide.active{opacity:1;visibility:visible;transition:opacity .5s var(--ease)}
+
+.kick{font-family:var(--fs);font-size:12.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:500;display:block}
+
+/* rise-in for active slide content */
+.rise{opacity:0;transform:translateY(16px);transition:opacity .6s var(--ease),transform .7s var(--ease)}
+.slide.active .rise{opacity:1;transform:none}
+.slide.active .rise.d1{transition-delay:.10s}
+.slide.active .rise.d2{transition-delay:.22s}
+.slide.active .rise.d3{transition-delay:.34s}
+.slide.active .rise.d4{transition-delay:.46s}
+
+/* COVER */
+.cover .cwrap{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;padding:0 9vw}
+.cover h1{font-family:var(--fd);font-weight:400;font-size:clamp(40px,6vw,86px);letter-spacing:-.015em;line-height:1.08;margin-top:28px}
+.cover .sub{margin-top:26px;font-family:var(--fd);font-size:clamp(17px,1.6vw,21px);color:var(--muted);line-height:1.6;max-width:34ch;font-style:italic}
+.cover .tags{display:flex;gap:8px;margin-top:34px;flex-wrap:wrap}
+.cover .tag{font-size:12.5px;font-weight:500;color:var(--muted);border:1px solid var(--line);border-radius:100px;padding:6px 14px}
+.cover .hint{margin-top:9vh;font-size:13px;color:var(--faint)}
+.cover .hint b{font-weight:600;color:var(--muted)}
+
+/* DIVIDER */
+.divider .dwrap{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:0 10vw}
+.divider .dnum{font-family:var(--fs);font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);font-weight:600;margin-bottom:26px}
+.divider .dtitle{font-family:var(--fd);font-weight:400;font-size:clamp(40px,5.6vw,78px);letter-spacing:-.015em;line-height:1.08}
+.divider .dsub{margin-top:22px;font-family:var(--fd);font-style:italic;font-size:clamp(15px,1.5vw,19px);color:var(--muted);line-height:1.6;max-width:44ch}
+
+/* CONTENT — two columns */
+.content .cgrid{position:absolute;inset:0;display:grid;grid-template-columns:44% 56%}
+.content .ctext{padding:10vh 4vw 10vh 9vw;display:flex;flex-direction:column;justify-content:center}
+.content .ctext .kick{margin-bottom:26px}
+.content .line{font-family:var(--fd);font-weight:400;font-size:clamp(24px,3vw,44px);line-height:1.24;letter-spacing:-.012em;max-width:18ch}
+.content .cvis{position:relative;display:grid;place-items:center;border-left:1px solid var(--line);padding:6vh 5vw}
+
+/* STATEMENT — full-width centered emotional beat */
+.statement .swrap{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:0 12vw}
+.statement .kick{margin-bottom:28px;color:var(--faint)}
+.statement .line{font-family:var(--fd);font-weight:400;font-size:clamp(30px,4.4vw,64px);line-height:1.18;letter-spacing:-.015em;max-width:22ch}
+
+/* placeholder box */
+.ph{width:100%;max-width:520px;aspect-ratio:4/3;border:1px dashed var(--line2);border-radius:16px;background:
+   repeating-linear-gradient(-45deg,transparent,transparent 11px,rgba(17,17,17,.02) 11px,rgba(17,17,17,.02) 12px),var(--box);
+   display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:32px 34px;gap:16px}
+.ph.tall{aspect-ratio:3/4;max-width:360px}
+.ph.wide{aspect-ratio:16/10;max-width:600px}
+.ph .phicon{width:34px;height:34px;border:1.5px solid var(--line3);border-radius:8px;position:relative;opacity:.5}
+.ph .phicon::before{content:"";position:absolute;inset:6px;border-radius:3px;background:var(--line2)}
+.ph .phlabel{font-family:var(--fd);font-size:clamp(14px,1.2vw,17px);color:var(--ink);line-height:1.45;max-width:34ch}
+.ph .phtag{font-family:var(--fs);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);font-weight:600}
+
+/* CLOSE */
+.close .clwrap{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:0 10vw}
+.close h2{font-family:var(--fd);font-weight:400;font-size:clamp(30px,4vw,58px);letter-spacing:-.015em;line-height:1.12;max-width:20ch}
+.close .clnote{margin-top:22px;font-family:var(--fd);font-style:italic;font-size:clamp(15px,1.5vw,19px);color:var(--muted);max-width:40ch;line-height:1.6}
+.close .acts{margin-top:6vh;display:flex;align-items:center;gap:22px}
+.close .btnk{font-family:var(--fs);font-size:13.5px;font-weight:500;color:var(--bg);background:var(--ink);border:0;border-radius:100px;padding:13px 24px;cursor:pointer;text-decoration:none;transition:box-shadow .3s var(--ease),transform .3s var(--ease)}
+.close .btnk:hover{transform:translateY(-1px);box-shadow:0 14px 34px -12px rgba(17,17,17,.4)}
+.close .acts a.text{font-family:var(--fs);font-size:13.5px;color:var(--muted);text-decoration:none;border-bottom:1px solid var(--line2);padding-bottom:2px;transition:color .2s,border-color .2s}
+.close .acts a.text:hover{color:var(--ink);border-color:var(--ink)}
+
+/* CHROME */
+#chrome{position:fixed;bottom:0;left:0;right:0;display:flex;justify-content:space-between;align-items:center;padding:16px 26px;z-index:60}
+#chrome .side{display:flex;align-items:center;gap:14px;min-width:230px}
+#chrome .side.right{justify-content:flex-end}
+.meta{font-family:var(--fs);font-size:12px;color:var(--faint);letter-spacing:.02em}
+.meta b{color:var(--muted);font-weight:500}
+.navbtn{font-family:var(--fs);font-size:13px;font-weight:500;color:var(--muted);background:var(--bg);border:1px solid var(--line);border-radius:100px;padding:9px 16px;cursor:pointer;transition:color .2s,border-color .2s}
+.navbtn:hover{color:var(--ink);border-color:var(--line3)}
+.navbtn:disabled{opacity:.3;cursor:default}
+#count{font-family:var(--fs);font-size:12px;color:var(--faint);letter-spacing:.04em;min-width:56px;text-align:center}
+
+@media (prefers-reduced-motion:reduce){*{transition-duration:.001s!important;animation-duration:.001s!important}}
+@media(max-width:900px){
+  .content .cgrid{grid-template-columns:1fr;grid-template-rows:auto 1fr}
+  .content .ctext{padding:9vh 8vw 3vh}
+  .content .cvis{border-left:0;border-top:1px solid var(--line);padding:4vh 8vw 8vh}
+  #chrome .side{min-width:0}
+}
+</style>
+</head>
+<body>
+
+<div id="prog"></div>
+<div id="stage"></div>
+
+<div id="chrome">
+  <div class="side left"><span class="meta">Sequifi × Parallel</span></div>
+  <div class="side" style="flex:1;justify-content:center;min-width:0"><span class="meta" id="chapmeta"></span></div>
+  <div class="side right">
+    <span id="count"></span>
+    <button class="navbtn" id="backBtn">← Back</button>
+    <button class="navbtn" id="nextBtn">Next →</button>
+  </div>
+</div>
+
+<script>
+/* ---------------- NARRATIVE DATA ----------------
+   Voice notes (from Healthify): one short line per beat, present tense,
+   concrete, no hedging. The visual holds; the line advances.
+   Monochrome only — no colour emphasis in this draft.                */
+const SLIDES=[
+  {type:'cover',
+   kick:'Parallel · Case study',
+   title:'Sequifi × Parallel',
+   sub:'A design system, a workforce most software ignores, and how one module became an entire product.',
+   tags:['HR Tech','B2B SaaS','Design System','Product Design']},
+
+  /* ===== SCENE 1 · THE BRIEF (no divider, like Healthify's opener) ===== */
+  {type:'content',ch:'The brief',
+   line:'Somewhere in Texas, a 21-year-old just got hired to sell solar panels door to door.',
+   ph:'B&W field photo — a young rep on a suburban doorstep, clipboard in hand'},
+  {type:'content',ch:'The brief',
+   line:'He may not last the summer. In home services, the workforce turns over fast.',
+   ph:'B&W photo — a home-services crew; the feel of a young, fast-changing workforce'},
+  {type:'content',ch:'The brief',
+   line:'His first day starts with a login. That screen is Sequifi.',
+   ph:'Sequifi login screen (grayscale)',phclass:'tall'},
+  {type:'content',ch:'The brief',
+   line:'Sequifi runs hiring, payroll, and commissions for home-services companies. Roofing, pest control, solar.',
+   ph:'Sequifi dashboard — the product at a glance (grayscale)',phclass:'wide'},
+  {type:'content',ch:'The brief',
+   line:'The product already worked. To grow, Sequifi needed people to actually use it.',
+   ph:'Simple diagram — adoption: the gap between having a product and having it used'},
+  {type:'content',ch:'The brief',
+   line:'So they came to us with a contained brief. A design system of their own, and a fix for onboarding.',
+   ph:'The brief, as two plain lines: “a design system” · “better onboarding”'},
+
+  /* ===== CHAPTER 02 · THE FIRST DAY ===== */
+  {type:'divider',num:'Chapter 02',title:'The first day',
+   sub:'The most important flow in the product was also the most punishing.'},
+  {type:'content',ch:'The first day',
+   line:'To bring on one worker, Sequifi had to capture wages, commission for every product, upfront bonuses, overrides, and milestones.',
+   ph:'Original onboarding — the full flow shown at once, dense and daunting (grayscale)',phclass:'wide'},
+  {type:'content',ch:'The first day',
+   line:'Eight steps. Most of them repeated for every product that worker could sell.',
+   ph:'Close-up — the per-product payment fields, repeating again and again'},
+  {type:'content',ch:'The first day',
+   line:'We audited every screen, then rebuilt the flow around how people actually think.',
+   ph:'Audit — pain points marked on the old flow (annotated, grayscale)',phclass:'wide'},
+  {type:'content',ch:'The first day',
+   line:'Payment details moved under the product they belong to. Eight steps became six, and no one had to hold all of it at once.',
+   ph:'Redesigned onboarding — the consolidated “Product Payment” step; an 8 → 6 step marker',phclass:'wide'},
+
+  /* ===== CHAPTER 03 · THE LANGUAGE ===== */
+  {type:'divider',num:'Chapter 03',title:'The language',
+   sub:'Software this workforce would trust the moment they saw it.'},
+  {type:'content',ch:'The language',
+   line:'This workforce tunes out anything clunky. So we made Sequifi feel as familiar as the apps they already live in.',
+   ph:'The old Sequifi UI beside a familiar social feed — the familiarity gap',phclass:'wide'},
+  {type:'content',ch:'The language',
+   line:'The language carried two instincts. The authority to handle money exactly right, and the care owed to everyone waiting to be paid.',
+   ph:'Visual-language board — the two brand instincts (authority + care)'},
+  {type:'content',ch:'The language',
+   line:'We showed the client two directions. They chose the clearer one.',
+   ph:'Two directions side by side — “Gridlock” vs “Opscape,” the chosen one marked',phclass:'wide'},
+  {type:'content',ch:'The language',
+   line:'Then we codified all of it — colour, type, icons, states, and the manuals for how to use them. A system they could build the future on. Without us.',
+   ph:'The design system + its documentation — components, states, usage manuals (grayscale)',phclass:'wide'},
+
+  /* ===== CHAPTER 04 · THE TURN ===== */
+  {type:'divider',num:'Chapter 04',title:'The turn',
+   sub:'What happens when a clean system meets a real, messy product.'},
+  {type:'statement',ch:'The turn',
+   line:'We delivered. Then it went quiet.'},
+  {type:'content',ch:'The turn',
+   line:'A design system can’t apply itself. Handed the tools, Sequifi hit the same wall we were hired to help with.',
+   ph:'The clean design-system file beside the tangled, years-old real product'},
+  {type:'content',ch:'The turn',
+   line:'So they came back with a smaller question. Could you show us one module, built right?',
+   ph:'One module, redesigned and built right (grayscale)',phclass:'tall'},
+  {type:'content',ch:'The turn',
+   line:'One module became the entire platform. We rebuilt Sequifi end to end — dashboard, payroll, commissions, hiring, onboarding — repairing the system wherever their real product broke it.',
+   ph:'Grid of the full redesigned platform — every core surface, one language (grayscale)',phclass:'wide'},
+
+  /* ===== CHAPTER 05 · WHAT IT EARNED ===== */
+  {type:'divider',num:'Chapter 05',title:'What it earned',
+   sub:'The real deliverable was never the design system.'},
+  {type:'statement',ch:'What it earned',
+   line:'Sequifi came to us to become independent.'},
+  {type:'statement',ch:'What it earned',
+   line:'The work earned something better. A partner they trusted with the whole product.'},
+  {type:'content',ch:'What it earned',
+   line:'And in Texas, a 21-year-old clears his first day without asking anyone for help.',
+   ph:'Callback — the same login from the opening, now clean; the worker gets through',phclass:'tall'},
+
+  {type:'close',
+   title:'They came for the tools. They handed us the keys.',
+   note:'Sequifi × Parallel',
+   actions:[
+     {label:'Explore the design file →',href:'https://www.figma.com/design/ZcfD8yTkWrGEpPerZ0B66W/-Final--Sequifi-Redesign',cls:'btnk'},
+     {label:'← Back to the library',href:'index.html',cls:'text'}
+   ]}
+];
+
+/* ---------------- RENDER ---------------- */
+const stage=document.getElementById('stage');
+const el=(t,c,h)=>{const n=document.createElement(t);if(c)n.className=c;if(h!=null)n.innerHTML=h;return n;};
+
+SLIDES.forEach(s=>{
+  const sec=el('section','slide '+s.type);
+  if(s.type==='cover'){
+    const w=el('div','cwrap');
+    w.appendChild(el('span','kick rise',s.kick));
+    w.appendChild(el('h1','rise d1',s.title));
+    w.appendChild(el('p','sub rise d2',s.sub));
+    const tags=el('div','tags rise d3');
+    s.tags.forEach(t=>tags.appendChild(el('span','tag',t)));
+    w.appendChild(tags);
+    w.appendChild(el('p','hint rise d4','Click, or press <b>→</b>, to begin'));
+    sec.appendChild(w);
+  }
+  else if(s.type==='divider'){
+    const w=el('div','dwrap');
+    w.appendChild(el('span','dnum rise',s.num));
+    w.appendChild(el('h2','dtitle rise d1',s.title));
+    if(s.sub) w.appendChild(el('p','dsub rise d2',s.sub));
+    sec.appendChild(w);
+  }
+  else if(s.type==='content'){
+    const g=el('div','cgrid');
+    const t=el('div','ctext');
+    t.appendChild(el('span','kick rise',s.ch));
+    t.appendChild(el('h2','line rise d1',s.line));
+    g.appendChild(t);
+    const v=el('div','cvis');
+    const ph=el('div','ph rise d2'+(s.phclass?(' '+s.phclass):''));
+    ph.appendChild(el('div','phicon'));
+    ph.appendChild(el('div','phlabel',s.ph));
+    ph.appendChild(el('div','phtag','placeholder'));
+    v.appendChild(ph);
+    g.appendChild(v);
+    sec.appendChild(g);
+  }
+  else if(s.type==='statement'){
+    const w=el('div','swrap');
+    w.appendChild(el('span','kick rise',s.ch));
+    w.appendChild(el('h2','line rise d1',s.line));
+    sec.appendChild(w);
+  }
+  else if(s.type==='close'){
+    const w=el('div','clwrap');
+    w.appendChild(el('h2','rise',s.title));
+    if(s.note) w.appendChild(el('p','clnote rise d1',s.note));
+    const acts=el('div','acts rise d2');
+    s.actions.forEach(a=>{
+      const link=el('a',a.cls,a.label);
+      link.href=a.href;
+      if(a.href.startsWith('http')){link.target='_blank';link.rel='noopener';}
+      acts.appendChild(link);
+    });
+    w.appendChild(acts);
+    sec.appendChild(w);
+  }
+  stage.appendChild(sec);
+});
+
+const slides=[...document.querySelectorAll('.slide')];
+const backBtn=document.getElementById('backBtn');
+const nextBtn=document.getElementById('nextBtn');
+const countEl=document.getElementById('count');
+const chapMeta=document.getElementById('chapmeta');
+const prog=document.getElementById('prog');
+let i=0;
+
+function render(){
+  slides.forEach((sl,idx)=>sl.classList.toggle('active',idx===i));
+  backBtn.disabled=(i===0);
+  nextBtn.disabled=(i===slides.length-1);
+  countEl.textContent=String(i+1).padStart(2,'0')+' / '+String(slides.length).padStart(2,'0');
+  prog.style.width=(i/(slides.length-1)*100)+'%';
+  const s=SLIDES[i];
+  let label='';
+  if(s.type==='cover') label='';
+  else if(s.type==='close') label='';
+  else if(s.type==='divider') label=s.num+' · '+s.title;
+  else label=s.ch;
+  chapMeta.textContent=label;
+}
+function go(n){i=Math.max(0,Math.min(slides.length-1,n));render();}
+function next(){go(i+1);}
+function prev(){go(i-1);}
+
+nextBtn.addEventListener('click',e=>{e.stopPropagation();next();});
+backBtn.addEventListener('click',e=>{e.stopPropagation();prev();});
+
+/* click anywhere advances; ignore clicks on links/buttons */
+document.addEventListener('click',e=>{
+  if(e.target.closest('a,button')) return;
+  next();
+});
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key===' '||e.key==='Enter'){e.preventDefault();next();}
+  else if(e.key==='ArrowLeft'){e.preventDefault();prev();}
+  else if(e.key==='Home'){go(0);}
+  else if(e.key==='End'){go(slides.length-1);}
+});
+
+render();
+</script>
+</body>
+</html>
