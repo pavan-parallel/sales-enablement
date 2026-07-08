@@ -302,6 +302,53 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f);
 .mini2{min-height:0}
 .mini2 .ph{min-height:0}
 
+/* ATOMS — live components */
+#atoms{padding:9vh var(--mx) 7vh}
+#atoms .lbadge .n{width:26px;height:26px;border-radius:50%;background:var(--indigo-soft);color:var(--indigo);display:inline-flex;align-items:center;justify-content:center;font-size:13px}
+#atoms .h-sec{font-weight:500;font-size:clamp(28px,3.1vw,46px);line-height:1.05;letter-spacing:-.026em;max-width:none}
+#atoms .atoms{margin-top:3.4vh;display:flex;flex-direction:column}
+#atoms .atom{display:grid;grid-template-columns:190px 1fr;gap:44px;align-items:center;padding:3vh 0;border-top:1px solid var(--line)}
+#atoms .atom:first-child{border-top:0}
+#atoms .aname{font-size:16px;font-weight:600;letter-spacing:-.01em}
+#atoms .aname .sub{display:block;font-size:12.5px;color:var(--lab);font-weight:400;margin-top:5px;line-height:1.4;max-width:22ch}
+#atoms .set{display:flex;flex-wrap:wrap;gap:30px;align-items:flex-start}
+#atoms .spec{display:flex;flex-direction:column;align-items:flex-start;gap:10px}
+#atoms .cap{font-size:12px;color:var(--lab);font-weight:500}
+#atoms .bt{font-size:14px;font-weight:600;border-radius:9px;padding:9px 18px;border:1px solid transparent;white-space:nowrap;user-select:none}
+#atoms .bt.pri{background:var(--indigo);color:#fff}
+#atoms .bt.pri.hov{background:var(--indigo-dk)}
+#atoms .bt.pri.foc{box-shadow:0 0 0 3px #fff,0 0 0 5px var(--indigo)}
+#atoms .bt.pri.prs{background:#253377}
+#atoms .bt.pri.dis{background:#C7CDF3;color:#EEF0FB}
+#atoms .bt.sec{background:#fff;border-color:var(--line2);color:var(--ink)}
+#atoms .field{width:200px}
+#atoms .ctl{border:1px solid #CDD2DA;border-radius:10px;padding:10px 13px;font-size:14px;background:#fff;display:flex;justify-content:space-between;align-items:center}
+#atoms .ctl .hint{color:var(--lab)}
+#atoms .field.focus .ctl{border-color:var(--indigo);box-shadow:0 0 0 3px rgba(78,97,214,.16)}
+#atoms .field.err .ctl{border-color:#F04452;box-shadow:0 0 0 3px rgba(240,68,82,.13)}
+#atoms .field.dis .ctl{background:#F1F2F4;border-color:#E4E7EC;color:var(--lab)}
+#atoms .field .help{font-size:11px;color:#C22A38;margin-top:6px}
+#atoms .cgroup{min-width:0}
+#atoms .ct{font-size:10.5px;font-weight:600;color:var(--lab);letter-spacing:.05em;text-transform:uppercase;margin-bottom:12px}
+#atoms .crow{display:flex;gap:22px;align-items:center;flex-wrap:wrap}
+#atoms .citem{display:flex;align-items:center;gap:9px;font-size:13px;color:var(--mut)}
+#atoms .tgl{width:40px;height:23px;border-radius:100px;background:#CDD2DA;position:relative;flex:none}
+#atoms .tgl::after{content:"";position:absolute;top:3px;left:3px;width:17px;height:17px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.28)}
+#atoms .tgl.on{background:var(--indigo)}#atoms .tgl.on::after{left:20px}
+#atoms .cbx{width:21px;height:21px;border-radius:6px;border:1.5px solid #C0C5CE;background:#fff;flex:none;display:flex;align-items:center;justify-content:center}
+#atoms .cbx.on{background:var(--indigo);border-color:var(--indigo)}
+#atoms .cbx .dash{width:10px;height:2.5px;border-radius:2px;background:#fff}
+#atoms .rdo{width:21px;height:21px;border-radius:50%;border:1.5px solid #C0C5CE;background:#fff;flex:none;display:flex;align-items:center;justify-content:center}
+#atoms .rdo.on{border-color:var(--indigo)}#atoms .rdo.on::after{content:"";width:10px;height:10px;border-radius:50%;background:var(--indigo)}
+#atoms .vsep{width:1px;align-self:stretch;background:var(--line);margin:0 6px}
+#atoms .badge{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:600;padding:5px 12px;border-radius:100px}
+#atoms .badge .dot{width:7px;height:7px;border-radius:50%}
+#atoms .badge.win{background:#E7F7EE;color:#157F43}#atoms .badge.win .dot{background:#26BB5C}
+#atoms .badge.att{background:#FFF3D6;color:#8A5A00}#atoms .badge.att .dot{background:#E29A00}
+#atoms .badge.err{background:#FDECEE;color:#C22A38}#atoms .badge.err .dot{background:#F04452}
+#atoms .tag{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:500;padding:5px 11px;border-radius:8px;background:#F1F2F4;color:#3A3A40;border:1px solid var(--line)}
+#atoms .tag .x{color:var(--lab);font-size:15px;line-height:1;margin-top:-1px}
+
 /* ACCESSIBILITY */
 .a11y{display:grid;grid-template-columns:42% 1fr;gap:5vw;align-items:center;height:100%}
 .a11y .demo{background:var(--panel2);border-radius:20px;padding:5vh 4vw;display:flex;flex-direction:column;gap:2.4vh}
@@ -701,29 +748,67 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f);
   </div>
 </section>
 
-<!-- 18 ATOMS -->
-<section class="slide">
+<!-- 18 ATOMS (live components) -->
+<section class="slide" id="atoms">
   <div class="rl">Sequoia</div><div class="rr">Sequifi × Parallel</div>
-  <div class="head">
-    <div class="lbadge"><span class="st">02</span> Atoms</div>
-    <h2 class="h-sec" style="max-width:17ch">The smallest pieces — every state built in.</h2>
+  <div>
+    <div class="lbadge"><span class="n">02</span> Atoms</div>
+    <h2 class="h-sec">The smallest pieces. Every state built in.</h2>
   </div>
-  <div class="split">
-    <div class="pnl">
-      <div class="pnl-h">Button — nothing left to guess</div>
-      <div class="btncol">
-        <div class="btnline"><span class="sb pri">Run payroll</span><span class="sn">Default</span></div>
-        <div class="btnline"><span class="sb pri hov">Run payroll</span><span class="sn">Hover</span></div>
-        <div class="btnline"><span class="sb pri foc">Run payroll</span><span class="sn">Focus</span></div>
-        <div class="btnline"><span class="sb pri dis">Run payroll</span><span class="sn">Disabled</span></div>
-        <div class="btnline"><span class="sb sec">Cancel</span><span class="sn">Secondary</span></div>
+  <div class="atoms">
+    <!-- BUTTON -->
+    <div class="atom">
+      <div class="aname">Button<span class="sub">Primary, with a secondary variant</span></div>
+      <div class="set">
+        <div class="spec"><span class="bt pri">Run payroll</span><span class="cap">Default</span></div>
+        <div class="spec"><span class="bt pri hov">Run payroll</span><span class="cap">Hover</span></div>
+        <div class="spec"><span class="bt pri foc">Run payroll</span><span class="cap">Focus</span></div>
+        <div class="spec"><span class="bt pri prs">Run payroll</span><span class="cap">Pressed</span></div>
+        <div class="spec"><span class="bt pri dis">Run payroll</span><span class="cap">Disabled</span></div>
+        <div class="spec"><span class="bt sec">Cancel</span><span class="cap">Secondary</span></div>
       </div>
     </div>
-    <div class="mini2">
-      <div class="ph"><span class="tag">Atom</span><span class="pl">Input field · all states</span></div>
-      <div class="ph"><span class="tag">Atom</span><span class="pl">Toggle &amp; checkbox</span></div>
-      <div class="ph"><span class="tag">Atom</span><span class="pl">Select / dropdown</span></div>
-      <div class="ph"><span class="tag">Atom</span><span class="pl">Badge &amp; tag</span></div>
+    <!-- INPUT -->
+    <div class="atom">
+      <div class="aname">Input<span class="sub">Every state, one control</span></div>
+      <div class="set">
+        <div class="spec"><div class="field"><div class="ctl"><span class="hint">$0.00</span><span class="hint">/ mo</span></div></div><span class="cap">Default</span></div>
+        <div class="spec"><div class="field focus"><div class="ctl"><span>$4,200.00</span><span class="hint">/ mo</span></div></div><span class="cap">Focus</span></div>
+        <div class="spec"><div class="field err"><div class="ctl"><span>$0.00</span><span class="hint">/ mo</span></div><div class="help">Enter an amount above zero.</div></div><span class="cap">Error</span></div>
+        <div class="spec"><div class="field dis"><div class="ctl"><span>Set by plan</span><span>/ mo</span></div></div><span class="cap">Disabled</span></div>
+      </div>
+    </div>
+    <!-- SELECTION -->
+    <div class="atom">
+      <div class="aname">Toggle, checkbox<br>&amp; radio</div>
+      <div class="set">
+        <div class="cgroup"><div class="ct">Toggle</div><div class="crow"><span class="citem"><span class="tgl"></span> Off</span><span class="citem"><span class="tgl on"></span> On</span></div></div>
+        <div class="vsep"></div>
+        <div class="cgroup"><div class="ct">Checkbox</div><div class="crow">
+          <span class="citem"><span class="cbx"></span> Off</span>
+          <span class="citem"><span class="cbx on"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg></span> On</span>
+          <span class="citem"><span class="cbx on"><span class="dash"></span></span> Mixed</span>
+        </div></div>
+        <div class="vsep"></div>
+        <div class="cgroup"><div class="ct">Radio</div><div class="crow"><span class="citem"><span class="rdo"></span> Off</span><span class="citem"><span class="rdo on"></span> On</span></div></div>
+      </div>
+    </div>
+    <!-- BADGE & TAG -->
+    <div class="atom">
+      <div class="aname">Badge &amp; tag</div>
+      <div class="set">
+        <div class="cgroup"><div class="ct">Status</div><div class="crow">
+          <span class="badge win"><span class="dot"></span>Active</span>
+          <span class="badge att"><span class="dot"></span>Pending</span>
+          <span class="badge err"><span class="dot"></span>Overdue</span>
+        </div></div>
+        <div class="vsep"></div>
+        <div class="cgroup"><div class="ct">Tags</div><div class="crow">
+          <span class="tag">Roofing<span class="x">×</span></span>
+          <span class="tag">Solar<span class="x">×</span></span>
+          <span class="tag">Full-time<span class="x">×</span></span>
+        </div></div>
+      </div>
     </div>
   </div>
 </section>
