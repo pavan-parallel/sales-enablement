@@ -86,10 +86,23 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f);
 .center .h-state{max-width:20ch}
 .center .lead{max-width:38ch;margin:22px auto 0}
 
-/* old-screens 2×2 (uniform 8:5) */
-.oldgrid{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:1.1vw;height:50vh;width:min(100%,80vh);margin:4vh auto 0}
-.oldgrid .ph{overflow:hidden;border-radius:14px;background:var(--panel2)}
-.oldgrid img{width:100%;height:100%;object-fit:cover;object-position:top left;display:block}
+/* slide 4 — fanned peeking screens, hover/tap to bring forward */
+#pileup{justify-content:flex-start;overflow:hidden}
+#pileup .head{position:relative;z-index:5}
+.fanhint{display:block;margin-top:12px;font-size:13px;color:var(--lab)}
+.fan{position:absolute;inset:0;pointer-events:none}
+.fan .card{position:absolute;bottom:0;width:48vw;aspect-ratio:8/5;border-radius:16px 16px 0 0;overflow:hidden;
+  background:#fff;border:1px solid var(--line);border-bottom:0;box-shadow:0 30px 70px -42px rgba(0,0,0,.5);
+  transform:translateY(56%) rotate(var(--r,0deg));transform-origin:center bottom;
+  transition:transform .55s var(--ease),box-shadow .55s var(--ease);
+  pointer-events:auto;cursor:pointer;will-change:transform}
+.fan .card img{width:100%;height:100%;object-fit:cover;object-position:top left;display:block}
+.fan .c1{left:-10vw;--r:-7deg;z-index:1}
+.fan .c2{left:14vw;--r:-2.5deg;z-index:2}
+.fan .c3{left:38vw;--r:2.5deg;z-index:3}
+.fan .c4{left:62vw;--r:7deg;z-index:4}
+.fan .card:hover,.fan .card.up{transform:translateY(-2%) rotate(0deg) scale(1.06);z-index:20;
+  box-shadow:0 60px 130px -35px rgba(0,0,0,.6)}
 
 /* DIVIDER */
 .divider{justify-content:center}
@@ -324,17 +337,17 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f);
 </section>
 
 <!-- 04 BRIEF 2 -->
-<section class="slide">
+<section class="slide bleed" id="pileup">
   <div class="rl">The brief</div><div class="rr">Sequifi × Parallel</div>
   <div class="head">
     <h2 class="h-state">Over the years, features piled up.</h2>
-    <p class="lead">Screens got dense, and no two looked alike.</p>
+    <p class="lead">Screens got dense, and no two looked alike.<span class="fanhint">Hover any screen to bring it forward.</span></p>
   </div>
-  <div class="oldgrid">
-    <div class="ph"><img src="assets/Old%20Screenshot%2001.png" alt="Old Sequifi dashboard"></div>
-    <div class="ph"><img src="assets/Old%20Screenshot%2002.png" alt="Old Sequifi referrals"></div>
-    <div class="ph"><img src="assets/Old%20Screenshot%2003.png" alt="Old Sequifi templates"></div>
-    <div class="ph"><img src="assets/Old%20Screenshot%2004.png" alt="Old Sequifi scheduling"></div>
+  <div class="fan">
+    <div class="card c1"><img src="assets/Old%20Screenshot%2001.png" alt="Old Sequifi dashboard"></div>
+    <div class="card c2"><img src="assets/Old%20Screenshot%2002.png" alt="Old Sequifi referrals"></div>
+    <div class="card c3"><img src="assets/Old%20Screenshot%2003.png" alt="Old Sequifi templates"></div>
+    <div class="card c4"><img src="assets/Old%20Screenshot%2004.png" alt="Old Sequifi scheduling"></div>
   </div>
 </section>
 
@@ -869,6 +882,12 @@ document.addEventListener('keydown',e=>{
   else if(e.key==='Home'){i=0;render();}
   else if(e.key==='End'){i=slides.length-1;render();}
 });
+document.querySelectorAll('#pileup .card').forEach(c=>c.addEventListener('click',e=>{
+  e.stopPropagation();
+  const up=c.classList.contains('up');
+  document.querySelectorAll('#pileup .card').forEach(x=>x.classList.remove('up'));
+  if(!up)c.classList.add('up');
+}));
 const m=location.hash.match(/^#(\d+)/);
 if(m)i=Math.min(+m[1],slides.length-1);
 render();
