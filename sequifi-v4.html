@@ -38,6 +38,9 @@ body{background:var(--bg);color:var(--ink);font-family:var(--fs);-webkit-font-sm
   font-size:clamp(19px,2.25vw,31px);line-height:1.3;letter-spacing:-.01em;max-width:42ch;
   opacity:0;transform:translateY(20px);transition:opacity .6s var(--ease),transform .65s var(--ease)}
 .shead .hl.show{opacity:1;transform:none}
+.shead .hl .hs{display:block;font-size:clamp(15px,1.65vw,23px);color:var(--muted);line-height:1.4;margin-top:10px;
+  opacity:0;transform:translateY(8px);transition:opacity .5s var(--ease) .55s,transform .55s var(--ease) .55s}
+.shead .hl.show .hs{opacity:1;transform:none}
 .shead .hl.gone{opacity:0;transform:translateY(-20px)}
 .shead .kicker{position:absolute;top:0;left:0}
 
@@ -74,6 +77,12 @@ body{background:var(--bg);color:var(--ink);font-family:var(--fs);-webkit-font-sm
   font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:600}
 .mapwrap .dsframe.solid{border-style:solid;border-color:var(--ink);opacity:1}
 .mapwrap .dsframe.solid span{color:var(--ink)}
+
+/* ============ DIVIDERS ============ */
+.divider .dwrap{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:0 10vw}
+.divider .dnum{font-size:13px;letter-spacing:.15em;text-transform:uppercase;color:var(--faint);font-weight:600;margin-bottom:24px}
+.divider .dtitle{font-family:var(--fd);font-weight:400;font-size:clamp(40px,5.4vw,76px);letter-spacing:-.015em;line-height:1.08}
+.divider .dsub{margin-top:20px;font-family:var(--fd);font-style:italic;font-size:clamp(15px,1.5vw,19px);color:var(--muted);line-height:1.6;max-width:44ch}
 
 /* ============ COVER ============ */
 #cover{padding:0}
@@ -193,12 +202,11 @@ body{background:var(--bg);color:var(--ink);font-family:var(--fs);-webkit-font-sm
   opacity:0;transform:translateY(-6px);transition:opacity .4s var(--qd),transform .45s var(--ease) var(--qd)}
 #s2.b1 .prods i{opacity:1;transform:none}
 #s2 .prods i b{font-weight:600;color:var(--ink)}
-#s2 .plancap{font-size:12.5px;color:var(--muted);opacity:0;transition:opacity .6s .9s}
-#s2.b1 .plancap{opacity:1}
+#s2 .capslot{position:relative;height:18px;width:100%}
+#s2 .plancap{position:absolute;left:0;right:0;top:0;text-align:center;font-size:12.5px;color:var(--muted);opacity:0;transition:opacity .5s}
 #s2.b0 .plancap.c0{opacity:1}
-#s2.b1 .plancap.c0{opacity:0;position:absolute}
-#s2 .plancap.c1{opacity:0}
-#s2.b1 .plancap.c1{opacity:1}
+#s2.b1 .plancap.c0{opacity:0}
+#s2.b1 .plancap.c1{opacity:1;transition-delay:.9s}
 /* b2 legacy */
 #s2 .v2{display:grid;place-items:center}
 #s2 .v2 .ph{width:min(860px,64vw);aspect-ratio:16/9}
@@ -239,7 +247,7 @@ body{background:var(--bg);color:var(--ink);font-family:var(--fs);-webkit-font-sm
 #s3.b3 .v0 .steps{opacity:.3}
 #s3.b3 .scattercap{opacity:.25}
 #s3.b3 .v0 .underph{opacity:0;visibility:hidden}
-#s3 .notes{position:absolute;left:0;right:0;bottom:4%;display:flex;gap:16px;justify-content:center;pointer-events:none;
+#s3 .notes{position:absolute;left:0;right:0;top:42%;display:flex;gap:16px;justify-content:center;pointer-events:none;
   opacity:0;transition:opacity .5s}
 #s3.b3 .notes{opacity:1}
 #s3 .note{width:min(300px,26vw);background:var(--bg2);border:1px solid var(--line2);border-radius:13px;padding:15px 17px;
@@ -426,10 +434,10 @@ body{background:var(--bg);color:var(--ink);font-family:var(--fs);-webkit-font-sm
 <section class="scene" id="s1" data-beats="4" data-ch="01 · The setup">
   <div class="shead">
     <p class="kicker">Chapter 01 · The setup</p>
-    <div class="hl" data-b="0">Sequifi makes HR and payroll software for home-services companies. Roofing, pest control, solar, lawn care.</div>
-    <div class="hl" data-b="1">These companies hire door-to-door sales crews. People join in batches, and most don't stay long.</div>
-    <div class="hl" data-b="2">Every rep is paid on commission. So every hire means building a pay plan from scratch. That work lands on HR.</div>
-    <div class="hl" data-b="3">Sequifi had the customers. The problem was usage: HR still did most of this work in spreadsheets. To grow, the product had to be easier than the spreadsheet.</div>
+    <div class="hl" data-b="0">Sequifi makes HR and payroll software for home services.<span class="hs">Roofing, pest control, solar, lawn care.</span></div>
+    <div class="hl" data-b="1">The industry sells door to door.<span class="hs">Crews are young, hired in batches, and most don't stay long.</span></div>
+    <div class="hl" data-b="2">Every rep is paid on commission.<span class="hs">So every hire needs a pay plan, built from scratch. That work lands on HR.</span></div>
+    <div class="hl" data-b="3">Sequifi had found product-market fit.<span class="hs">Growth now depended on adoption, and HR still ran this work in spreadsheets. The product had to be easier than the spreadsheet.</span></div>
   </div>
   <div class="stage">
     <div class="vlayer v0" data-vb="0">
@@ -468,14 +476,22 @@ body{background:var(--bg);color:var(--ink);font-family:var(--fs);-webkit-font-sm
   </div>
 </section>
 
+<section class="scene divider" data-beats="1" data-ch="Part one · The problem">
+  <div class="dwrap">
+    <p class="dnum rise">Part one</p>
+    <h2 class="dtitle rise d1">The problem.</h2>
+    <p class="dsub rise d2">Complicated pay, an aging product, and HR still in spreadsheets.</p>
+  </div>
+</section>
+
 <!-- ================= S2 · THE PROBLEM ================= -->
 <section class="scene" id="s2" data-beats="4" data-ch="02 · The problem">
   <div class="shead">
     <p class="kicker">Chapter 02 · The problem</p>
-    <div class="hl" data-b="0">A rep's pay plan has five parts, set up in order. Wages, commission, upfront bonus, overrides, milestones.</div>
-    <div class="hl" data-b="1">Commission isn't one number. Every product has its own rate. The same goes for upfronts and overrides.</div>
-    <div class="hl" data-b="2">And the product itself had aged. Years of new features, with no design language holding them together.</div>
-    <div class="hl" data-b="3">So Sequifi came to Parallel with three asks. Make onboarding simple. Build a design system. Redesign one module to show the way.</div>
+    <div class="hl" data-b="0">One rep's pay plan has five parts.<span class="hs">Wages, commission, upfront bonus, overrides, milestones. In order.</span></div>
+    <div class="hl" data-b="1">Commission isn't one number.<span class="hs">Every product has its own rate. Same for upfronts and overrides.</span></div>
+    <div class="hl" data-b="2">And the product itself had aged.<span class="hs">Years of new features, with no design language holding them together.</span></div>
+    <div class="hl" data-b="3">Sequifi asked Parallel for three things.<span class="hs">Simpler onboarding. A design system. One module redesigned to show the way.</span></div>
   </div>
   <div class="stage">
     <div class="vlayer v0" data-vb="0-1">
@@ -493,8 +509,10 @@ body{background:var(--bg);color:var(--ink);font-family:var(--fs);-webkit-font-sm
         <div class="parr" style="--pd:.95s"></div>
         <div class="pstep" style="--pd:1.05s"><span class="pn">5</span><div class="pt2">Milestones</div></div>
       </div>
-      <div class="plancap c0">five parts, in order, for every single hire</div>
-      <div class="plancap c1">every product, its own rate, at every step</div>
+      <div class="capslot">
+        <div class="plancap c0">five parts, in order, for every single hire</div>
+        <div class="plancap c1">every product, its own rate, at every step</div>
+      </div>
     </div>
     <div class="vlayer v2" data-vb="2">
       <div class="ph browser"><div class="pl">The legacy product. A real screen, dense and dated, shown honestly</div><div class="pt">Placeholder · legacy screenshot</div></div>
@@ -513,16 +531,24 @@ body{background:var(--bg);color:var(--ink);font-family:var(--fs);-webkit-font-sm
   </div>
 </section>
 
+<section class="scene divider" data-beats="1" data-ch="Part two · The work">
+  <div class="dwrap">
+    <p class="dnum rise">Part two</p>
+    <h2 class="dtitle rise d1">The work.</h2>
+    <p class="dsub rise d2">Onboarding, a design system, and one module.</p>
+  </div>
+</section>
+
 <!-- ================= S3 · ONBOARDING ================= -->
 <section class="scene" id="s3" data-beats="6" data-ch="03 · Onboarding">
   <div class="shead">
     <p class="kicker">Chapter 03 · Onboarding</p>
     <div class="hl" data-b="0">Onboarding one worker took eight steps.</div>
-    <div class="hl" data-b="1">Three of those steps were about pay. Each one listed every product the rep could sell.</div>
-    <div class="hl" data-b="2">Which meant one product's pay lived in three different places. Nobody could see it in one go.</div>
-    <div class="hl" data-b="3">The audit turned up more. Small things, but HR hit them every single day.</div>
-    <div class="hl" data-b="4">We regrouped the flow by product. One page now holds everything a product pays. Eight steps became six.</div>
-    <div class="hl" data-b="5">And we made it forgiving. Drafts save. Steps can wait. Errors point at the exact field.</div>
+    <div class="hl" data-b="1">Three of those steps were about pay.<span class="hs">Each one listed every product a rep could sell.</span></div>
+    <div class="hl" data-b="2">One product's pay lived in three places.<span class="hs">Nobody could see it in one go.</span></div>
+    <div class="hl" data-b="3">The audit turned up more.<span class="hs">Small things. HR hit them every day.</span></div>
+    <div class="hl" data-b="4">We regrouped the flow by product.<span class="hs">One page holds everything a product pays. Eight steps became six.</span></div>
+    <div class="hl" data-b="5">And we made it forgiving.<span class="hs">Drafts save. Steps can wait. Errors point at the field.</span></div>
   </div>
   <div class="stage">
     <!-- beats 0–3: old flow -->
@@ -584,9 +610,9 @@ body{background:var(--bg);color:var(--ink);font-family:var(--fs);-webkit-font-sm
 <section class="scene" id="s4" data-beats="3" data-ch="04 · The design system">
   <div class="shead">
     <p class="kicker">Chapter 04 · The design system</p>
-    <div class="hl" data-b="0">The design system had a clear brief, in Sequifi's own words. Familiar, trustworthy, organized, clean.</div>
-    <div class="hl" data-b="1">We built two complete directions. Sequifi chose Opscape: clear, functional, made for operations.</div>
-    <div class="hl" data-b="2">Then the system itself. Hanken Grotesk for type, a restrained palette, and every component in every state a screen can reach.</div>
+    <div class="hl" data-b="0">The design system had a clear brief.<span class="hs">In Sequifi's words: familiar, trustworthy, organized, clean.</span></div>
+    <div class="hl" data-b="1">We built two complete directions.<span class="hs">Sequifi chose Opscape: calm, functional, made for operations.</span></div>
+    <div class="hl" data-b="2">Then we built the system itself.<span class="hs">Hanken Grotesk, a restrained palette, and every component in every state.</span></div>
   </div>
   <div class="stage">
     <div class="vlayer v0" data-vb="0">
@@ -643,7 +669,7 @@ body{background:var(--bg);color:var(--ink);font-family:var(--fs);-webkit-font-sm
 <section class="scene" id="s5" data-beats="1" data-ch="05 · The module">
   <div class="shead">
     <p class="kicker">Chapter 05 · The module</p>
-    <div class="hl" data-b="0">The third ask: one module, redesigned in the new language, to prove it on the real product.</div>
+    <div class="hl" data-b="0">The third ask: one module, redesigned as proof.<span class="hs">The new language, applied to the real product.</span></div>
   </div>
   <div class="stage">
     <div class="vlayer v0" data-vb="0" style="display:flex;align-items:center;justify-content:center;gap:3vw">
@@ -660,12 +686,20 @@ body{background:var(--bg);color:var(--ink);font-family:var(--fs);-webkit-font-sm
   </div>
 </section>
 
+<section class="scene divider" data-beats="1" data-ch="Part three · The turn">
+  <div class="dwrap">
+    <p class="dnum rise">Part three</p>
+    <h2 class="dtitle rise d1">The turn.</h2>
+    <p class="dsub rise d2">What happened when the engagement ended.</p>
+  </div>
+</section>
+
 <!-- ================= S6 · THE EXTENSION ================= -->
 <section class="scene" id="s6" data-beats="2" data-ch="06 · The extension">
   <div class="shead">
     <p class="kicker">Chapter 06 · The extension</p>
-    <div class="hl" data-b="0">That was the brief, delivered. New onboarding, a design system, and the module that showed the way. The engagement ended there.</div>
-    <div class="hl" data-b="1">Then Sequifi came back: extend the engagement, and apply the design system to the entire platform.</div>
+    <div class="hl" data-b="0">The brief was delivered.<span class="hs">New onboarding, the design system, the module. The engagement ended there.</span></div>
+    <div class="hl" data-b="1">Then Sequifi came back.<span class="hs">Extend the engagement. Apply the system to the entire platform.</span></div>
   </div>
   <div class="stage">
     <div class="vlayer on" data-vb="0-1">
@@ -677,11 +711,19 @@ body{background:var(--bg);color:var(--ink);font-family:var(--fs);-webkit-font-sm
   </div>
 </section>
 
+<section class="scene divider" data-beats="1" data-ch="Part four · The rebuild">
+  <div class="dwrap">
+    <p class="dnum rise">Part four</p>
+    <h2 class="dtitle rise d1">The rebuild.</h2>
+    <p class="dsub rise d2">The whole platform, in the new language.</p>
+  </div>
+</section>
+
 <!-- ================= S7 · THE REBUILD ================= -->
 <section class="scene" id="s7" data-beats="1" data-ch="07 · The rebuild">
   <div class="shead">
     <p class="kicker">Chapter 07 · The rebuild</p>
-    <div class="hl" data-b="0">Fifteen modules, one language. Everything fell into place.</div>
+    <div class="hl" data-b="0">Fifteen modules, one language.<span class="hs">Everything fell into place.</span></div>
   </div>
   <div class="stage">
     <div class="vlayer v0" data-vb="0">
@@ -716,13 +758,13 @@ body{background:var(--bg);color:var(--ink);font-family:var(--fs);-webkit-font-sm
     <div class="dtitle">Contents</div>
     <div class="ditem" data-si="0"><span class="dn">··</span><span class="dt">Cover</span></div>
     <div class="ditem" data-si="1"><span class="dn">01</span><span class="dt">The setup</span></div>
-    <div class="ditem" data-si="2"><span class="dn">02</span><span class="dt">The problem</span></div>
-    <div class="ditem" data-si="3"><span class="dn">03</span><span class="dt">Onboarding</span></div>
-    <div class="ditem" data-si="4"><span class="dn">04</span><span class="dt">The design system</span></div>
-    <div class="ditem" data-si="5"><span class="dn">05</span><span class="dt">The module</span></div>
-    <div class="ditem" data-si="6"><span class="dn">06</span><span class="dt">The extension</span></div>
-    <div class="ditem" data-si="7"><span class="dn">07</span><span class="dt">The rebuild</span></div>
-    <div class="ditem" data-si="8"><span class="dn">··</span><span class="dt">The close</span></div>
+    <div class="ditem" data-si="3"><span class="dn">02</span><span class="dt">The problem</span></div>
+    <div class="ditem" data-si="5"><span class="dn">03</span><span class="dt">Onboarding</span></div>
+    <div class="ditem" data-si="6"><span class="dn">04</span><span class="dt">The design system</span></div>
+    <div class="ditem" data-si="7"><span class="dn">05</span><span class="dt">The module</span></div>
+    <div class="ditem" data-si="9"><span class="dn">06</span><span class="dt">The extension</span></div>
+    <div class="ditem" data-si="11"><span class="dn">07</span><span class="dt">The rebuild</span></div>
+    <div class="ditem" data-si="12"><span class="dn">··</span><span class="dt">The close</span></div>
     <div class="dfoot"><a href="index.html">← Library</a><a href="https://www.figma.com/design/ZcfD8yTkWrGEpPerZ0B66W/-Final--Sequifi-Redesign" target="_blank" rel="noopener">Design file ↗</a></div>
   </div>
 </div>
@@ -843,7 +885,7 @@ document.addEventListener('keydown',e=>{
   else if(e.key==='ArrowLeft'){e.preventDefault();prev();}
   else if(e.key==='Home'){si=0;beat=0;render();}
   else if(e.key==='End'){si=meta.length-1;beat=0;render();}
-  else if(/^[1-7]$/.test(e.key)){si=+e.key;beat=0;render();}
+  else if(/^[1-7]$/.test(e.key)){si=({1:1,2:3,3:5,4:6,5:7,6:9,7:11})[e.key];beat=0;render();}
 });
 
 /* ---------- cursor with page-turn glyphs ---------- */
