@@ -53,6 +53,10 @@ body{background:var(--bg);color:var(--text);font-family:var(--fs);-webkit-font-s
 #cover .ctag{font-size:12.5px;font-weight:500;color:rgba(17,17,17,.6);border:1px solid var(--line);border-radius:100px;padding:6px 14px;background:var(--bg2)}
 #cover .chint{margin-top:8vh;font-size:13px;color:var(--faint)}
 #cover .chint b{font-weight:500;color:var(--muted)}
+#cover .beginrow{display:flex;align-items:center;gap:16px}
+.beginbtn{font-family:var(--fs);font-size:14px;font-weight:500;color:var(--bg);background:var(--text);border:0;border-radius:100px;
+  padding:14px 26px;cursor:pointer;transition:transform .3s var(--ease),box-shadow .3s}
+.beginbtn:hover{transform:translateY(-1px);box-shadow:0 14px 34px -12px rgba(17,17,17,.4)}
 #cover .cwrap>*{animation:coverrise .8s var(--ease) both}
 #cover .ck{animation-delay:.15s}#cover h1{animation-delay:.28s}#cover .csub{animation-delay:.42s}
 #cover .ctags{animation-delay:.54s}#cover .chint{animation-delay:.72s}
@@ -401,7 +405,11 @@ body{background:var(--bg);color:var(--text);font-family:var(--fs);-webkit-font-s
 .oclose{position:fixed;top:24px;right:28px;width:40px;height:40px;border-radius:50%;border:1px solid var(--line2);background:var(--bg2);
   color:var(--muted);font-size:19px;cursor:pointer;z-index:210;transition:color .2s,border-color .2s}
 .oclose:hover{color:var(--text);border-color:var(--text)}
-#menu .mwrap{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;padding:8vh 9vw;overflow:auto}
+#menu{background:rgba(17,17,17,.22);backdrop-filter:none;-webkit-backdrop-filter:none}
+#menu .mwrap{position:absolute;left:0;top:0;bottom:0;width:min(430px,88vw);display:flex;flex-direction:column;justify-content:center;
+  padding:8vh 48px;overflow:auto;background:var(--bg);border-right:1px solid var(--line);
+  box-shadow:30px 0 80px -30px rgba(17,17,17,.28);transform:translateX(-102%);transition:transform .45s var(--ease)}
+#menu.open .mwrap{transform:none}
 #menu .mtitle{font-family:var(--fs);font-size:12.5px;letter-spacing:.06em;text-transform:uppercase;font-weight:500;color:var(--muted);margin-bottom:28px}
 #menu .mgroup{margin-bottom:22px}
 #menu .mnum{font-family:var(--fs);font-size:12px;color:var(--faint);margin-bottom:6px}
@@ -413,8 +421,19 @@ body{background:var(--bg);color:var(--text);font-family:var(--fs);-webkit-font-s
 #menu .msub span:hover{color:var(--text);border-bottom-color:var(--line2)}
 
 /* ============ DETAIL (context + prototype) ============ */
-#detail .dgrid{position:absolute;inset:0;display:grid;grid-template-columns:44% 56%}
-#detail .dleft{padding:9vh 4vw 9vh 7vw;display:flex;flex-direction:column;justify-content:center;overflow:auto}
+#detail{background:rgba(17,17,17,.30);backdrop-filter:none;-webkit-backdrop-filter:none}
+#detail>.oclose{display:none}
+#detail .dgrid{position:absolute;inset:calc(4vh + 56px) 4vw 4vh;display:grid;grid-template-columns:44% 56%;
+  background:var(--bg);border:1px solid var(--line2);border-top:0;border-radius:0 0 20px 20px;overflow:hidden;
+  box-shadow:0 40px 100px -30px rgba(17,17,17,.45)}
+#dhead{position:absolute;top:4vh;left:4vw;right:4vw;height:56px;background:var(--bg);border:1px solid var(--line2);
+  border-bottom:1px solid var(--line);border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:space-between;
+  padding:0 14px 0 24px;z-index:206}
+#dhead #dcrumb{font-family:var(--fs);font-size:13px;color:var(--muted)}
+#dhead #dcrumb b{color:var(--text);font-weight:500}
+#dhead .dhr{display:flex;align-items:center;gap:10px}
+#dhead .dhr small{font-size:11px;color:var(--faint)}
+#detail .dleft{padding:6vh 3vw 6vh 4vw;display:flex;flex-direction:column;justify-content:center;overflow:auto}
 #detail .dright{position:relative;display:grid;place-items:center;
   background:radial-gradient(80% 70% at 50% 42%,rgba(17,17,17,.03),transparent 70%);border-left:1px solid var(--line)}
 #detail .dkick{font-family:var(--fs);font-size:12px;letter-spacing:.05em;text-transform:uppercase;font-weight:600;color:var(--muted);margin-bottom:16px}
@@ -428,10 +447,14 @@ body{background:var(--bg);color:var(--text);font-family:var(--fs);-webkit-font-s
 #detail .dverd .dot{width:10px;height:10px;border-radius:50%;background:currentColor}
 #detail .dverd .vl{font-size:14px;font-weight:600}
 #detail .dverd .sig{color:var(--muted);font-weight:400;font-size:13.5px;border-left:1px solid var(--line2);padding-left:12px;margin-left:2px}
-#detail .dcount{position:fixed;bottom:26px;left:7vw;font-family:var(--fs);font-size:12px;color:var(--faint)}
-#detail .darrows{position:fixed;bottom:22px;right:28px;display:flex;gap:9px;z-index:210}
-#detail .darrows button{width:40px;height:40px;border-radius:50%;border:1px solid var(--line2);background:var(--bg2);color:var(--muted);
-  font-size:16px;cursor:pointer;transition:color .2s,border-color .2s}
+#detail .dcount{position:fixed;bottom:calc(4vh + 16px);left:calc(4vw + 26px);font-family:var(--fs);font-size:12px;color:var(--faint);z-index:207}
+#detail .darrows{display:contents}
+#detail .darrows button{position:fixed;top:50%;transform:translateY(-50%);width:44px;height:44px;border-radius:50%;border:1px solid var(--line2);
+  background:var(--bg2);color:var(--muted);font-size:16px;cursor:pointer;transition:color .2s,border-color .2s;z-index:210;
+  box-shadow:0 12px 30px -10px rgba(17,17,17,.3)}
+#detail #dprev{left:calc(4vw - 22px)}
+#detail #dnext{right:calc(4vw - 22px)}
+#detail.single #dprev,#detail.single #dnext{display:none}
 #detail .darrows button:hover{color:var(--text);border-color:var(--text)}
 
 /* phone */
@@ -502,6 +525,10 @@ body{background:var(--bg);color:var(--text);font-family:var(--fs);-webkit-font-s
   #cursor.on{opacity:1}
   #cursor.hot{width:34px;height:34px}
   #cursor.press{width:20px;height:20px}
+  #cursor{display:grid;place-items:center;font-family:var(--fs)}
+  #cursor span{font-size:0;font-weight:600;color:#000;transition:font-size .18s}
+  #cursor.zone{width:40px;height:40px}
+  #cursor.zone span{font-size:16px}
   /* inside the Figma embed the native cursor takes over — precision beats polish there */
   body.figma-open *{cursor:auto!important}
   body.figma-open #cursor{opacity:0!important}
@@ -529,7 +556,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--fs);-webkit-font-s
     <h1>Healthify × Parallel</h1>
     <p class="csub">An AI-first redesign, a retention scare, and the research that turned it around.</p>
     <div class="ctags"><span class="ctag">Health Tech</span><span class="ctag">B2C</span><span class="ctag">AI</span><span class="ctag">Product design</span></div>
-    <p class="chint"><b>→</b> to begin &nbsp;·&nbsp; <b>C</b> for contents</p>
+    <div class="chint beginrow"><button class="beginbtn" id="beginBtn">Begin the story →</button><small>or press <b>→</b> &nbsp;·&nbsp; <b>C</b> for contents</small></div>
   </div>
 </section>
 
@@ -850,6 +877,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--fs);-webkit-font-s
 <!-- DETAIL -->
 <div class="overlay" id="detail">
   <button class="oclose" data-close="detail">✕</button>
+  <div id="dhead"><span id="dcrumb"></span><span class="dhr"><button class="navbtn" id="dclose">Close ✕</button><small>esc</small></span></div>
   <div class="dgrid">
     <div class="dleft" id="dleft"></div>
     <div class="dright" id="dright"></div>
@@ -1184,7 +1212,8 @@ function render(animate){const sc=scenes[si];
   for(let b=0;b<=beat;b++)sc.classList.add('b'+b);
   for(let b=0;b<=beat;b++)sceneHooks[si](b,!(animate&&b===beat));
   drawBeats();updateNav();}
-function show(s,b,animate){scenes.forEach((sc,idx)=>sc.classList.toggle('active',idx===s));si=s;beat=b;render(animate);}
+function show(s,b,animate){scenes.forEach((sc,idx)=>sc.classList.toggle('active',idx===s));si=s;beat=b;render(animate);
+  history.replaceState(null,'','#'+s+'.'+b);}
 function next(){killHint();const total=+scenes[si].dataset.beats;
   if(beat<total-1)show(si,beat+1,true);
   else if(si<scenes.length-1)show(si+1,0,true);}
@@ -1242,6 +1271,7 @@ function renderDetail(){
         +'<span class="pv" style="color:'+PMFC[p.v]+'"><span class="dot"></span>'+p.v+'</span>'
         +'<span class="pw">'+p.r+'</span></div>').join('')+'</div>';
     dcount.textContent='Artifact · The PMF feature check';
+    document.getElementById('dcrumb').innerHTML='The diagnosis · <b>The feature check</b>';
     return;
   }
   if(dKind==='concept'){
@@ -1255,6 +1285,7 @@ function renderDetail(){
     dright.innerHTML=c.full?phonePicked():(c.proto?protoEmbed(c.proto):phonePlaceholder(c.name));
     fitProto();
     dcount.textContent='Concept '+(dIndex+1)+' / '+CONCEPTS.length+'  ·  ← → to browse';
+    document.getElementById('dcrumb').innerHTML='The exploration · <b>Concept '+(dIndex+1)+' of '+CONCEPTS.length+'</b>';
   } else {
     const ins=INSIGHTS[dIndex],p=PROBLEMS[ins.cluster];
     dleft.innerHTML='<div class="dkick" style="color:'+p.c+'">Rolls up to · '+p.k+'</div>'
@@ -1263,6 +1294,7 @@ function renderDetail(){
     dright.innerHTML='<div class="evidence"><div class="dsub" style="margin-bottom:2px">What we saw in the sessions</div>'
       +ins.obs.map((s,k)=>'<div class="ec"><span class="en">Observation 0'+(k+1)+'</span>'+s+'</div>').join('')+'</div>';
     dcount.textContent='Insight '+(dIndex+1)+' / '+INSIGHTS.length+'  ·  ← → to browse';
+    document.getElementById('dcrumb').innerHTML='The diagnosis · <b>Insight '+(dIndex+1)+' of '+INSIGHTS.length+'</b>';
   }
 }
 function openDetail(kind,i){killHint();dKind=kind;dIndex=i;detail.classList.toggle('single',kind==='pmf');renderDetail();detail.classList.add('open');}
@@ -1292,6 +1324,15 @@ document.querySelectorAll('[data-close]').forEach(el=>el.addEventListener('click
 document.getElementById('menuBtn').addEventListener('click',openMenu);
 document.getElementById('backBtn').addEventListener('click',prev);
 document.getElementById('nextBtn').addEventListener('click',next);
+document.getElementById('beginBtn').addEventListener('click',next);
+document.getElementById('dclose').addEventListener('click',()=>detail.classList.remove('open'));
+
+/* page-turn zones: left 12vw goes back, the rest advances */
+document.addEventListener('click',e=>{
+  if(anyOpen())return;
+  if(e.target.closest('a,button,iframe,.insight,.con,.bd,.mlink,.msub span,[data-go],.artifact,.shipshot,#chrome,#hint'))return;
+  if(e.clientX<innerWidth*0.12)prev();else next();
+});
 
 /* ---------------- CURTAIN TRANSITIONS ---------------- */
 const curtain=document.getElementById('curtain');
@@ -1303,13 +1344,21 @@ addEventListener('pageshow',()=>{requestAnimationFrame(()=>curtain.classList.rem
 
 /* ---------------- ROUND CURSOR ---------------- */
 if(matchMedia('(pointer:fine)').matches){
-  const cur=document.createElement('div');cur.id='cursor';document.body.appendChild(cur);
+  const cur=document.createElement('div');cur.id='cursor';cur.innerHTML='<span id="cg"></span>';document.body.appendChild(cur);
+  const cg=cur.firstChild;
   let cx=innerWidth/2,cy=innerHeight/2,mx=cx,my=cy,shown=false;
   addEventListener('mousemove',e=>{
     mx=e.clientX;my=e.clientY;
     if(!shown){shown=true;cx=mx;cy=my;cur.classList.add('on');}
     const hot=e.target.closest('a,button,.insight,.con,.bd,.mlink,.msub span,[data-go],.artifact,.shipshot');
     cur.classList.toggle('hot',!!hot);
+    let g='';
+    if(!hot&&!anyOpen()){
+      const total=+scenes[si].dataset.beats;
+      if(e.clientX<innerWidth*0.12){if(!(si===0&&beat===0))g='←';}
+      else if(!(si===scenes.length-1&&beat===total-1))g='→';
+    }
+    cg.textContent=g;cur.classList.toggle('zone',!!g);
   });
   document.addEventListener('mouseleave',()=>{shown=false;cur.classList.remove('on');});
   // native cursor takes over inside any embedded iframe (Figma prototypes etc.)
@@ -1325,7 +1374,11 @@ if(matchMedia('(pointer:fine)').matches){
 /* ---------------- INPUT ---------------- */
 addEventListener('keydown',e=>{
   if(anyOpen()){
-    if(e.key==='Escape')closeAll();
+    if(e.key==='Escape'){
+      if(detail.classList.contains('open'))detail.classList.remove('open');
+      else if(figmaOv.classList.contains('open')){figmaOv.classList.remove('open');document.body.classList.remove('figma-open');}
+      else menu.classList.remove('open');
+    }
     else if(detail.classList.contains('open')){if(e.key==='ArrowRight')stepDetail(1);if(e.key==='ArrowLeft')stepDetail(-1);}
     return;
   }
@@ -1350,7 +1403,9 @@ curtain.classList.add('on');
 layout(ORDER0);
 beatsEl.addEventListener('mouseleave',hidePreview);
 precomputeThumbs();     // capture thumbnails silently first…
-show(0,0,true);         // …then land on the cover
+const hm0=location.hash.match(/^#(\d+)\.(\d+)$/);
+if(hm0){const s0=Math.min(+hm0[1],scenes.length-1);show(s0,Math.min(+hm0[2],+scenes[s0].dataset.beats-1),false);}
+else show(0,0,true);    // …then land on the cover
 requestAnimationFrame(()=>requestAnimationFrame(()=>curtain.classList.remove('on')));
 setTimeout(()=>curtain.classList.remove('on'),300); // rAF never fires in throttled/hidden tabs — never let the curtain stick
 </script>

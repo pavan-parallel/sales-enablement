@@ -84,8 +84,30 @@ body{background:var(--bg);color:var(--ink);font-family:var(--fs);-webkit-font-sm
 #cover .csub{margin-top:24px;font-size:16px;color:var(--muted);line-height:1.65;max-width:44ch}
 #cover .ctags{display:flex;gap:8px;margin-top:32px;flex-wrap:wrap}
 #cover .ctag{font-size:12.5px;font-weight:500;color:rgba(17,17,17,.6);border:1px solid var(--line);border-radius:100px;padding:6px 14px}
-#cover .chint{margin-top:7vh;font-size:13px;color:var(--faint)}
-#cover .chint b{font-weight:500;color:var(--muted)}
+#cover .beginrow{display:flex;align-items:center;gap:16px;margin-top:7vh}
+.beginbtn{font-family:var(--fs);font-size:14px;font-weight:500;color:var(--bg);background:var(--ink);border:0;border-radius:100px;
+  padding:14px 26px;cursor:pointer;transition:transform .3s var(--ease),box-shadow .3s}
+.beginbtn:hover{transform:translateY(-1px);box-shadow:0 14px 34px -12px rgba(17,17,17,.4)}
+#cover .beginrow small{font-size:12.5px;color:var(--faint)}
+
+/* contents drawer */
+#drawer{position:fixed;inset:0;z-index:120;visibility:hidden;pointer-events:none}
+#drawer .scrim{position:absolute;inset:0;background:rgba(17,17,17,.26);opacity:0;transition:opacity .3s}
+#drawer .panel{position:absolute;left:0;top:0;bottom:0;width:min(380px,86vw);background:var(--bg);border-right:1px solid var(--line);
+  box-shadow:30px 0 80px -30px rgba(17,17,17,.25);padding:7vh 42px 5vh;transform:translateX(-102%);
+  transition:transform .45s var(--ease);display:flex;flex-direction:column;overflow:auto}
+#drawer.open{visibility:visible;pointer-events:auto}
+#drawer.open .scrim{opacity:1}
+#drawer.open .panel{transform:none}
+#drawer .dtitle{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:22px}
+#drawer .ditem{display:flex;align-items:baseline;gap:14px;padding:13px 2px;border-top:1px solid var(--line);cursor:pointer}
+#drawer .ditem .dn{font-size:11px;color:var(--faint);min-width:24px;font-weight:600}
+#drawer .ditem .dt{font-family:var(--fd);font-size:19px;letter-spacing:-.01em;color:var(--ink);transition:color .2s}
+#drawer .ditem:hover .dt{color:var(--green)}
+#drawer .ditem.here .dt::after{content:"· you are here";font-family:var(--fs);font-size:11px;color:var(--faint);margin-left:10px}
+#drawer .dfoot{margin-top:auto;padding-top:22px;border-top:1px solid var(--line);display:flex;gap:20px}
+#drawer .dfoot a{font-size:13px;color:var(--muted);text-decoration:none;border-bottom:1px solid var(--line2);padding-bottom:2px}
+#drawer .dfoot a:hover{color:var(--ink);border-color:var(--ink)}
 #cover .cmap{flex:1}
 #cover .cmap .map{width:100%}
 #cover .cwrap>*{animation:rise .8s var(--ease) both}
@@ -374,6 +396,10 @@ body{background:var(--bg);color:var(--ink);font-family:var(--fs);-webkit-font-sm
     transition:width .3s var(--ease),height .3s var(--ease),opacity .25s}
   #cursor.on{opacity:1}
   #cursor.hot{width:34px;height:34px}
+  #cursor{display:grid;place-items:center;font-family:var(--fs)}
+  #cursor span{font-size:0;font-weight:600;color:#000;transition:font-size .18s}
+  #cursor.zone{width:40px;height:40px}
+  #cursor.zone span{font-size:16px}
 }
 @media (prefers-reduced-motion:reduce){*{transition-duration:.001s!important;animation-duration:.001s!important;transition-delay:0s!important;animation-delay:0s!important}}
 </style>
@@ -390,7 +416,7 @@ body{background:var(--bg);color:var(--ink);font-family:var(--fs);-webkit-font-sm
       <h1>Sequifi × Parallel</h1>
       <p class="csub">HR software for industries that hire door to door, redesigned from the language up.</p>
       <div class="ctags"><span class="ctag">HR Tech</span><span class="ctag">B2B SaaS</span><span class="ctag">Design System</span><span class="ctag">Product Redesign</span></div>
-      <p class="chint"><b>→</b> or click to begin</p>
+      <div class="beginrow"><button class="beginbtn" id="beginBtn">Begin the story →</button><small>or press →</small></div>
     </div>
     <div class="cmap"><div class="map" data-map="cover"></div></div>
   </div>
@@ -683,9 +709,27 @@ body{background:var(--bg);color:var(--ink);font-family:var(--fs);-webkit-font-sm
   </div>
 </section>
 
+<!-- ================= CONTENTS DRAWER ================= -->
+<div id="drawer">
+  <div class="scrim"></div>
+  <div class="panel">
+    <div class="dtitle">Contents</div>
+    <div class="ditem" data-si="0"><span class="dn">··</span><span class="dt">Cover</span></div>
+    <div class="ditem" data-si="1"><span class="dn">01</span><span class="dt">The setup</span></div>
+    <div class="ditem" data-si="2"><span class="dn">02</span><span class="dt">The problem</span></div>
+    <div class="ditem" data-si="3"><span class="dn">03</span><span class="dt">Onboarding</span></div>
+    <div class="ditem" data-si="4"><span class="dn">04</span><span class="dt">The design system</span></div>
+    <div class="ditem" data-si="5"><span class="dn">05</span><span class="dt">The module</span></div>
+    <div class="ditem" data-si="6"><span class="dn">06</span><span class="dt">The extension</span></div>
+    <div class="ditem" data-si="7"><span class="dn">07</span><span class="dt">The rebuild</span></div>
+    <div class="ditem" data-si="8"><span class="dn">··</span><span class="dt">The close</span></div>
+    <div class="dfoot"><a href="index.html">← Library</a><a href="https://www.figma.com/design/ZcfD8yTkWrGEpPerZ0B66W/-Final--Sequifi-Redesign" target="_blank" rel="noopener">Design file ↗</a></div>
+  </div>
+</div>
+
 <!-- ================= CHROME ================= -->
 <div id="chrome">
-  <div class="navgrp"><span id="brand">Sequifi × Parallel</span></div>
+  <div class="navgrp"><span id="brand">Sequifi × Parallel</span><button class="navbtn" id="menuBtn">Contents</button></div>
   <div id="center">
     <div id="beats"></div>
     <span id="scenelab"></span>
@@ -696,7 +740,7 @@ body{background:var(--bg);color:var(--ink);font-family:var(--fs);-webkit-font-sm
   </div>
 </div>
 
-<div id="cursor"></div>
+<div id="cursor"><span id="curglyph"></span></div>
 
 <script>
 /* ---------- product map ---------- */
@@ -771,24 +815,62 @@ function next(){if(beat<meta[si].beats-1)beat++;else if(si<meta.length-1){si++;b
 function prev(){if(beat>0)beat--;else if(si>0){si--;beat=meta[si].beats-1;}render();}
 document.getElementById('nextBtn').addEventListener('click',e=>{e.stopPropagation();next();});
 document.getElementById('backBtn').addEventListener('click',e=>{e.stopPropagation();prev();});
-document.addEventListener('click',e=>{if(e.target.closest('a,button,.bd'))return;next();});
+document.getElementById('beginBtn').addEventListener('click',e=>{e.stopPropagation();next();});
+
+/* ---------- contents drawer ---------- */
+const drawer=document.getElementById('drawer');
+const drawerOpen=()=>drawer.classList.contains('open');
+function toggleDrawer(force){drawer.classList.toggle('open',force);syncHere();}
+document.getElementById('menuBtn').addEventListener('click',e=>{e.stopPropagation();toggleDrawer();});
+drawer.querySelector('.scrim').addEventListener('click',()=>toggleDrawer(false));
+function syncHere(){drawer.querySelectorAll('.ditem').forEach(d=>d.classList.toggle('here',+d.dataset.si===si));}
+drawer.querySelectorAll('.ditem').forEach(d=>d.addEventListener('click',()=>{si=+d.dataset.si;beat=0;render();toggleDrawer(false);}));
+
+/* ---------- page-turn zones ---------- */
+const BACKZONE=()=>innerWidth*0.12;
+const atStart=()=>si===0&&beat===0;
+const atEnd=()=>si===meta.length-1&&beat===meta[si].beats-1;
+document.addEventListener('click',e=>{
+  if(drawerOpen())return;
+  if(e.target.closest('a,button,.bd,#drawer,#chrome'))return;
+  if(e.clientX<BACKZONE()) prev(); else next();
+});
 document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){if(drawerOpen())toggleDrawer(false);return;}
+  if(e.key==='c'||e.key==='C'){toggleDrawer();return;}
+  if(drawerOpen())return;
   if(e.key==='ArrowRight'||e.key===' '||e.key==='Enter'){e.preventDefault();next();}
   else if(e.key==='ArrowLeft'){e.preventDefault();prev();}
   else if(e.key==='Home'){si=0;beat=0;render();}
   else if(e.key==='End'){si=meta.length-1;beat=0;render();}
+  else if(/^[1-7]$/.test(e.key)){si=+e.key;beat=0;render();}
 });
 
-/* ---------- cursor ---------- */
+/* ---------- cursor with page-turn glyphs ---------- */
 const cur=document.getElementById('cursor');
+const curglyph=document.getElementById('curglyph');
 if(matchMedia('(pointer:fine)').matches){
   addEventListener('mousemove',e=>{
     cur.classList.add('on');
     cur.style.left=e.clientX+'px';cur.style.top=e.clientY+'px';
-    cur.classList.toggle('hot',!!e.target.closest('a,button,.bd'));
+    const interactive=e.target.closest('a,button,.bd,#drawer .panel,#chrome');
+    cur.classList.toggle('hot',!!interactive);
+    let g='';
+    if(!interactive&&!drawerOpen()){
+      if(e.clientX<BACKZONE()){if(!atStart())g='←';}
+      else if(!atEnd())g='→';
+    }
+    curglyph.textContent=g;
+    cur.classList.toggle('zone',!!g);
   });
   addEventListener('mouseleave',()=>cur.classList.remove('on'));
 }
+
+/* ---------- position in the URL ---------- */
+const _render=render;
+render=function(){_render();history.replaceState(null,'','#'+si+'.'+beat);syncHere();};
+const hm=location.hash.match(/^#(\d+)\.(\d+)$/);
+if(hm){si=Math.min(+hm[1],meta.length-1);beat=Math.min(+hm[2],meta[si].beats-1);}
 
 render();
 </script>
