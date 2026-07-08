@@ -96,6 +96,12 @@ h1.hl,h2.hl{font-family:var(--fd);font-weight:400;font-size:clamp(26px,3.2vw,46p
 .tl .wklabels{flex:1;display:flex;gap:4px}
 .tl .wklabels span{flex:1;text-align:center;font-size:10px;color:var(--faint)}
 
+.gcard{border:1px solid var(--line2);border-radius:12px;padding:17px 18px;background:var(--bg)}
+.gcard b{font-family:var(--fd);font-weight:400;font-size:clamp(15px,1.4vw,19px);display:block;letter-spacing:-.01em}
+.gcard span{font-size:13px;color:var(--muted);display:block;margin-top:8px;line-height:1.55}
+.gcard .where{margin-top:12px}
+.gcard .where i{font-style:normal;display:inline-block;border:1px solid var(--line);border-radius:100px;padding:3px 11px;margin:5px 5px 0 0;font-size:12px;color:var(--muted)}
+
 /* close */
 #end{align-items:center;text-align:center}
 #end h2.hl{max-width:22ch}
@@ -190,6 +196,17 @@ h1.hl,h2.hl{font-family:var(--fd);font-weight:400;font-size:clamp(26px,3.2vw,46p
 
 <section class="slide">
   <p class="kick">03 · Sequoia</p>
+  <h2 class="hl">A design system earns its keep three ways.</h2>
+  <div class="vis cols3" style="max-width:1050px">
+    <div class="gcard"><b>Change once, everywhere.</b><span>One source of truth, so consistency holds as the product grows.</span></div>
+    <div class="gcard"><b>One pattern, many jobs.</b><span>Fewer building blocks, so every new screen is faster than the last.</span></div>
+    <div class="gcard"><b>The team runs it alone.</b><span>Documented and named, so it outlives the people who built it.</span></div>
+  </div>
+  <p class="hs" style="font-size:15px;margin-top:24px">Sequoia does all three. Here's how.</p>
+</section>
+
+<section class="slide">
+  <p class="kick">03 · Sequoia</p>
   <h2 class="hl">One structure, five levels.</h2>
   <div class="vis arch" style="max-width:1050px">
     <div class="lvl"><b>Foundations</b><span>Color, type, spacing, radius, elevation. All tokenised.</span></div>
@@ -234,6 +251,18 @@ h1.hl,h2.hl{font-family:var(--fd);font-weight:400;font-size:clamp(26px,3.2vw,46p
 
 <section class="slide">
   <p class="kick">03 · Sequoia</p>
+  <h2 class="hl">Built to be read, not decoded.</h2>
+  <p class="hs">In payroll, a misread number is a wrong paycheck. The palette is built for clarity.</p>
+  <div class="vis cols3" style="max-width:1050px">
+    <div class="gcard"><b>A five-step text hierarchy</b><span>Primary, secondary, tertiary, ghost, error. Importance is built in, never guessed.</span></div>
+    <div class="gcard"><b>Error at #8E0B16</b><span>A deep, high-contrast red, chosen to read clearly rather than to alarm.</span></div>
+    <div class="gcard"><b>States as tokens</b><span>Disabled, focus and icon colours are defined, never faked with opacity.</span></div>
+  </div>
+  <span class="verify">AA contrast pass to confirm · verify with Sandesh</span>
+</section>
+
+<section class="slide">
+  <p class="kick">03 · Sequoia</p>
   <h2 class="hl">Responsive by default.</h2>
   <p class="hs">Auto layout everywhere. Components resize, reflow and hold their alignment as content changes, so a screen built today survives the feature added next year.</p>
   <div class="vis"><div class="ph" style="width:min(700px,56vw);aspect-ratio:16/7"><div class="pl">One component shown at three widths, holding its shape</div><div class="pt">Placeholder · responsive demo</div></div></div>
@@ -241,10 +270,25 @@ h1.hl,h2.hl{font-family:var(--fd);font-weight:400;font-size:clamp(26px,3.2vw,46p
 
 <section class="slide">
   <p class="kick">03 · Sequoia</p>
-  <h2 class="hl">One list item, five jobs.</h2>
-  <p class="hs">The same row component works in payroll, hiring, reports, alerts and settings. That generality is the test of a system, and the reason new screens assemble instead of getting designed.</p>
-  <div class="vis"><div class="ph" style="width:min(760px,60vw);aspect-ratio:16/7"><div class="pl">One component, shown living in five different modules</div><div class="pt">Placeholder · component collage</div></div></div>
-  <span class="verify">example to confirm in file · verify with Sandesh</span>
+  <h2 class="hl">One pattern, many jobs.</h2>
+  <p class="hs">The fewer the building blocks, the faster the next screen. Four of Sequoia's patterns each carry the whole product.</p>
+  <div class="vis cols2" style="max-width:1000px">
+    <div class="gcard"><b>The multi-step wizard</b><div class="where"><i>Position setup</i><i>Worker onboarding</i></div></div>
+    <div class="gcard"><b>The slide-over drawer</b><div class="where"><i>Redline changes</i><i>Locations filter</i></div></div>
+    <div class="gcard"><b>The view switch</b><div class="where"><i>Table / Org chart</i><i>Table / Map</i></div></div>
+    <div class="gcard"><b>The data table</b><div class="where"><i>Locations</i><i>Positions</i><i>Departments</i></div></div>
+  </div>
+</section>
+
+<section class="slide">
+  <p class="kick">03 · Sequoia</p>
+  <h2 class="hl">The system holds when the brand changes.</h2>
+  <p class="hs">Sequifi is white-labeled: every customer sees their own brand. We ran the same flows under two different skins, and nothing broke.</p>
+  <div class="vis cols2" style="max-width:1000px">
+    <div class="ph" style="aspect-ratio:16/10"><div class="pl">The same flow, skinned as "aveyo"</div><div class="pt">Placeholder · white-label A</div></div>
+    <div class="ph" style="aspect-ratio:16/10"><div class="pl">The same flow, skinned as "Fulcrum Loans"</div><div class="pt">Placeholder · white-label B</div></div>
+  </div>
+  <p class="hs" style="font-size:15px;margin-top:20px">Change the tokens, change the brand. The structure never moves.</p>
 </section>
 
 <section class="slide">
@@ -291,6 +335,22 @@ h1.hl,h2.hl{font-family:var(--fd);font-weight:400;font-size:clamp(26px,3.2vw,46p
   <p class="dnum">Part four</p>
   <h2 class="hl">The handoff.</h2>
   <p class="hs">A system is judged by what happens after the designers leave.</p>
+</section>
+
+<section class="slide">
+  <p class="kick">06 · The handoff</p>
+  <h2 class="hl">How working with us actually goes.</h2>
+  <p class="hs">The same rhythm that built Sequoia.</p>
+  <div class="vis arch" style="max-width:1080px">
+    <div class="lvl"><b>Foundations</b><span>Shared in the first week.</span></div>
+    <span class="sep">&rarr;</span>
+    <div class="lvl"><b>Components &amp; patterns</b><span>Reviewed as they land.</span></div>
+    <span class="sep">&rarr;</span>
+    <div class="lvl"><b>Templates &amp; docs</b><span>Handed over, not thrown over.</span></div>
+    <span class="sep">&rarr;</span>
+    <div class="lvl"><b>Real flows</b><span>Onboarding, then the platform.</span></div>
+  </div>
+  <p class="hs" style="font-size:15px;margin-top:24px">Files open throughout. Senior designers on the work, not just the pitch. Walkthroughs you watch on your own time, so nothing waits for a meeting.</p>
 </section>
 
 <section class="slide">
