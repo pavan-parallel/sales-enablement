@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bridge fork — two directions → the decision → the reasoning</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FFFFFF; --ink:#17161A; --mut:#6C6B70; --lab:#9B9BA1;
+  --line:rgba(20,19,24,.11); --line2:rgba(20,19,24,.20);
+  --panel:#EAEAEC; --panel2:#F3F3F3;
+  --dark:#000000; --dmut:#8B8B92; --dline:rgba(255,255,255,.14);
+  --indigo:#4E61D6; --indigo-lt:#7E8DF4; --indigo-soft:#ECEEFB; --indigo-dk:#3D4FC4;
+  --red:#B4442F;
+  --f:'Hanken Grotesk',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  --ease:cubic-bezier(.4,0,.1,1);
+  --mx:6.2vw;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden}
+body{background:var(--bg);color:var(--ink);font-family:var(--f);
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+
+#prog{position:fixed;top:0;left:0;height:2px;background:var(--ink);width:0;z-index:90;transition:width .45s var(--ease)}
+
+.slide{position:absolute;inset:0;padding:12.5vh var(--mx) 11vh;display:none;flex-direction:column;justify-content:center;opacity:0}
+.slide.active{display:flex;opacity:1;transition:opacity .35s var(--ease)}
+
+.rl,.rr{position:absolute;top:5.6vh;font-size:14px;font-weight:500;color:var(--lab);letter-spacing:-.005em}
+.rl{left:var(--mx)}
+.rr{right:var(--mx);text-align:right}
+
+.h-sec{font-weight:500;font-size:clamp(30px,3.5vw,54px);line-height:1.06;letter-spacing:-.024em;max-width:20ch}
+.lead{font-size:clamp(17px,1.35vw,21px);line-height:1.5;color:var(--mut);max-width:46ch;font-weight:400}
+.accent{color:var(--indigo)}
+.overline{font-size:14px;font-weight:600;color:var(--indigo);margin-bottom:16px}
+.head .lead{margin-top:20px}
+.mt{margin-top:22px}
+
+.ph{position:relative;background:var(--panel);border-radius:16px;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;text-align:center}
+.ph.soft{background:var(--panel2)}
+.ph.tint{background:var(--indigo-soft)}
+.ph .pl{font-size:14px;color:var(--mut);max-width:34ch;padding:22px;line-height:1.5}
+.ph .tag{position:absolute;top:15px;left:17px;font-size:12px;color:var(--lab);font-weight:500}
+.ph.shot img{position:absolute;top:0;left:0;width:100%;height:auto;display:block}
+
+/* CHIPS */
+.chips{display:flex;flex-wrap:wrap;gap:13px;max-width:920px;margin-top:5vh}
+.chip{font-size:clamp(17px,1.6vw,25px);font-weight:400;border:1px solid var(--line2);border-radius:100px;padding:13px 28px;letter-spacing:-.01em}
+.chip.hot{background:var(--indigo);color:#fff;border-color:var(--indigo)}
+
+/* TWO-PANEL (directions intro) */
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:2vw;margin-top:5vh}
+.duo .cell .ph{aspect-ratio:16/10}
+.duo .cell .cap{margin-top:16px}
+.duo .cell .nm{font-size:clamp(19px,1.8vw,27px);font-weight:500;letter-spacing:-.02em}
+.duo .cell .ds{font-size:14px;color:var(--mut);line-height:1.5;margin-top:5px;max-width:34ch}
+
+/* MOODBOARD */
+.mbhead{display:flex;align-items:flex-end;justify-content:space-between;gap:30px;flex-wrap:wrap}
+.mbhead .desc{font-size:clamp(16px,1.35vw,20px);color:var(--mut);max-width:36ch;line-height:1.5}
+.trip{display:grid;grid-template-columns:repeat(3,1fr);gap:1.6vw;margin-top:4.5vh}
+.trip .ph{aspect-ratio:3/4}
+
+/* ── NEW · THE DECISION ─────────────────────────── */
+.decision{justify-content:flex-start}
+.decision .h-sec{font-size:clamp(28px,3vw,46px);max-width:24ch}
+.dtitle{position:relative;min-height:calc(clamp(28px,3vw,46px) * 2.3)}
+.dh{position:absolute;top:0;left:0;transition:opacity .45s var(--ease);will-change:opacity}
+.dh1{opacity:0}
+.decision.beat-1 .dh0{opacity:0}
+.decision.beat-1 .dh1{opacity:1}
+.dsub{margin-top:14px;opacity:0;transform:translateY(6px);transition:opacity .5s var(--ease) .1s,transform .5s var(--ease) .1s}
+.decision.beat-1 .dsub{opacity:1;transform:none}
+
+.dboards{display:grid;grid-template-columns:1fr 1fr;gap:2.6vw;margin-top:3.4vh;align-items:start}
+.board{transition:transform .6s var(--ease),opacity .6s var(--ease),filter .6s var(--ease)}
+.bname{margin-top:15px;font-weight:500;font-size:clamp(18px,1.55vw,23px);letter-spacing:-.02em}
+.bname small{font-weight:400;color:var(--mut)}
+
+/* the same screen rendered two ways */
+.scr{height:min(34vh,338px);border:1px solid var(--line2);border-radius:13px;overflow:hidden;background:#fff;
+  transition:box-shadow .6s var(--ease)}
+/* GRIDLOCK — dense, busy, utilitarian */
+.scr.dense .sbar{display:flex;align-items:center;gap:7px;background:#3E3E44;color:#fff;padding:8px 11px;font-size:12px}
+.scr.dense .sbar .st{margin-right:auto;font-weight:600}
+.scr.dense .sbar .sctrl{background:rgba(255,255,255,.15);border-radius:5px;padding:3px 8px;font-size:10px;font-weight:500}
+.scr.dense .stabs{display:flex;border-bottom:1px solid var(--line);font-size:10.5px}
+.scr.dense .stabs span{padding:6px 11px;color:var(--mut);border-right:1px solid var(--line)}
+.scr.dense .stabs .on{color:var(--ink);font-weight:600;box-shadow:inset 0 -2px 0 var(--ink)}
+.scr.dense table{width:100%;border-collapse:collapse;font-size:11px;font-variant-numeric:tabular-nums}
+.scr.dense td{padding:4.5px 9px;border:1px solid var(--line);color:#3a3a40;white-space:nowrap}
+.scr.dense .hd td{background:#EDEDEF;font-weight:600;color:var(--mut);font-size:10px}
+.scr.dense tr:nth-child(even):not(.hd):not(.tot) td{background:#FAFAFB}
+.scr.dense .num{text-align:right}
+.scr.dense .tot td{font-weight:700;background:#E7E7EA}
+.scr.dense .sfoot{display:flex;justify-content:space-between;align-items:center;padding:6px 10px;
+  border-top:1px solid var(--line);font-size:10px;color:var(--mut);background:#F6F6F7}
+.scr.dense .sfoot .pg span{padding:0 4px}
+.scr.dense .sfoot .pg b{color:var(--ink)}
+/* OPSCAPE — calm, open, readable */
+.scr.calm{display:flex;flex-direction:column}
+.scr.calm .cbar{background:var(--indigo);color:#fff;padding:15px 19px;font-weight:500;font-size:16px;
+  display:flex;justify-content:space-between;align-items:center;flex:none}
+.scr.calm .cbar .pill{background:rgba(255,255,255,.22);border-radius:100px;padding:4px 12px;font-size:12px;font-weight:500}
+.scr.calm .cbody{padding:22px;flex:1;display:flex;flex-direction:column;justify-content:center}
+.scr.calm .ctbl{border:1px solid var(--line);border-radius:11px;overflow:hidden}
+.scr.calm .cr{display:flex;justify-content:space-between;padding:14px 17px;border-top:1px solid var(--line);
+  font-size:15px;font-variant-numeric:tabular-nums}
+.scr.calm .cr:first-child{border-top:0}
+.scr.calm .cr .v{font-weight:600}
+.scr.calm .cr.tot{background:var(--indigo-soft)}
+
+/* beat 1 — Gridlock recedes, Opscape wins */
+.decision.beat-1 .board.gridlock{filter:grayscale(1);opacity:.34;transform:scale(.95)}
+.decision.beat-1 .board.opscape{transform:scale(1.02)}
+.decision.beat-1 .board.opscape .scr{box-shadow:0 0 0 3px var(--indigo),0 40px 90px -50px rgba(78,97,214,.6)}
+
+/* beat 1 (with the win) — the words it satisfies light up at the same time */
+.winchips{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px;opacity:0;transform:translateY(8px);
+  transition:opacity .55s var(--ease) .12s,transform .55s var(--ease) .12s}
+.decision.beat-1 .winchips{opacity:1;transform:none}
+.winchips .chip{font-size:15px;padding:8px 16px}
+.wnote{margin-top:16px;font-size:14px;color:var(--mut);opacity:0;transition:opacity .55s var(--ease) .28s}
+.decision.beat-1 .wnote{opacity:1}
+
+/* REASONING (vertical timeline) */
+.rzt{display:grid;grid-template-columns:1.05fr .95fr;gap:5vw;align-items:center;height:100%}
+.rzt-right{display:flex;justify-content:center}
+.vtl{margin-top:4vh}
+.vnode{display:flex;gap:22px;align-items:stretch;opacity:0;transition:opacity .5s var(--ease)}
+.vrail{flex:none;width:16px;display:flex;flex-direction:column;align-items:center}
+.vdot{width:14px;height:14px;border-radius:50%;background:var(--indigo);flex:none;margin-top:5px}
+.vline{width:2px;flex:1;background:var(--line2);margin:6px 0;transform:scaleY(0);transform-origin:top center;transition:transform .55s var(--ease)}
+.vnode:last-child .vline{display:none}
+.vbody{padding-bottom:3.4vh}
+.vnode:last-child .vbody{padding-bottom:0}
+.vbody .vt{font-size:clamp(18px,1.7vw,24px);font-weight:500;line-height:1.28;letter-spacing:-.015em;max-width:27ch}
+.vbody .vd{font-size:14.5px;color:var(--mut);line-height:1.5;margin-top:8px;max-width:36ch}
+/* beat 0 shows only the headline + screen; each next reveals one reason,
+   the current one bright, earlier ones staying but dimmed, later ones still hidden */
+.reason.beat-1 .vnode:nth-child(1){opacity:1}
+.reason.beat-2 .vnode:nth-child(1){opacity:.38}
+.reason.beat-2 .vnode:nth-child(2){opacity:1}
+.reason.beat-3 .vnode:nth-child(1){opacity:.38}
+.reason.beat-3 .vnode:nth-child(2){opacity:.38}
+.reason.beat-3 .vnode:nth-child(3){opacity:1}
+/* the connector line falls from 0 to full only when the NEXT point arrives */
+.reason.beat-2 .vnode:nth-child(1) .vline{transform:scaleY(1)}
+.reason.beat-3 .vnode:nth-child(2) .vline{transform:scaleY(1)}
+.rscreen{width:min(430px,36vw);border:1px solid var(--line);border-radius:18px;overflow:hidden;background:#fff;
+  box-shadow:0 44px 100px -58px rgba(20,19,24,.4)}
+.rscreen .rbar{background:var(--indigo);color:#fff;padding:16px 20px;font-weight:500;font-size:17px;
+  display:flex;justify-content:space-between;align-items:center}
+.rscreen .rbar .rpill{background:rgba(255,255,255,.22);border-radius:100px;padding:4px 12px;font-size:12px;font-weight:500}
+.rscreen .rbody{padding:22px}
+.rscreen .rtable{border:1px solid var(--line);border-radius:11px;overflow:hidden}
+.rscreen .rtable .r{display:flex;justify-content:space-between;padding:12px 16px;border-top:1px solid var(--line);font-variant-numeric:tabular-nums;font-size:15px}
+.rscreen .rtable .r:first-child{border-top:0}
+.rscreen .rtable .r .k{color:var(--mut)}.rscreen .rtable .r .v{font-weight:600}
+.rscreen .rtable .r.tot{background:var(--indigo-soft)}
+.rscreen .rtable .r.tot .k{color:var(--ink);font-weight:500}
+
+/* CHROME */
+#chrome{position:fixed;bottom:0;left:0;right:0;display:flex;justify-content:space-between;align-items:center;
+  padding:22px var(--mx);z-index:70;pointer-events:none}
+#chrome>*{pointer-events:auto}
+.pgno{font-size:13px;color:var(--lab);font-weight:500;font-variant-numeric:tabular-nums}
+.ngrp{display:flex;gap:9px}
+.navbtn{width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:#fff;
+  color:var(--ink);cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;
+  transition:border-color .2s,background .2s;box-shadow:0 2px 10px -3px rgba(0,0,0,.2)}
+.navbtn:hover{border-color:var(--line2)}
+.navbtn:disabled{opacity:.3;cursor:default}
+.hint{position:fixed;bottom:26px;left:50%;transform:translateX(-50%);z-index:70;font-size:12.5px;color:var(--lab);
+  pointer-events:none;transition:opacity .4s}
+
+@media (prefers-reduced-motion:reduce){*{transition-duration:.001s!important}}
+</style>
+</head>
+<body>
+<div id="prog"></div>
+
+<!-- 1 · TWO DIRECTIONS (was slide 9) -->
+<section class="slide active">
+  <div class="rl">Visual language</div><div class="rr">Sequifi × Parallel</div>
+  <div class="head"><h2 class="h-sec">From the keywords, we explored two directions.</h2></div>
+  <div class="duo">
+    <div class="cell">
+      <div class="ph shot"><img src="Assets/gridlock-moodboard-ui.png" alt="Gridlock — visual direction moodboard"></div>
+    </div>
+    <div class="cell">
+      <div class="ph shot"><img src="Assets/opscape-moodboard-ui.png" alt="Opscape — visual direction moodboard"></div>
+    </div>
+  </div>
+</section>
+
+<!-- 2 · GRIDLOCK MOODBOARD (was slide 10) -->
+<section class="slide">
+  <div class="rl">Direction one</div><div class="rr">Sequifi × Parallel</div>
+  <div class="mbhead">
+    <h2 class="h-sec" style="max-width:12ch">Gridlock</h2>
+    <p class="desc">Order and structure, with a bit of flow. Denser, more utilitarian.</p>
+  </div>
+  <div class="trip">
+    <div class="ph"><span class="tag">Screen</span><span class="pl">Gridlock · dashboard</span></div>
+    <div class="ph"><span class="tag">Screen</span><span class="pl">Gridlock · table view</span></div>
+    <div class="ph"><span class="tag">Screen</span><span class="pl">Gridlock · detail</span></div>
+  </div>
+</section>
+
+<!-- 3 · OPSCAPE MOODBOARD (was slide 11 — pill removed, now an equal exploration) -->
+<section class="slide">
+  <div class="rl">Direction two</div><div class="rr">Sequifi × Parallel</div>
+  <div class="mbhead">
+    <h2 class="h-sec" style="max-width:12ch">Opscape</h2>
+    <p class="desc">Clean and functional, made for operations. Lighter, calmer, more open.</p>
+  </div>
+  <div class="trip">
+    <div class="ph"><span class="tag">Screen</span><span class="pl">Opscape · dashboard</span></div>
+    <div class="ph"><span class="tag">Screen</span><span class="pl">Opscape · table view</span></div>
+    <div class="ph"><span class="tag">Screen</span><span class="pl">Opscape · detail</span></div>
+  </div>
+</section>
+
+<!-- 4 · THE DECISION (NEW — the bridge) -->
+<section class="slide decision" data-beats="2">
+  <div class="rl">Visual language</div><div class="rr">Sequifi × Parallel</div>
+  <div class="head">
+    <div class="dtitle">
+      <h2 class="h-sec dh dh0">So we built the same screen both ways.</h2>
+      <h2 class="h-sec dh dh1">The one that's easier to work in won.</h2>
+    </div>
+    <p class="lead dsub">HR admins are in payroll all day. The open one is easier to read, and harder to misread.</p>
+  </div>
+  <div class="dboards">
+    <div class="board gridlock">
+      <div class="scr dense">
+        <div class="sbar"><span class="st">Payroll</span><span class="sctrl">Filters</span><span class="sctrl">Export</span><span class="sctrl">•••</span></div>
+        <div class="stabs"><span class="on">Current</span><span>Pending</span><span>History</span><span>Adjustments</span></div>
+        <table>
+          <tr class="hd"><td>Item</td><td>Type</td><td class="num">Amount</td><td>Status</td></tr>
+          <tr><td>Commission</td><td>Variable</td><td class="num">$1,240.00</td><td>Ready</td></tr>
+          <tr><td>Upfront bonus</td><td>Fixed</td><td class="num">$300.00</td><td>Ready</td></tr>
+          <tr><td>Override</td><td>Variable</td><td class="num">$85.50</td><td>Ready</td></tr>
+          <tr><td>Base draw</td><td>Fixed</td><td class="num">$500.00</td><td>Held</td></tr>
+          <tr><td>Clawback</td><td>Adjustment</td><td class="num">-$120.00</td><td>Review</td></tr>
+          <tr><td>Referral bonus</td><td>Variable</td><td class="num">$210.00</td><td>Ready</td></tr>
+          <tr><td>Mileage</td><td>Fixed</td><td class="num">$64.20</td><td>Ready</td></tr>
+          <tr><td>Deduction</td><td>Adjustment</td><td class="num">-$45.00</td><td>Posted</td></tr>
+          <tr class="tot"><td>Total</td><td></td><td class="num">$1,625.50</td><td></td></tr>
+        </table>
+        <div class="sfoot"><span>Showing 1–8 of 128</span><span class="pg"><b>‹</b> 1 2 3 <b>›</b></span></div>
+      </div>
+      <div class="bname">Gridlock <small>— dense</small></div>
+    </div>
+    <div class="board opscape">
+      <div class="scr calm">
+        <div class="cbar">Payroll <span class="pill">March</span></div>
+        <div class="cbody"><div class="ctbl">
+          <div class="cr"><span class="k">Commission</span><span class="v">$1,240.00</span></div>
+          <div class="cr"><span class="k">Upfront bonus</span><span class="v">$300.00</span></div>
+          <div class="cr"><span class="k">Override</span><span class="v">$85.50</span></div>
+          <div class="cr tot"><span class="k">Total</span><span class="v">$1,625.50</span></div>
+        </div></div>
+      </div>
+      <div class="bname">Opscape <small>— calm</small></div>
+      <div class="winchips">
+        <span class="chip hot">Clean</span><span class="chip hot">Efficient</span><span class="chip hot">Order</span>
+      </div>
+      <div class="wnote">The words we started with pointed here.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 5 · NONE OF IT WAS RANDOM (was slide 12 — now reveals one reason at a time) -->
+<section class="slide reason" data-beats="4">
+  <div class="rl">Visual language</div><div class="rr">Sequifi × Parallel</div>
+  <div class="rzt">
+    <div>
+      <h2 class="h-sec" style="font-size:clamp(30px,3.4vw,50px)">Every choice inside Opscape had a reason.</h2>
+      <div class="vtl">
+        <div class="vnode">
+          <span class="vrail"><span class="vdot"></span><span class="vline"></span></span>
+          <div class="vbody"><div class="vt">We chose indigo, because it feels calm and in control.</div><div class="vd">Which matters when the screen is about someone's pay.</div></div>
+        </div>
+        <div class="vnode">
+          <span class="vrail"><span class="vdot"></span><span class="vline"></span></span>
+          <div class="vbody"><div class="vt">We chose a typeface that works everywhere.</div><div class="vd">Clear in a table full of numbers, still friendly on a welcome screen.</div></div>
+        </div>
+        <div class="vnode">
+          <span class="vrail"><span class="vdot"></span><span class="vline"></span></span>
+          <div class="vbody"><div class="vt">We gave everything room to breathe.</div><div class="vd">Admins are in these screens all day, so nothing feels cramped.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="rzt-right">
+      <div class="rscreen">
+        <div class="rbar">Payroll <span class="rpill">March</span></div>
+        <div class="rbody"><div class="rtable">
+          <div class="r"><span class="k">Commission</span><span class="v">$1,240.00</span></div>
+          <div class="r"><span class="k">Upfront bonus</span><span class="v">$300.00</span></div>
+          <div class="r"><span class="k">Override</span><span class="v">$85.50</span></div>
+          <div class="r tot"><span class="k">Total</span><span class="v">$1,625.50</span></div>
+        </div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div id="chrome">
+  <span class="pgno" id="pgno"></span>
+  <div class="ngrp">
+    <button class="navbtn" id="backBtn" aria-label="Back">←</button>
+    <button class="navbtn" id="nextBtn" aria-label="Next">→</button>
+  </div>
+</div>
+<div class="hint" id="hint">Click / → to advance · this fork = slides 9→13 of the deck</div>
+
+<script>
+const slides=[...document.querySelectorAll('.slide')];
+let i=0, beat=0;
+const pad=n=>String(n).padStart(2,'0');
+const beatsOf=s=>parseInt(s.dataset.beats||'1',10);
+function applyBeats(){
+  const s=slides[i];
+  for(let k=1;k<=12;k++) s.classList.remove('beat-'+k);
+  for(let k=1;k<=beat;k++) s.classList.add('beat-'+k);
+}
+function chrome(){
+  const s=slides[i];
+  const pg=document.getElementById('pgno');
+  const totalBeats=beatsOf(s);
+  pg.textContent=pad(i+1)+' / '+pad(slides.length)+(totalBeats>1?'  ·  '+(beat+1)+'/'+totalBeats:'');
+  document.getElementById('backBtn').disabled=(i===0&&beat===0);
+  document.getElementById('nextBtn').disabled=(i===slides.length-1&&beat===totalBeats-1);
+  document.getElementById('prog').style.width=(i/(slides.length-1)*100)+'%';
+  document.getElementById('hint').style.opacity=(i===0&&beat===0)?'1':'0';
+  history.replaceState(null,'','#'+i+'.'+beat);
+}
+function render(){
+  slides.forEach((s,k)=>s.classList.toggle('active',k===i));
+  applyBeats();chrome();
+}
+function next(){
+  if(beat<beatsOf(slides[i])-1){beat++;applyBeats();chrome();return;}
+  if(i<slides.length-1){i++;beat=0;render();}
+}
+function prev(){
+  if(beat>0){beat--;applyBeats();chrome();return;}
+  if(i>0){i--;beat=beatsOf(slides[i])-1;render();}
+}
+document.getElementById('nextBtn').addEventListener('click',e=>{e.stopPropagation();next();});
+document.getElementById('backBtn').addEventListener('click',e=>{e.stopPropagation();prev();});
+document.addEventListener('click',e=>{if(e.target.closest('a,button'))return;if(e.clientX<innerWidth*0.12)prev();else next();});
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key===' '||e.key==='Enter'){e.preventDefault();next();}
+  else if(e.key==='ArrowLeft'){e.preventDefault();prev();}
+  else if(e.key==='Home'){i=0;beat=0;render();}
+  else if(e.key==='End'){i=slides.length-1;beat=beatsOf(slides[i])-1;render();}
+});
+const m=location.hash.match(/^#(\d+)(?:\.(\d+))?/);
+if(m){i=Math.min(+m[1],slides.length-1);beat=Math.min(+(m[2]||0),beatsOf(slides[i])-1);}
+render();
+</script>
+</body>
+</html>
