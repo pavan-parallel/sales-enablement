@@ -66,9 +66,13 @@ button{font-family:var(--fs)}
              0 28px 70px -24px rgba(17,17,17,.22)}
 
 /* ============ FEATURED ============ */
-#featured{position:relative;border:1px solid var(--line);border-radius:var(--r);overflow:hidden;cursor:pointer;margin-bottom:20px;
-  background:var(--card);display:grid;grid-template-columns:1.2fr .8fr}
+#featured{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px}
+.featc{position:relative;border:1px solid var(--line);border-radius:var(--r);overflow:hidden;cursor:pointer;
+  background:var(--card);padding:38px 40px 34px;display:flex;flex-direction:column;
+  transition:box-shadow .3s var(--ease),transform .3s var(--ease)}
+.featc:hover{box-shadow:0 28px 70px -24px rgba(17,17,17,.22)}
 #featured .fl{padding:42px 46px 40px}
+#featured .fmeta{margin-top:auto}
 #featured .flag{display:inline-flex;align-items:center;gap:9px;font-size:12px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--green-ink);margin-bottom:20px}
 #featured .flag .pulse{width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse 2.2s infinite}
 @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(25,219,152,.45)}70%{box-shadow:0 0 0 9px rgba(25,219,152,0)}100%{box-shadow:0 0 0 0 rgba(25,219,152,0)}}
@@ -77,7 +81,7 @@ button{font-family:var(--fs)}
 #featured .fmeta{display:flex;gap:8px;margin-top:22px;flex-wrap:wrap}
 #featured .fbtn{display:inline-block;margin-top:28px;font-size:14.5px;font-weight:500;color:#fff;background:var(--ink);border-radius:100px;
   padding:13px 26px;text-decoration:none;transition:transform .3s var(--ease),box-shadow .3s}
-#featured:hover .fbtn{transform:translateX(4px);box-shadow:0 14px 34px -12px rgba(17,17,17,.4)}
+.featc:hover .fbtn{transform:translateX(4px);box-shadow:0 14px 34px -12px rgba(17,17,17,.4)}
 #featured .fr{position:relative;border-left:1px solid var(--line);min-height:260px;
   background:radial-gradient(90% 90% at 60% 30%,#F4F9F3,transparent 75%),linear-gradient(#FFFFFF,#FBFAF6)}
 .sketch{position:absolute;inset:0;padding:36px}
@@ -350,26 +354,27 @@ function drawFeatured(show){
   const f=document.getElementById('featured');
   if(!show){f.style.display='none';return;}
   f.style.display='grid';
-  const h=CS[0];
-  f.innerHTML=
-   '<div class="fl">'
-   +'<span class="flag"><span class="pulse"></span>Live walkthrough</span>'
-   +'<h2>Healthify × Parallel</h2>'
-   +'<p class="fd">'+h.d+' Told as an interactive story: prototypes embedded, every card opens into depth, and the room decides where to go next.</p>'
-   +'<div class="fmeta"><span class="tg">'+h.ind+'</span><span class="tg">'+h.m+'</span>'+h.tags.map(t=>'<span class="tg">'+t+'</span>').join('')+'</div>'
-   +'<a class="fbtn" href="'+encodeURI(h.href)+'">Open the walkthrough →</a>'
-   +'</div>'
-   +'<div class="fr"><div class="sketch">'
-   +'<svg viewBox="0 0 300 190" preserveAspectRatio="none">'
-   +'<line x1="0" y1="60" x2="300" y2="60" stroke="rgba(17,17,17,.07)"/>'
-   +'<line x1="0" y1="115" x2="300" y2="115" stroke="rgba(17,17,17,.07)"/>'
-   +'<path d="M8 160 C 60 148, 110 120, 150 92" stroke="#10B87F" stroke-width="2" fill="none"/>'
-   +'<path d="M150 92 C 190 96, 230 130, 288 168" stroke="#D65151" stroke-width="2" fill="none"/>'
-   +'<path d="M150 92 C 200 80, 250 66, 292 52" stroke="#6A685D" stroke-width="1.2" stroke-dasharray="4 7" fill="none" opacity=".4"/>'
-   +'<circle cx="150" cy="92" r="4.5" fill="#E0AC52"/>'
-   +'</svg><span class="sl">Scene 1 · The bet</span></div></div>';
-  f.querySelector('.fbtn').onclick=e=>{e.preventDefault();e.stopPropagation();goLive(h.href);};
-  f.onclick=()=>goLive(h.href);
+  const feat=[
+    {c:CS[0],title:'Healthify × Parallel',
+     desc:CS[0].d+' Told as an interactive story: prototypes embedded, every card opens into depth.'},
+    {c:CS.find(x=>x.href==='sequifi-ds-v3.html'),title:'Sequoia × Parallel',
+     desc:'The design system we built for Sequifi, told slide by slide — foundations to components to the stress test on the real product.'}
+  ].filter(o=>o.c);
+  f.innerHTML=feat.map(o=>{
+    const c=o.c;
+    return '<div class="featc glowable">'
+     +'<span class="flag"><span class="pulse"></span>Live walkthrough</span>'
+     +'<h2>'+o.title+'</h2>'
+     +'<p class="fd">'+o.desc+'</p>'
+     +'<div class="fmeta"><span class="tg">'+c.ind+'</span><span class="tg">'+c.m+'</span>'+c.tags.map(t=>'<span class="tg">'+t+'</span>').join('')+'</div>'
+     +'<a class="fbtn" href="'+encodeURI(c.href)+'">Open the walkthrough →</a>'
+     +'</div>';
+  }).join('');
+  [...f.querySelectorAll('.featc')].forEach((el,i)=>{
+    const href=feat[i].c.href;
+    el.querySelector('.fbtn').onclick=e=>{e.preventDefault();e.stopPropagation();goLive(href);};
+    el.onclick=()=>goLive(href);
+  });
 }
 
 /* ================= GRID ================= */
@@ -379,7 +384,8 @@ function drawGrid(){
   const anyFilter=activeTags.size||model!=='All';
   drawFeatured(!anyFilter);
   grid.innerHTML='';
-  const shown=anyFilter?list:list.filter(c=>c!==CS[0]); // featured project lives in the hero card; other live builds stay in the grid
+  const sq=CS.find(c=>c.href==='sequifi-ds-v3.html');
+  const shown=anyFilter?list:list.filter(c=>c!==CS[0]&&c!==sq); // featured projects live in the hero cards; other live builds stay in the grid
   shown.forEach((c,k)=>{
     const idx=CS.indexOf(c);
     const el=document.createElement('div');
