@@ -1889,7 +1889,7 @@ document.addEventListener('keydown',e=>{
     paths.forEach((p,idx)=>{p.style.strokeDasharray=lens[idx];p.style.strokeDashoffset=lens[idx];});
     const t0=performance.now();
     const iv=setInterval(()=>{
-      const el=Math.min(1,(performance.now()-t0)/dur), e=1-Math.pow(1-el,3);
+      const el=Math.min(1,(performance.now()-t0)/dur), e=1-Math.pow(1-el,4);
       paths.forEach((p,idx)=>{p.style.strokeDashoffset=String(lens[idx]*(1-e));});
       if(el>=1){clearInterval(iv);if(head)head.style.opacity='1';}
     },16);
@@ -1915,7 +1915,7 @@ document.addEventListener('keydown',e=>{
       const head=mk('path',{d:'M '+(ex-7)+' '+(ey-5)+' L '+(ex+1)+' '+ey+' L '+(ex-7)+' '+(ey+5)+' Z',fill:'#4E61D6'});
       head.style.opacity='0';head.style.transition='opacity .3s ease';
       svg.appendChild(glow);svg.appendChild(line);svg.appendChild(head);
-      travel([glow,line],head,720);
+      travel([glow,line],head,980);
     });
   }
   rhlSync=()=>{
@@ -1928,7 +1928,7 @@ document.addEventListener('keydown',e=>{
     });
     screens.forEach((s,k)=>s.classList.toggle('show',k===Math.max(0,p)));
     svg.style.display='block';
-    if(p>=0) pending=setTimeout(drawConn,430); // let the point rise first, then the line travels
+    if(p>=0) pending=setTimeout(drawConn,640); // let the point fully settle first, then the line travels
   };
   rhlClear=()=>{wipe();clearTimeout(pending);svg.style.display='none';};
   addEventListener('resize',()=>{if(slides[i]&&slides[i].id==='rhl'){wipe();drawConn();}});
