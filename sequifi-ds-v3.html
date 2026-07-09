@@ -694,7 +694,7 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f);
 #a11y4 .a11y{display:grid;grid-template-columns:34% 1fr;gap:5vw;align-items:center}
 #a11y4 .h-sec{max-width:12ch}
 #a11y4 .lead{max-width:38ch;margin-top:20px}
-#a11y4 .right{display:flex;justify-content:center}
+#a11y4 .right{display:flex;justify-content:flex-start;padding-left:1vw}
 #a11y4 .tnum{font-variant-numeric:tabular-nums}
 #a11y4 .pcard{width:452px;background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:0 26px 58px -38px rgba(20,19,24,.42);padding:26px 30px;overflow:visible;position:relative}
 #a11y4 .pc-kick{font-size:12px;color:#6C6B70;font-weight:500}
@@ -715,6 +715,10 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f);
 #a11y4 .anno .atx{font-size:12px;color:var(--lab);font-weight:500}
 #a11y4 .anno .atx b{color:var(--ink);font-weight:600}
 #a11y4 .anno .atx .r{font-variant-numeric:tabular-nums}
+#a11y4 .anno .pill{font-size:11px;font-weight:700;padding:3px 9px;border-radius:100px;letter-spacing:.02em;white-space:nowrap}
+#a11y4 .anno .pill.aaa{background:#E9F7EF;color:#157F43}
+#a11y4 .anno .pill.aa{background:var(--indigo-soft);color:var(--indigo)}
+#a11y4 .anno .pill.na{background:#F1F2F4;color:var(--mut)}
 
 /* ===== slide 27 · responsive (one payroll run, three layouts) ===== */
 #resp2{--green:#2F7D53;--green-soft:#E5F1EA;--amber:#8A6320;--amber-soft:#F6EEDC}
@@ -1018,7 +1022,7 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f);
           <div class="main">
             <div class="top"><div class="crumb"><b>Home</b></div><div class="spacer"></div><div class="search">Search</div><div class="av"></div></div>
             <div class="body">
-              <div class="greet" data-key="hello">Good morning, Priya 👋</div>
+              <div class="greet" data-key="hello">Good morning, Rachel 👋</div>
               <div class="greetsub">Here's how your teams are tracking this month.</div>
               <div class="tiles" style="margin-top:26px">
                 <div class="tile" data-key="num"><div class="lb">Total commission</div><div class="nm">$124,900</div><div class="dl" style="color:#1F9254">↑ 8.4% this month</div></div>
@@ -1518,20 +1522,20 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f);
       <div class="pc-kick">Paystub · March 2024</div>
       <div class="pc-hero">
         <div class="pc-hlab">Take-home pay</div><div class="pc-hval tnum">$3,447.20</div>
-        <span class="anno"><span class="conn"></span><span class="adot" style="background:#17161A"></span><span class="atx"><b>Primary</b> · <span class="r">18:1</span></span></span>
+        <span class="anno"><span class="conn"></span><span class="adot" style="background:#17161A"></span><span class="atx"><b>Primary</b> · <span class="r">18:1</span></span><span class="pill aaa">WCAG AAA</span></span>
       </div>
       <div class="pc-list">
         <div class="pc-row"><span class="k">Gross pay</span><span class="v tnum">$4,200.00</span>
-          <span class="anno"><span class="conn"></span><span class="adot" style="background:#6C6B70"></span><span class="atx"><b>Tertiary</b> · <span class="r">5.3:1</span></span></span></div>
+          <span class="anno"><span class="conn"></span><span class="adot" style="background:#6C6B70"></span><span class="atx"><b>Tertiary</b> · <span class="r">5.3:1</span></span><span class="pill aa">WCAG AA</span></span></div>
         <div class="pc-row"><span class="k">Taxes</span><span class="v tnum">−$588.00</span>
-          <span class="anno"><span class="conn"></span><span class="adot" style="background:#45454B"></span><span class="atx"><b>Secondary</b> · <span class="r">9.5:1</span></span></span></div>
+          <span class="anno"><span class="conn"></span><span class="adot" style="background:#45454B"></span><span class="atx"><b>Secondary</b> · <span class="r">9.5:1</span></span><span class="pill aaa">WCAG AAA</span></span></div>
         <div class="pc-row"><span class="k">Benefits</span><span class="v tnum">−$164.80</span></div>
         <div class="pc-row tot"><span class="k">Take-home</span><span class="v tnum">$3,447.20</span></div>
       </div>
       <div class="pc-note"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg> 1 deduction needs review
-        <span class="anno"><span class="conn"></span><span class="adot" style="background:#8E0B16"></span><span class="atx"><b>Error</b> · <span class="r">9.5:1</span></span></span></div>
+        <span class="anno"><span class="conn"></span><span class="adot" style="background:#8E0B16"></span><span class="atx"><b>Error</b> · <span class="r">9.5:1</span></span><span class="pill aaa">WCAG AAA</span></span></div>
       <div class="pc-ghost">Deposited to account ending 4471
-        <span class="anno"><span class="conn"></span><span class="adot" style="background:#A6A6AC"></span><span class="atx"><b>Ghost</b> · non-essential</span></span></div>
+        <span class="anno"><span class="conn"></span><span class="adot" style="background:#A6A6AC"></span><span class="atx"><b>Ghost</b> · <span class="r">2.4:1</span></span><span class="pill na">Non-essential</span></span></div>
     </div></div>
   </div>
 </section>
