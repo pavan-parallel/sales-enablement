@@ -120,7 +120,7 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f);
 #kw .kwhead .accent{color:var(--indigo)}
 #kw .spot{margin-top:auto;margin-bottom:12vh;min-height:1.1em;display:flex;align-items:flex-end}
 #kw .big{font-weight:500;font-size:clamp(52px,7.4vw,128px);line-height:.9;letter-spacing:-.042em;color:var(--indigo);display:inline-block;will-change:transform,opacity}
-#kw .big.anim{animation:spotIn .5s var(--ease)}
+#kw .big.anim{animation:spotIn .38s var(--ease)}
 @keyframes spotIn{0%{opacity:0;transform:translateY(18px)}100%{opacity:1;transform:translateY(0)}}
 #kw .listR{border-left:1px solid var(--line);display:flex;flex-direction:column;justify-content:center;padding:0 var(--mx);gap:.5vh}
 #kw .listR .li{position:relative;display:flex;align-items:center;font-size:clamp(16px,1.5vw,24px);font-weight:500;letter-spacing:-.02em;color:var(--line2);padding:1.1vh 0;cursor:pointer;transition:color .3s var(--ease),transform .3s var(--ease)}
@@ -143,7 +143,7 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f);
 
 /* TWO-PANEL SHOWCASE */
 .duo{display:grid;grid-template-columns:1fr 1fr;gap:2vw;margin-top:5vh}
-.duo .cell .ph{aspect-ratio:16/10}
+.duo .cell .ph{aspect-ratio:16/10;border:1px solid var(--line2);box-shadow:0 34px 70px -40px rgba(20,19,24,.55)}
 .duo .cell .cap{margin-top:16px}
 .duo .cell .nm{font-size:clamp(19px,1.8vw,27px);font-weight:500;letter-spacing:-.02em}
 .duo .cell .ds{font-size:14px;color:var(--mut);line-height:1.5;margin-top:5px;max-width:34ch}
@@ -804,6 +804,21 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f);
 #resp2 .app-ph .tab{display:flex;flex-direction:column;align-items:center;gap:.3em;font-size:.62em;font-weight:500;color:var(--lab)}
 #resp2 .app-ph .tab .ic{width:1.5em;height:1.5em;border-radius:.35em;background:currentColor;opacity:.5}
 #resp2 .app-ph .tab.on{color:var(--indigo)} #resp2 .app-ph .tab.on .ic{opacity:1}
+
+/* ===== slide 12 · the decision — dark verdict with the real screen peeking up ===== */
+#verdict{justify-content:flex-start;padding-top:13vh}
+#verdict .kick{font-size:15px;font-weight:500;color:var(--dmut);margin-bottom:4vh}
+#verdict .vbig{font-weight:500;font-size:clamp(48px,7.6vw,120px);line-height:.94;letter-spacing:-.04em}
+#verdict .vbig .o{color:var(--indigo-lt)}
+#verdict .vwhy{margin-top:4.6vh;padding-top:2.8vh;border-top:1px solid var(--dline);display:flex;gap:44px;flex-wrap:wrap;
+  font-size:clamp(15px,1.4vw,20px);color:#C9C9D1;font-weight:400;max-width:62ch}
+#verdict .vwhy b{color:#fff;font-weight:500}
+#verdict .vpeek{position:absolute;left:50%;bottom:0;width:min(1120px,74vw);height:37vh;
+  border-radius:18px 18px 0 0;overflow:hidden;background:#fff;border:1px solid rgba(255,255,255,.14);border-bottom:0;
+  box-shadow:0 -10px 100px -14px rgba(78,97,214,.55);transform:translateX(-50%) translateY(46px);opacity:0}
+#verdict .vpeek img{width:100%;display:block}
+#verdict.active .vpeek{animation:vrise .9s var(--ease) .15s forwards}
+@keyframes vrise{to{transform:translateX(-50%) translateY(0);opacity:1}}
 </style>
 </head>
 <body>
@@ -955,21 +970,12 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f);
 </section>
 
 <!-- 12 THE DECISION · verdict; the chosen Opscape screen rises from the bottom -->
-<section class="slide verdict" data-beats="2">
+<section class="slide dark" id="verdict">
   <div class="rl">Visual language</div><div class="rr">Sequifi × Parallel</div>
-  <div class="vd2">
-    <div class="txt">
-      <h2 class="h-sec">Sequifi chose <span class="accent">Opscape</span>.</h2>
-      <p class="lead">It held up when the screen was full of someone's pay.</p>
-      <div class="chips vchips">
-        <span class="chip hot">Calm under pressure</span><span class="chip hot">Clear at a glance</span><span class="chip hot">Made for all-day use</span>
-      </div>
-    </div>
-    <div class="panel">
-      <div class="riser"><div class="frbar"><i></i><i></i><i></i></div>
-        <div class="frshot"><img src="Assets/Visual%20Directions/Opscape/Option%202.2.png" alt="Opscape — the chosen dashboard"></div></div>
-    </div>
-  </div>
+  <div class="kick">The decision</div>
+  <div class="vbig">Sequifi chose<br><span class="o">Opscape.</span></div>
+  <div class="vwhy"><span><b>Calm</b> under pressure</span><span><b>Clear</b> at a glance</span><span><b>Made</b> for all-day use</span></div>
+  <div class="vpeek"><img src="Assets/Dashboard.png" alt="Opscape dashboard"></div>
 </section>
 
 <!-- 13 EVERY CHOICE HAD A REASON · placeholder for the real detail screen -->
@@ -1868,7 +1874,7 @@ document.addEventListener('keydown',e=>{
   let n=0,timer=null,hovering=false;
   function show(k){n=k;big.textContent=words[k];big.classList.remove('anim');void big.offsetWidth;big.classList.add('anim');items.forEach((el,j)=>el.classList.toggle('on',j===k));}
   function loop(){if(!hovering)show((n+1)%words.length);}
-  function start(){stop();timer=setInterval(loop,1400);}
+  function start(){stop();timer=setInterval(loop,1000);}
   function stop(){if(timer){clearInterval(timer);timer=null;}}
   items.forEach((el,k)=>el.addEventListener('mouseenter',()=>{hovering=true;stop();show(k);}));
   list.addEventListener('mouseleave',()=>{hovering=false;start();});
