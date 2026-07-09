@@ -826,6 +826,24 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f);
 #docslide .figwin{width:100%;border:1px solid var(--line2);border-radius:12px;overflow:hidden;
   box-shadow:0 34px 74px -42px rgba(20,19,24,.5)}
 #docslide .figwin img{width:100%;display:block}
+
+/* ===== slide 31 · the stress test — cascade; hover a screen and it pops forward ===== */
+#stress{grid-template-columns:1.12fr 1fr;padding:0}
+#stress.active{display:grid}
+#stress .viz{position:relative;display:flex;align-items:center;justify-content:center;padding:12vh 2vw 12vh var(--mx);min-width:0}
+#stress .txt{display:flex;flex-direction:column;justify-content:center;padding:0 var(--mx) 0 4vw}
+#stress .casc{position:relative;width:100%;max-width:700px;aspect-ratio:5/4}
+#stress .win{position:absolute;width:70%;border-radius:14px;overflow:hidden;background:#fff;border:1px solid var(--line);
+  box-shadow:0 34px 70px -46px rgba(20,19,24,.5);
+  transition:transform .26s var(--ease),box-shadow .26s var(--ease);transform-origin:center center;will-change:transform}
+#stress .win .wbar{height:30px;background:#F1F1F3;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:5px;padding:0 12px}
+#stress .win .wbar i{width:8px;height:8px;border-radius:50%;background:#d3d3d7;flex:none}
+#stress .win .wshot{aspect-ratio:16/10;overflow:hidden}
+#stress .win .wshot img{width:100%;height:100%;object-fit:cover;object-position:top left;display:block}
+#stress .c1{top:0;left:0;z-index:1;transform:rotate(-1.5deg)}
+#stress .c2{top:16%;left:15%;z-index:2;transform:rotate(1deg)}
+#stress .c3{top:33%;left:30%;z-index:3;transform:rotate(-.5deg)}
+#stress .win.up{z-index:20;transform:rotate(0deg) scale(1.05) translateY(-16px);box-shadow:0 56px 110px -40px rgba(20,19,24,.58)}
 </style>
 </head>
 <body>
@@ -1693,14 +1711,18 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f);
 </section>
 
 <!-- 32 STRESS TEST -->
-<section class="slide">
+<section class="slide" id="stress">
   <div class="rl">The stress test</div><div class="rr">Sequifi × Parallel</div>
-  <div class="two rev">
-    <div class="ph"><span class="tag">Asset</span><span class="pl">A real screen, rebuilt with Sequoia</span></div>
-    <div>
-      <h2 class="h-sec">We stress-tested it on the real product.</h2>
-      <p class="lead mt">We applied the design system across the product. Wherever a screen broke a component, we fixed the system, not the screen. Every fix made Sequoia stronger.</p>
+  <div class="viz">
+    <div class="casc">
+      <div class="win c1"><div class="wbar"><i></i><i></i><i></i></div><div class="wshot"><img src="Assets/Templates.png" alt="Templates"></div></div>
+      <div class="win c2"><div class="wbar"><i></i><i></i><i></i></div><div class="wshot"><img src="Assets/Management.png" alt="Management"></div></div>
+      <div class="win c3"><div class="wbar"><i></i><i></i><i></i></div><div class="wshot"><img src="Assets/Dashboard.png" alt="Dashboard"></div></div>
     </div>
+  </div>
+  <div class="txt">
+    <h2 class="h-sec">We stress-tested it on the real product.</h2>
+    <p class="lead">We applied the design system across the product. Wherever a screen broke a component, we fixed the system, not the screen. Every fix made Sequoia stronger.</p>
   </div>
 </section>
 
@@ -1960,6 +1982,23 @@ document.addEventListener('keydown',e=>{
     fit('scr-ph',390,845,150,325);
   }
   respLayout(); addEventListener('resize',respLayout);
+})();
+/* slide 31 · stress test — hover a screen in the cascade and it pops forward */
+(function(){
+  const casc=document.querySelector('#stress .casc'), viz=document.querySelector('#stress .viz');
+  if(!casc) return;
+  const cards=[...casc.querySelectorAll('.win')];
+  const raise=n=>cards.forEach((c,k)=>c.classList.toggle('up',k===n));
+  (viz||casc).addEventListener('mousemove',e=>{
+    const cr=casc.getBoundingClientRect(), px=e.clientX-cr.left, py=e.clientY-cr.top;
+    let best=-1, bd=Infinity;
+    cards.forEach((c,k)=>{
+      const x=c.offsetLeft,y=c.offsetTop,w=c.offsetWidth,h=c.offsetHeight;
+      if(px>=x&&px<=x+w&&py>=y&&py<=y+h){const cx=x+w/2,cy=y+h/2,d=(px-cx)**2+(py-cy)**2;if(d<bd){bd=d;best=k;}}
+    });
+    raise(best);
+  });
+  (viz||casc).addEventListener('mouseleave',()=>raise(-1));
 })();
 const m=location.hash.match(/^#(\d+)(?:\.(\d+))?/);
 if(m){i=Math.min(+m[1],slides.length-1);beat=Math.min(+(m[2]||0),beatsOf(slides[i])-1);}
