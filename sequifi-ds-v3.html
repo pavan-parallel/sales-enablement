@@ -624,12 +624,13 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f);
 #rhl .left{padding:0 3vw 0 var(--mx);display:flex;flex-direction:column;justify-content:center;position:relative;z-index:6}
 #rhl .left h1{font-weight:500;font-size:clamp(28px,3vw,46px);line-height:1.05;letter-spacing:-.026em;max-width:15ch}
 #rhl .pts{margin-top:5vh;display:flex;flex-direction:column}
-#rhl .pt{display:flex;gap:20px;padding:2.4vh 0;opacity:.3;transition:opacity .4s var(--ease)}
-#rhl .pt.on{opacity:1}
+#rhl .pt{display:flex;gap:20px;padding:2.4vh 0;opacity:0;transform:translateY(10px);transition:opacity .5s var(--ease),transform .5s var(--ease)}
+#rhl .pt.show{opacity:1;transform:none}
 #rhl .pt .rail{flex:none;width:14px;display:flex;flex-direction:column;align-items:center;padding-top:6px}
 #rhl .pt .dot{width:13px;height:13px;border-radius:50%;background:var(--indigo);flex:none;transition:transform .3s var(--ease)}
-#rhl .pt.on .dot{transform:scale(1.15)}
-#rhl .pt .line{width:2px;flex:1;background:var(--line2);margin:8px 0 -2.4vh}
+#rhl .pt.cur .dot{transform:scale(1.18)}
+#rhl .pt .line{width:2px;flex:1;background:var(--line2);margin:8px 0 -2.4vh;transform:scaleY(0);transform-origin:top;transition:transform .55s var(--ease)}
+#rhl .pt.linegrow .line{transform:scaleY(1)}
 #rhl .pt:last-child .line{display:none}
 #rhl .pt .t{font-size:clamp(17px,1.55vw,22px);font-weight:500;line-height:1.3;letter-spacing:-.015em;max-width:24ch}
 #rhl .pt .d{font-size:14.5px;color:var(--mut);line-height:1.5;margin-top:7px;max-width:32ch}
@@ -968,7 +969,7 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f);
 </section>
 
 <!-- 13 EVERY CHOICE HAD A REASON · placeholder for the real detail screen -->
-<section class="slide" id="rhl" data-beats="3">
+<section class="slide" id="rhl" data-beats="4">
   <div class="rl">Visual language</div><div class="rr">Sequifi × Parallel</div>
   <div class="left">
     <h1>Every choice inside Opscape had a reason.</h1>
@@ -1870,7 +1871,8 @@ document.addEventListener('keydown',e=>{
   kwStart=()=>{hovering=false;show(0);start();};   // always begin at Familiar, then cycle
   kwStop=()=>{stop();};
 })();
-/* slide 13 · reason-highlight — connectors from the active point to the real screen */
+/* slide 13 · reason-highlight — beat 0 is intro; each next reveals a point, then
+   the connector travels from that point to the real component to guide the eye. */
 (function(){
   const NS='http://www.w3.org/2000/svg';
   const sec=document.getElementById('rhl');
@@ -1879,35 +1881,57 @@ document.addEventListener('keydown',e=>{
   const pts=[...sec.querySelectorAll('.pt')];
   const screens=[...sec.querySelectorAll('.screen')];
   const TARGETS={0:['indigo'],1:['hello','num'],2:['room']};
-  const mk=(tag,a)=>{const n=document.createElementNS(NS,tag);for(const k in a)n.setAttribute(k,a[k]);return n;};
-  const wipe=()=>{while(svg.firstChild)svg.removeChild(svg.firstChild);};
-  function draw(){
-    wipe();
+  const mk=(t,a)=>{const n=document.createElementNS(NS,t);for(const k in a)n.setAttribute(k,a[k]);return n;};
+  let timers=[], pending=null;
+  function wipe(){timers.forEach(clearInterval);timers=[];while(svg.firstChild)svg.removeChild(svg.firstChild);}
+  function travel(paths,head,dur){
+    const lens=paths.map(p=>p.getTotalLength());
+    paths.forEach((p,idx)=>{p.style.strokeDasharray=lens[idx];p.style.strokeDashoffset=lens[idx];});
+    const t0=performance.now();
+    const iv=setInterval(()=>{
+      const el=Math.min(1,(performance.now()-t0)/dur), e=1-Math.pow(1-el,3);
+      paths.forEach((p,idx)=>{p.style.strokeDashoffset=String(lens[idx]*(1-e));});
+      if(el>=1){clearInterval(iv);if(head)head.style.opacity='1';}
+    },16);
+    timers.push(iv);
+  }
+  function drawConn(){
+    while(svg.firstChild)svg.removeChild(svg.firstChild);
     svg.setAttribute('width',innerWidth);svg.setAttribute('height',innerHeight);
-    const b=Math.min(beat,2), scr=screens[b], keys=TARGETS[b]||[];
-    if(!scr)return;
+    const p=beat-1; if(p<0)return;
+    const scr=screens[Math.max(0,p)], keys=TARGETS[p]||[], ptEl=pts[p];
+    if(!scr||!ptEl)return;
     const left=sec.querySelector('.left').getBoundingClientRect();
-    const title=pts[b].querySelector('.t').getBoundingClientRect();
+    const title=ptEl.querySelector('.t').getBoundingClientRect();
     const sx=left.right-4, sy=title.top+title.height/2;
     keys.forEach(k=>{
-      const t=scr.querySelector('[data-key="'+k+'"]'); if(!t)return;
-      const r=t.getBoundingClientRect();
+      const tg=scr.querySelector('[data-key="'+k+'"]'); if(!tg)return;
+      const r=tg.getBoundingClientRect();
       const ex=r.left-16, ey=r.top+r.height/2, dx=ex-sx;
       const c1x=sx+Math.max(70,dx*0.5), c2x=ex-Math.max(70,dx*0.45);
       const d='M '+sx+' '+sy+' C '+c1x+' '+sy+' '+c2x+' '+ey+' '+ex+' '+ey;
-      svg.appendChild(mk('path',{d,fill:'none',stroke:'#4E61D6',opacity:'.09','stroke-width':'5','stroke-linecap':'round'}));
-      svg.appendChild(mk('path',{d,fill:'none',stroke:'#4E61D6',opacity:'.7','stroke-width':'1.6','stroke-dasharray':'0.5 7','stroke-linecap':'round'}));
-      svg.appendChild(mk('path',{d:'M '+(ex-7)+' '+(ey-5)+' L '+(ex+1)+' '+ey+' L '+(ex-7)+' '+(ey+5)+' Z',fill:'#4E61D6'}));
+      const glow=mk('path',{d,fill:'none',stroke:'#4E61D6',opacity:'.10','stroke-width':'5','stroke-linecap':'round'});
+      const line=mk('path',{d,fill:'none',stroke:'#4E61D6',opacity:'.78','stroke-width':'1.8','stroke-linecap':'round'});
+      const head=mk('path',{d:'M '+(ex-7)+' '+(ey-5)+' L '+(ex+1)+' '+ey+' L '+(ex-7)+' '+(ey+5)+' Z',fill:'#4E61D6'});
+      head.style.opacity='0';head.style.transition='opacity .3s ease';
+      svg.appendChild(glow);svg.appendChild(line);svg.appendChild(head);
+      travel([glow,line],head,720);
     });
   }
   rhlSync=()=>{
-    const b=Math.min(beat,2);
-    pts.forEach((p,k)=>p.classList.toggle('on',k===b));
-    screens.forEach((s,k)=>s.classList.toggle('show',k===b));
-    svg.style.display='block'; wipe(); setTimeout(draw,70);
+    wipe(); clearTimeout(pending);
+    const p=beat-1;
+    pts.forEach((el,k)=>{
+      el.classList.toggle('show',k<=p);   // cumulative: revealed points stay
+      el.classList.toggle('linegrow',k<p);// the rail line falls once a later point exists
+      el.classList.toggle('cur',k===p);
+    });
+    screens.forEach((s,k)=>s.classList.toggle('show',k===Math.max(0,p)));
+    svg.style.display='block';
+    if(p>=0) pending=setTimeout(drawConn,430); // let the point rise first, then the line travels
   };
-  rhlClear=()=>{wipe();svg.style.display='none';};
-  addEventListener('resize',()=>{if(slides[i]&&slides[i].id==='rhl')draw();});
+  rhlClear=()=>{wipe();clearTimeout(pending);svg.style.display='none';};
+  addEventListener('resize',()=>{if(slides[i]&&slides[i].id==='rhl'){wipe();drawConn();}});
 })();
 /* slide 27 · responsive — each screen authored at native size, scaled to its viewport */
 (function(){
