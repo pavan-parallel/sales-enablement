@@ -791,14 +791,14 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f);
   <div class="rl">Visual language</div><div class="rr">Sequifi × Parallel</div>
   <div class="rzt">
     <div>
-      <h2 class="h-sec" style="font-size:clamp(30px,3.4vw,50px)">Every choice inside Opscape had a reason.</h2>
+      <h2 class="h-sec" style="font-size:clamp(30px,3.4vw,50px)">Nothing here is decoration.</h2>
       <div class="vtl">
         <div class="vnode"><span class="vrail"><span class="vdot"></span><span class="vline"></span></span>
-          <div class="vbody"><div class="vt">Calm under pressure, so we chose indigo.</div><div class="vd">It stays quiet when the screen is full of numbers.</div></div></div>
+          <div class="vbody"><div class="vt">We chose indigo because it feels calm and in control.</div><div class="vd">That matters when the screen is about someone's pay.</div></div></div>
         <div class="vnode"><span class="vrail"><span class="vdot"></span><span class="vline"></span></span>
-          <div class="vbody"><div class="vt">Clear at a glance, so we set one type scale.</div><div class="vd">Hierarchy is read, never guessed.</div></div></div>
+          <div class="vbody"><div class="vt">We chose a typeface that works in two very different places.</div><div class="vd">Clear in a table full of numbers, and still warm on a welcome screen. That's Hanken Grotesk.</div></div></div>
         <div class="vnode"><span class="vrail"><span class="vdot"></span><span class="vline"></span></span>
-          <div class="vbody"><div class="vt">Made for all-day use, so we gave everything room.</div><div class="vd">Nothing feels cramped for people who never leave these screens.</div></div></div>
+          <div class="vbody"><div class="vt">We gave everything room to breathe, because admins are here all day.</div><div class="vd">Nothing feels cramped, so decisions stay easy from the first hour to the last.</div></div></div>
       </div>
     </div>
     <div class="rzt-right">
@@ -1508,7 +1508,7 @@ document.addEventListener('keydown',e=>{
   let n=0,timer=null,hovering=false;
   function show(k){n=k;big.textContent=words[k];big.classList.remove('anim');void big.offsetWidth;big.classList.add('anim');items.forEach((el,j)=>el.classList.toggle('on',j===k));}
   function loop(){if(!hovering)show((n+1)%words.length);}
-  function start(){stop();timer=setInterval(loop,1800);}
+  function start(){stop();timer=setInterval(loop,1400);}
   function stop(){if(timer){clearInterval(timer);timer=null;}}
   items.forEach((el,k)=>el.addEventListener('mouseenter',()=>{hovering=true;stop();show(k);}));
   list.addEventListener('mouseleave',()=>{hovering=false;start();});
