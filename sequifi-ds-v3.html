@@ -593,6 +593,12 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f);
 .scn .txt{padding:0 4vw 0 var(--mx);display:flex;flex-direction:column;justify-content:center}
 .scn .txt .lead{margin-top:18px;max-width:24ch}
 .scn .panel{position:relative;background:var(--stage);overflow:hidden}
+/* each direction gets its own panel character so the two slides read differently */
+.scn.dir-grid .panel{background:linear-gradient(158deg,#E8ECF7 0%,#D9DFF1 100%)}
+.scn.dir-grid .panel::before{content:"";position:absolute;inset:0;
+  background-image:linear-gradient(rgba(78,97,214,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(78,97,214,.07) 1px,transparent 1px);
+  background-size:34px 34px}
+.scn.dir-open .panel{background:radial-gradient(125% 95% at 80% 18%,#FBFAF6 0%,#F2EFFA 52%,#E7E4F5 100%)}
 .scn .frame{position:absolute;top:12%;bottom:12%;left:9%;right:0;border-radius:16px 0 0 16px;overflow:hidden;
   background:#fff;border:1px solid var(--line);border-right:0;box-shadow:0 44px 90px -42px rgba(28,36,86,.42)}
 .frbar{height:38px;background:#F1F1F3;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:7px;padding:0 16px}
@@ -735,7 +741,7 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f);
 <!-- 10 GRIDLOCK · screen grounded on a tinted panel -->
 <section class="slide screen">
   <div class="rl">Direction one</div><div class="rr">Sequifi × Parallel</div>
-  <div class="scn">
+  <div class="scn dir-grid">
     <div class="txt">
       <h2 class="h-sec" style="max-width:12ch">Gridlock</h2>
       <p class="lead">Order and structure, with a bit of flow. Denser, more utilitarian.</p>
@@ -750,7 +756,7 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f);
 <!-- 11 OPSCAPE · screen grounded on a tinted panel -->
 <section class="slide screen">
   <div class="rl">Direction two</div><div class="rr">Sequifi × Parallel</div>
-  <div class="scn">
+  <div class="scn dir-open">
     <div class="txt">
       <h2 class="h-sec" style="max-width:12ch">Opscape</h2>
       <p class="lead">Clean and functional, made for operations. Lighter, calmer, more open.</p>
