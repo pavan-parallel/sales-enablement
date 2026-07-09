@@ -819,6 +819,13 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f);
 #verdict .vpeek img{width:100%;display:block}
 #verdict.active .vpeek{animation:vrise .9s var(--ease) .15s forwards}
 @keyframes vrise{to{transform:translateX(-50%) translateY(0);opacity:1}}
+
+/* ===== slide 30 · documentation — real Figma-file screenshot ===== */
+#docslide .docgrid{display:grid;grid-template-columns:300px 1fr;gap:4vw;align-items:center;height:100%}
+#docslide .h-sec{max-width:13ch}
+#docslide .figwin{width:100%;border:1px solid var(--line2);border-radius:12px;overflow:hidden;
+  box-shadow:0 34px 74px -42px rgba(20,19,24,.5)}
+#docslide .figwin img{width:100%;display:block}
 </style>
 </head>
 <body>
@@ -1663,14 +1670,14 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f);
 </section>
 
 <!-- 30 DOCUMENTATION -->
-<section class="slide">
+<section class="slide" id="docslide">
   <div class="rl">Sequoia</div><div class="rr">Sequifi × Parallel</div>
-  <div class="two">
+  <div class="docgrid">
     <div>
       <h2 class="h-sec">We documented it so well, anyone can pick it up.</h2>
       <p class="lead mt">A new designer, a developer, even an AI tool can read the system and use it right. That's what keeps it going after we leave.</p>
     </div>
-    <div class="ph"><span class="tag">Asset</span><span class="pl">The real "getting started" and usage docs</span></div>
+    <div class="figwin"><img src="Assets/sequoia-docs-full.png" alt="The Sequoia design system, documented in Figma"></div>
   </div>
 </section>
 
