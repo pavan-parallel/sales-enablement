@@ -51,8 +51,9 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f);
 
 /* consistent heading across the five numbered layer slides, kept vertically balanced */
 .slide.layer{justify-content:center;padding:10vh var(--mx) 8vh}
-.slide.layer .lbadge{margin-bottom:14px}
-.slide.layer .h-sec{font-size:clamp(27px,3vw,44px);line-height:1.06;letter-spacing:-.024em;max-width:28ch}
+.slide.layer .lbadge{margin-bottom:16px;font-size:clamp(26px,2.8vw,42px);font-weight:600;gap:14px}
+.slide.layer .lbadge .st,.slide.layer .lbadge .n{width:1.05em;height:1.05em;font-size:.42em}
+.slide.layer .h-sec{font-size:clamp(18px,1.75vw,27px);line-height:1.3;letter-spacing:-.018em;max-width:40ch;font-weight:500}
 
 .ph{position:relative;background:var(--panel);border-radius:16px;overflow:hidden;
   display:flex;align-items:center;justify-content:center;text-align:center}
@@ -828,7 +829,7 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f);
   <div class="stwrap">
     <div>
       <h2 class="h-state">Sequifi is HR and payroll software for home-services companies.</h2>
-      <p class="lead" style="margin-top:22px;max-width:52ch">Think roofing, pest control, solar. Everyone from sales reps to hiring managers to admins works out of the same product.</p>
+      <p class="lead" style="margin-top:22px;max-width:52ch">Think roofing, pest control, solar. One product runs the whole operation: hiring, payroll, payments, work assignments.</p>
     </div>
     <div class="ph med shot"><img src="Assets/Dashboard.png" alt="The Sequifi dashboard, built on Sequoia"></div>
   </div>
@@ -842,9 +843,9 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f);
     <p class="lead">Screens got dense, and no two looked alike.</p>
   </div>
   <div class="fan">
-    <div class="card c1"><img src="Assets/Old%20Screenshot%2001.png" alt="Old Sequifi dashboard"></div>
+    <div class="card c1"><img src="Assets/Old%20Screenshot%2003.png" alt="Old Sequifi templates"></div>
     <div class="card c2"><img src="Assets/Old%20Screenshot%2002.png" alt="Old Sequifi referrals"></div>
-    <div class="card c3"><img src="Assets/Old%20Screenshot%2003.png" alt="Old Sequifi templates"></div>
+    <div class="card c3"><img src="Assets/Old%20Screenshot%2001.png" alt="Old Sequifi dashboard"></div>
     <div class="card c4"><img src="Assets/Old%20Screenshot%2004.png" alt="Old Sequifi scheduling"></div>
   </div>
 </section>
@@ -864,6 +865,7 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f);
     <div class="toc">
       <div class="row"><span class="cnum">1</span><span class="t">A visual language for the product.</span></div>
       <div class="row"><span class="cnum">2</span><span class="t">A design system their team could build on.</span></div>
+      <div class="row" style="opacity:.42"><span class="cnum">3</span><span class="t">Improve the product experience. <span style="color:var(--lab);font-weight:400">Built on the new language, next phase.</span></span></div>
     </div>
   </div>
 </section>
@@ -901,7 +903,7 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f);
 <!-- 09 TWO DIRECTIONS -->
 <section class="slide">
   <div class="rl">Visual language</div><div class="rr">Sequifi × Parallel</div>
-  <div class="head"><h2 class="h-sec">From the keywords, we explored two directions.</h2></div>
+  <div class="head"><h2 class="h-sec">Through deep brand discovery, we explored two directions.</h2></div>
   <div class="duo">
     <div class="cell">
       <div class="ph shot"><img src="Assets/gridlock-moodboard.png" alt="Gridlock — visual direction moodboard"></div>
@@ -1077,7 +1079,7 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f);
   <div class="rl">Sequoia</div><div class="rr">Sequifi × Parallel</div>
   <div class="head">
     <div class="lbadge"><span class="st">01</span> Foundations</div>
-    <h2 class="h-sec">The decisions every other piece inherits.</h2>
+    <h2 class="h-sec">The tokens the entire system inherits: color, type, spacing.</h2>
   </div>
   <div class="grid">
     <div class="col">
@@ -1139,7 +1141,7 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f);
   <div class="rl">Sequoia</div><div class="rr">Sequifi × Parallel</div>
   <div>
     <div class="lbadge"><span class="n">02</span> Atoms</div>
-    <h2 class="h-sec">The smallest pieces. Every state built in.</h2>
+    <h2 class="h-sec">The smallest building blocks, with every state built in.</h2>
   </div>
   <div class="atoms">
     <!-- BUTTON -->
@@ -1204,7 +1206,7 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f);
   <div class="rl">Sequoia</div><div class="rr">Sequifi × Parallel</div>
   <div>
     <div class="lbadge"><span class="n">03</span> Molecules</div>
-    <h2 class="h-sec">Atoms combined into the pieces you actually use.</h2>
+    <h2 class="h-sec">A handful of atoms working together as one piece.</h2>
   </div>
   <div class="mols">
     <!-- 1 · LABELLED INPUT -->
@@ -1285,7 +1287,7 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f);
   <div class="rl">Sequoia</div><div class="rr">Sequifi × Parallel</div>
   <div>
     <div class="lbadge"><span class="n">04</span> Components</div>
-    <h2 class="h-sec">The workhorses the product is built from.</h2>
+    <h2 class="h-sec">Molecules grouped into a full section of the screen.</h2>
   </div>
   <div class="stage">
     <!-- HERO: data table with side drawer open -->
@@ -1493,17 +1495,6 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f);
   </div>
 </section>
 
-<!-- 30 DOCUMENTATION -->
-<section class="slide" id="docslide">
-  <div class="rl">Sequoia</div><div class="rr">Sequifi × Parallel</div>
-  <div class="docgrid">
-    <div>
-      <h2 class="h-sec">We documented it so well, anyone can pick it up.</h2>
-      <p class="lead mt">A new designer, a developer, even an AI tool can read the system and use it right. That's what keeps it going after we leave.</p>
-    </div>
-    <div class="figwin"><img src="Assets/sequoia-docs-full.png" alt="The Sequoia design system, documented in Figma"></div>
-  </div>
-</section>
 
 <!-- 31 DIVIDER · PART THREE -->
 <section class="slide dark divider">
