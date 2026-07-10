@@ -1801,6 +1801,6 @@ const m=location.hash.match(/^#(\d+)(?:\.(\d+))?/);
 if(m){i=Math.min(+m[1],slides.length-1);beat=Math.min(+(m[2]||0),beatsOf(slides[i])-1);}
 render();
 </script>
-<script src="deck-edit.js"></script>
+<script>(function(){var s=document.createElement('script');s.src='deck-edit.js?t='+Date.now();document.head.appendChild(s);})();</script>
 </body>
 </html>
