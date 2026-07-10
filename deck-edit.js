@@ -44,9 +44,9 @@
   /* ---------- EDIT MODE ---------- */
   var css = document.createElement('style');
   css.textContent =
-    '[data-ekey]{outline:1px dashed rgba(78,97,214,.45);outline-offset:3px;border-radius:3px;cursor:text}' +
-    '[data-ekey]:hover{outline-color:#4E61D6}' +
-    '[data-ekey]:focus{outline:2px solid #4E61D6;background:rgba(78,97,214,.07)}' +
+    '[data-ekey]{cursor:text}' +
+    '[data-ekey]:hover{outline:1.5px dashed rgba(78,97,214,.55);outline-offset:4px;border-radius:3px}' +
+    '[data-ekey]:focus{outline:2px solid #4E61D6;outline-offset:4px;border-radius:3px;background:rgba(78,97,214,.07)}' +
     '#edbar{position:fixed;left:0;right:0;bottom:0;z-index:99999;background:#111214;color:#fff;' +
     'font:500 13px/1.4 -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif;display:flex;' +
     'align-items:center;gap:14px;padding:12px 18px;box-shadow:0 -8px 30px -12px rgba(0,0,0,.55)}' +
@@ -54,9 +54,15 @@
     '#edbar button{font:inherit;font-weight:600;border:0;border-radius:8px;padding:9px 16px;cursor:pointer}' +
     '#edbar .save{background:#4E61D6;color:#fff}#edbar .loc{background:#2a2a30;color:#fff}#edbar .rst{background:transparent;color:#8b8b92}';
   document.head.appendChild(css);
-  document.querySelectorAll('[data-ekey]').forEach(function (el) { el.setAttribute('contenteditable', 'true'); el.spellcheck = false; });
+  /* keep clicks + keystrokes inside the text box; the deck navigates on click/space/arrows otherwise */
+  var stop = function (e) { e.stopPropagation(); };
+  document.querySelectorAll('[data-ekey]').forEach(function (el) {
+    el.setAttribute('contenteditable', 'true'); el.spellcheck = false;
+    el.addEventListener('mousedown', stop); el.addEventListener('click', stop); el.addEventListener('keydown', stop);
+  });
 
   var bar = document.createElement('div'); bar.id = 'edbar';
+  bar.addEventListener('mousedown', stop); bar.addEventListener('click', stop); bar.addEventListener('keydown', stop);
   bar.innerHTML = '<b>Edit mode</b><span class="msg" id="edmsg">click any highlighted text to edit</span>' +
     '<span class="sp"></span><button class="rst" id="edrst">Reset local</button>' +
     '<button class="loc" id="edloc">Save locally</button><button class="save" id="edsave">Save &amp; publish</button>';
