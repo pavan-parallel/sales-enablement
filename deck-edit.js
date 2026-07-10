@@ -9,26 +9,34 @@
   var EDIT = /[?&]edit(=|&|$)/.test(location.search);
 
   /* Which elements count as editable copy. Running labels, page number and nav are never touched. */
-  var SEL = [
-    '.h-cover', '.ttl', '.ln2', '.h-div', '.h-state', '.h-sec', '.kwhead', '.lead',
-    '.overline', '.kick', '.vbig', '.vwhy span', '.toc .t', '.toc .sub', '.cap',
-    '.bname', '.aname', '.mname', '.clsub', '.devlab', '.pl', '.vt', '.vd'
-  ].join(',');
-  var skip = function (el) { return el.closest('#chrome') || el.closest('#edbar') || el.closest('.rl') || el.closest('.rr') || el.id === 'pgno'; };
-
   function hash(s) { var h = 5381, i = s.length; while (i) h = (h * 33) ^ s.charCodeAt(--i); return 'k' + (h >>> 0).toString(36); }
   function b64enc(str) { return btoa(unescape(encodeURIComponent(str))); }
   function b64dec(b) { try { return decodeURIComponent(escape(atob(b.replace(/\n/g, '')))); } catch (e) { return ''; } }
 
-  /* Assign each copy element a stable key from its pristine default (survives reordering). */
+  var INLINE = /^(A|B|I|EM|STRONG|SPAN|BR|SMALL|U|MARK|SUP|SUB)$/;
+  function skip(el) {
+    if (el.closest('#chrome') || el.closest('#edbar') || el.closest('#edtoast') || el.closest('.rl') || el.closest('.rr')) return true;
+    if (/^(BUTTON|SVG|IMG|PATH|USE|INPUT|TABLE|THEAD|TBODY|TR|IFRAME)$/i.test(el.tagName)) return true;
+    if (el.id === 'pgno') return true;
+    return false;
+  }
+  function leafText(el) {   /* a text block: has text, and any children are only inline formatting */
+    if (!el.textContent.trim()) return false;
+    for (var c = el.firstElementChild; c; c = c.nextElementSibling) { if (!INLINE.test(c.tagName)) return false; }
+    return true;
+  }
+
+  /* Auto-detect every copy block inside the slides; key each by its pristine default (reorder-safe). */
   var seen = {}, map = {}, defaults = {};
-  [].slice.call(document.querySelectorAll(SEL))
-    .filter(function (el) { return !skip(el) && el.textContent.trim(); })
-    .forEach(function (el) {
-      var d = el.innerHTML.trim(), k = hash(d);
-      if (seen[k] != null) { seen[k]++; k = k + '_' + seen[k]; } else { seen[k] = 0; }
-      el.setAttribute('data-ekey', k); map[k] = el; defaults[k] = d;
-    });
+  [].slice.call(document.querySelectorAll('.slide *')).forEach(function (el) {
+    if (el.hasAttribute('data-ekey') || skip(el) || !leafText(el)) return;
+    if (el.parentElement && el.parentElement.closest('[data-ekey]')) return;   /* one owner per block, no nesting */
+    var t = el.textContent.trim();
+    if (t.length < 2 || /^[\d.,%$/+\-\s:apmAPM]+$/.test(t)) return;             /* skip pure numbers / tiny labels */
+    var d = el.innerHTML.trim(), k = hash(d);
+    if (seen[k] != null) { seen[k]++; k = k + '_' + seen[k]; } else { seen[k] = 0; }
+    el.setAttribute('data-ekey', k); map[k] = el; defaults[k] = d;
+  });
 
   function apply(ov) { if (!ov) return; Object.keys(ov).forEach(function (k) { if (map[k]) map[k].innerHTML = ov[k]; }); }
 
@@ -47,12 +55,15 @@
     '[data-ekey]{cursor:text}' +
     '[data-ekey]:hover{outline:1.5px dashed rgba(78,97,214,.55);outline-offset:4px;border-radius:3px}' +
     '[data-ekey]:focus{outline:2px solid #4E61D6;outline-offset:4px;border-radius:3px;background:rgba(78,97,214,.07)}' +
-    '#edbar{position:fixed;left:0;right:0;bottom:0;z-index:99999;background:#111214;color:#fff;' +
-    'font:500 13px/1.4 -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif;display:flex;' +
-    'align-items:center;gap:14px;padding:12px 18px;box-shadow:0 -8px 30px -12px rgba(0,0,0,.55)}' +
-    '#edbar b{color:#98A6F4}#edbar .sp{flex:1}#edbar .msg{color:#c9c9d1;font-weight:400}' +
-    '#edbar button{font:inherit;font-weight:600;border:0;border-radius:8px;padding:9px 16px;cursor:pointer}' +
-    '#edbar .save{background:#4E61D6;color:#fff}#edbar .loc{background:#2a2a30;color:#fff}#edbar .rst{background:transparent;color:#8b8b92}';
+    '#edbar{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:99999;display:flex;align-items:center;gap:6px;' +
+    'background:rgba(17,18,20,.9);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-radius:999px;padding:5px;' +
+    'box-shadow:0 10px 30px -10px rgba(0,0,0,.5);font:600 12.5px/1 -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif}' +
+    '#edbar button{font:inherit;border:0;border-radius:999px;padding:8px 15px;cursor:pointer;color:#fff}' +
+    '#edbar .save{background:#4E61D6}#edbar .loc{background:#33343a}#edbar .rst{background:transparent;color:#8b8b92;padding:8px 11px}' +
+    '#edtoast{position:fixed;left:50%;bottom:64px;transform:translateX(-50%);z-index:99999;max-width:70vw;' +
+    'background:#111214;color:#e8e8ee;font:500 12.5px/1.45 -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif;' +
+    'padding:9px 14px;border-radius:10px;box-shadow:0 10px 30px -10px rgba(0,0,0,.5);opacity:0;transition:opacity .2s;pointer-events:none}' +
+    '#edtoast.show{opacity:1}';
   document.head.appendChild(css);
   /* keep clicks + keystrokes inside the text box; the deck navigates on click/space/arrows otherwise */
   var stop = function (e) { e.stopPropagation(); };
@@ -61,13 +72,13 @@
     el.addEventListener('mousedown', stop); el.addEventListener('click', stop); el.addEventListener('keydown', stop);
   });
 
+  var toast = document.createElement('div'); toast.id = 'edtoast'; document.body.appendChild(toast);
   var bar = document.createElement('div'); bar.id = 'edbar';
-  bar.addEventListener('mousedown', stop); bar.addEventListener('click', stop); bar.addEventListener('keydown', stop);
-  bar.innerHTML = '<b>Edit mode</b><span class="msg" id="edmsg">click any highlighted text to edit</span>' +
-    '<span class="sp"></span><button class="rst" id="edrst">Reset local</button>' +
+  bar.innerHTML = '<button class="rst" id="edrst" title="Reset local edits">Reset</button>' +
     '<button class="loc" id="edloc">Save locally</button><button class="save" id="edsave">Save &amp; publish</button>';
   document.body.appendChild(bar);
-  var msg = function (t) { document.getElementById('edmsg').textContent = t; };
+  [bar, toast].forEach(function (x) { x.addEventListener('mousedown', stop); x.addEventListener('click', stop); x.addEventListener('keydown', stop); });
+  var tmr, msg = function (t) { toast.textContent = t; toast.classList.add('show'); clearTimeout(tmr); tmr = setTimeout(function () { toast.classList.remove('show'); }, 6000); };
 
   function collect() { var ov = {}; Object.keys(map).forEach(function (k) { var c = map[k].innerHTML.trim(); if (c !== defaults[k]) ov[k] = c; }); return ov; }
 
