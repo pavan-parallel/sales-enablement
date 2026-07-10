@@ -13,16 +13,20 @@
   function b64enc(str) { return btoa(unescape(encodeURIComponent(str))); }
   function b64dec(b) { try { return decodeURIComponent(escape(atob(b.replace(/\n/g, '')))); } catch (e) { return ''; } }
 
-  var INLINE = /^(A|B|I|EM|STRONG|SPAN|BR|SMALL|U|MARK|SUP|SUB)$/;
   function skip(el) {
     if (el.closest('#chrome') || el.closest('#edbar') || el.closest('#edtoast') || el.closest('.rl') || el.closest('.rr')) return true;
     if (/^(BUTTON|SVG|IMG|PATH|USE|INPUT|TABLE|THEAD|TBODY|TR|IFRAME)$/i.test(el.tagName)) return true;
     if (el.id === 'pgno') return true;
     return false;
   }
-  function leafText(el) {   /* a text block: has text, and any children are only inline formatting */
+  function inlineDisp(el) {   /* judged by how it actually renders, not by tag */
+    if (el.tagName === 'BR') return true;
+    var d = getComputedStyle(el).display;
+    return d === 'inline' || d === 'inline-block' || d === 'inline-flex' || d === 'contents';
+  }
+  function leafText(el) {   /* a single text field: has text, and any children only flow inline within it */
     if (!el.textContent.trim()) return false;
-    for (var c = el.firstElementChild; c; c = c.nextElementSibling) { if (!INLINE.test(c.tagName)) return false; }
+    for (var c = el.firstElementChild; c; c = c.nextElementSibling) { if (!inlineDisp(c)) return false; }
     return true;
   }
 
