@@ -15,6 +15,14 @@
 
   function skip(el) {
     if (el.closest('#chrome') || el.closest('#edbar') || el.closest('#edtoast') || el.closest('.rl') || el.closest('.rr')) return true;
+    /* Healthify motion deck: chrome, overlays, curtain, and every JS-generated or JS-mutated region.
+       The editor keys copy by its innerHTML hash and applies overrides once on load — so anything the
+       deck rebuilds on render() (cards, cohorts, concepts, ship features) or rewrites per beat (the s2
+       headline, the ship headline) must be excluded, or an override would be clobbered / mis-keyed. */
+    if (el.closest('#hint') || el.closest('#menu') || el.closest('#curtain') || el.closest('#errbar') || el.closest('#prog') ||
+        el.closest('#detail') || el.closest('#figma') || el.closest('#dotprev') || el.closest('#thumbstage') || el.closest('.thumbscene') ||
+        el.closest('#field') || el.closest('#people') || el.closest('#stage') || el.closest('#featgroup') || el.closest('#shiphead')) return true;
+    if (el.closest('#s2') && el.closest('[data-h]')) return true;   /* s2's headline text is swapped by JS each beat */
     if (/^(BUTTON|SVG|IMG|PATH|USE|INPUT|TABLE|THEAD|TBODY|TR|IFRAME)$/i.test(el.tagName)) return true;
     if (el.id === 'pgno') return true;
     return false;
@@ -32,7 +40,7 @@
 
   /* Auto-detect every copy block inside the slides; key each by its pristine default (reorder-safe). */
   var seen = {}, map = {}, defaults = {};
-  [].slice.call(document.querySelectorAll('.slide *')).forEach(function (el) {
+  [].slice.call(document.querySelectorAll('.slide *, .scene *')).forEach(function (el) {
     if (el.hasAttribute('data-ekey') || skip(el) || !leafText(el)) return;
     if (el.parentElement && el.parentElement.closest('[data-ekey]')) return;   /* one owner per block, no nesting */
     var t = el.textContent.trim();

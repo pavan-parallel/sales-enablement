@@ -1,1 +1,5 @@
 .DS_Store
+
+# Internal dev guidance / editor config — public repo, keep these out
+CLAUDE.md
+.claude/
