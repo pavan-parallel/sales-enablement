@@ -64,7 +64,9 @@
   /* ---------- EDIT MODE ---------- */
   var css = document.createElement('style');
   css.textContent =
-    '[data-ekey]{cursor:text}' +
+    /* motion decks set pointer-events:none on animated headlines so clicks fall through to the
+       deck's navigation; in edit mode that also blocks clicking into the text, so force it back on */
+    '[data-ekey]{cursor:text;pointer-events:auto!important}' +
     '[data-ekey]:hover{outline:1.5px dashed rgba(78,97,214,.55);outline-offset:4px;border-radius:3px}' +
     '[data-ekey]:focus{outline:2px solid #4E61D6;outline-offset:4px;border-radius:3px;background:rgba(78,97,214,.07)}' +
     '#edbar{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:99999;display:flex;align-items:center;gap:6px;' +
@@ -83,6 +85,33 @@
     el.setAttribute('contenteditable', 'true'); el.spellcheck = false;
     el.addEventListener('mousedown', stop); el.addEventListener('click', stop); el.addEventListener('keydown', stop);
   });
+
+  /* Motion decks crossfade several states in the same spot (headlines per beat, ship chips per
+     group) — all present, only one visible via opacity. With every keyed block now clickable,
+     a hidden overlapping one can sit on top and steal the click. On mousedown, pick the block
+     that's actually VISIBLE at the point and focus that one instead. */
+  function visibleEnough(el) {
+    for (var n = el; n && n !== document.body; n = n.parentElement) {
+      var s = getComputedStyle(n);
+      if (s.display === 'none' || s.visibility === 'hidden' || parseFloat(s.opacity) < 0.1) return false;
+    }
+    return true;
+  }
+  document.addEventListener('mousedown', function (e) {
+    if (!document.elementsFromPoint) return;
+    var st = document.elementsFromPoint(e.clientX, e.clientY), top = null, vis = null;
+    for (var i = 0; i < st.length; i++) {
+      var k = st[i].closest && st[i].closest('[data-ekey]');
+      if (!k) continue;
+      if (!top) top = k;
+      if (visibleEnough(k)) { vis = k; break; }
+    }
+    if (!vis || vis === top) return;      /* nothing visible here, or the top hit is already the visible one */
+    e.preventDefault(); e.stopPropagation();
+    vis.focus();
+    var r = document.createRange(); r.selectNodeContents(vis); r.collapse(false);
+    var sel = getSelection(); sel.removeAllRanges(); sel.addRange(r);
+  }, true);
 
   var toast = document.createElement('div'); toast.id = 'edtoast'; document.body.appendChild(toast);
   var bar = document.createElement('div'); bar.id = 'edbar';
