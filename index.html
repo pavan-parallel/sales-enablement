@@ -338,9 +338,9 @@ function drawFeatured(show){
   if(!show){f.style.display='none';return;}
   f.style.display='grid';
   const feat=[
-    {c:CS[0],title:'Healthify × Parallel',
+    {c:CS[0],title:'Healthify',
      desc:CS[0].d+' Told as an interactive story: prototypes embedded, every card opens into depth.'},
-    {c:CS.find(x=>x.href==='sequifi-ds-v4.html'),title:'Sequoia × Parallel',
+    {c:CS.find(x=>x.href==='sequifi-ds-v4.html'),title:'Sequoia',
      desc:'The design system we built for Sequifi, told slide by slide — foundations to components to the stress test on the real product.'}
   ].filter(o=>o.c);
   f.innerHTML=feat.map(o=>{
