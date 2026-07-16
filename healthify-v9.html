@@ -570,8 +570,11 @@ body{background:var(--bg);color:var(--ink);font-family:var(--fs);-webkit-font-sm
 #s5 .head .big{font-family:var(--fd);font-weight:500;font-size:clamp(29px,3vw,46px);letter-spacing:-.03em;line-height:1.06;max-width:15ch;color:var(--ink)}
 #s5 .head .cb{margin-top:18px;max-width:32ch;font-family:var(--fs);font-size:16px;color:var(--mut);line-height:1.55}
 
-/* bounded pine stage, grid-centres its phone; a zoom scales the phone about its centre */
-#s5 .estage{position:absolute;right:var(--mx);top:6.5vh;bottom:6.5vh;width:min(47vw,660px);border-radius:34px;overflow:hidden;z-index:2;
+/* bounded pine stage, grid-centres its phone; a zoom scales the phone about its centre.
+   A proper SQUARE, sized in vh so it tracks the vh-based phone: side = 76vh keeps the phone
+   (max zoom ~61.5vh wide) padded on the sides; capped at 46vw so it never crowds the headline. */
+#s5 .estage{position:absolute;right:var(--mx);top:50%;transform:translateY(-50%);
+  --est:min(76vh,46vw);width:var(--est);height:var(--est);border-radius:34px;overflow:hidden;z-index:2;
   display:grid;place-items:center;
   background:linear-gradient(158deg,#EAF4EE 0%,#DDEEE4 60%,#D3E9DB 100%);
   box-shadow:inset 0 1px 0 rgba(255,255,255,.7),inset 0 0 0 1px rgba(24,60,48,.05),0 30px 60px -40px rgba(28,28,48,.2)}
