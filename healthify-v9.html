@@ -1,0 +1,2151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<title>Healthify × Parallel · Interactive Walkthrough</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FFFFFF;--ink:#17161A;--text:#17161A;--mut:#555E56;--muted:#555E56;--lab:#7B857D;--faint:#7B857D;
+  --line:rgba(20,19,24,.10);--line2:rgba(20,19,24,.18);--line3:rgba(20,19,24,.30);
+  --panel:#EAEAEC;--panel2:#F3F3F3;
+  --dark:#0A1512;--dmut:#9EAAA0;--dline:rgba(255,255,255,.14);--dpanel:#0E1E19;
+  /* Light "paper" surface, the dark-moment system (cover + chapter dividers), inverted */
+  --paper-ink:#12241E;--paper-mut:#4F5A52;--paper-faint:#6E786F;--paper-accent:#21695C;
+  --indigo:#21695C;--indigo-lt:#5FC9A6;--indigo-soft:#E4F1EC;--indigo-dk:#184F45;
+  /* growth/recovery carries the story as the single indigo through-line; amber = caution, red = loss */
+  --green:#21695C;--grow:#21695C;--amber:#B07C1E;--red:#B4442F;
+  --fd:'Hanken Grotesk',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  --fs:'Hanken Grotesk',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  --f:'Hanken Grotesk',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  --ease:cubic-bezier(.4,0,.1,1);--spring:cubic-bezier(.34,1.3,.5,1);--mx:6.2vw;
+  /* phone / app UI */
+  --pbg:#F5F5F6;--pcard:#FFFFFF;--pink:#17161A;--pmut:#8A8A90;--pline:#EAEAEC;--pg:#21695C;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden}
+body{background:var(--bg);color:var(--ink);font-family:var(--fs);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+.serif{font-family:var(--fd)}
+.r{color:var(--red)}.g{color:var(--grow)}
+
+/* ---- type system (Sequoia / BB grammar) ---- */
+.big{font-family:var(--fd);font-weight:500;letter-spacing:-.02em;line-height:1.1}
+.kicker,.overline{font-family:var(--fs);font-size:14px;font-weight:600;letter-spacing:-.005em;color:var(--indigo)}
+/* corner running labels */
+.rl,.rr{position:absolute;top:5.4vh;font-family:var(--fs);font-size:13.5px;font-weight:500;color:var(--lab);letter-spacing:-.005em;z-index:6;pointer-events:none}
+.rl{left:var(--mx)}.rr{right:var(--mx);text-align:right}
+.dark .rl,.dark .rr{color:var(--dmut)}
+
+.scene{position:absolute;inset:0;padding:11vh var(--mx) 13vh;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .5s,visibility 0s .5s}
+.scene.active{opacity:1;visibility:visible;pointer-events:auto;transition:opacity .5s,visibility 0s}
+
+/* card hover, stroke highlight + soft glow */
+.glow{transition:border-color .28s,box-shadow .28s}
+.glow:hover{border-color:var(--line3);
+  box-shadow:0 0 0 1px var(--line2),0 1px 2px rgba(17,17,17,.04),0 26px 60px -22px rgba(17,17,17,.22)}
+
+/* progress bar */
+#prog{position:fixed;top:0;left:0;height:2px;background:var(--ink);width:0;z-index:90;transition:width .5s var(--ease),opacity .3s}
+#prog.on-dark{background:#fff}
+/* the close panel (s4 beat 2) is a deliberate clean terminal composition, no progress chrome on it */
+#prog.hide{opacity:0}
+
+/* ============ CURTAIN ============ */
+#curtain{position:fixed;inset:0;z-index:999;background:var(--bg);display:grid;place-items:center;
+  opacity:0;pointer-events:none;transition:opacity .45s}
+#curtain.on{opacity:1;pointer-events:auto}
+#curtain .ct{font-family:var(--fd);font-weight:500;font-size:clamp(22px,2.4vw,34px);color:var(--mut);letter-spacing:-.02em}
+
+/* ============ COVER (black) ============ */
+#cover{color:var(--paper-ink);
+  background:radial-gradient(60% 72% at 82% 4%,rgba(95,201,166,.14),transparent 62%),
+             linear-gradient(160deg,#F7F6F1 0%,#EEF1EC 60%,#E6EBE4 100%)}
+#cover::before{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;background:none}
+#cover .chero{position:absolute;top:0;bottom:0;right:0;width:43%;z-index:1;overflow:hidden}
+#cover .chero .glow{position:absolute;inset:0;z-index:0;background:radial-gradient(54% 48% at 52% 46%,rgba(95,201,166,.30),transparent 70%)}
+/* fixed target size (matches the approved mockup) but capped by viewport height via min(),
+   so it stays this size on normal/large windows and only shrinks on a short window, never
+   scales up into oversized overlapping slabs, never runs off the bottom */
+/* aspect-ratio:auto + overflow:visible are REQUIRED, not redundant: the global .phone rule
+   (used by the in-deck app mockups) sets aspect-ratio:9/19 + overflow:hidden, which leak onto
+   these cover frames by class-name collision, force a 9:19 box over the 9:20 screenshots and
+   clip the bottom bezel. Resetting here lets each frame hug its own image, per the approved mockup. */
+#cover .chero .phone{position:absolute;top:50%;left:50%;aspect-ratio:auto;overflow:visible;background:linear-gradient(155deg,#26252c,#141319);border-radius:40px;padding:8px;z-index:2;
+  box-shadow:0 3px 8px rgba(18,36,30,.14),0 40px 80px -34px rgba(18,36,30,.55),0 100px 150px -80px rgba(18,36,30,.4)}
+#cover .chero .phone img{display:block;width:100%;border-radius:32px;background:#fff}
+#cover .chero .phone.back{width:min(248px,32vh);transform:translate(-50%,-50%) translate(64px,-30px) rotate(7deg);z-index:1}
+#cover .chero .phone.front{width:min(272px,35vh);transform:translate(-50%,-50%) translate(-52px,26px) rotate(-4deg);z-index:2}
+/* top scrim so the white logo always reads over the photo */
+#cover .cscrim{position:absolute;top:0;left:0;right:0;height:22vh;z-index:3;pointer-events:none;
+  background:linear-gradient(180deg,rgba(247,246,241,.6),transparent)}
+/* Parallel logo, top-left */
+#cover .clogo{position:absolute;top:5.4vh;left:var(--mx);z-index:6;width:clamp(116px,10vw,150px);height:auto;display:block;
+  filter:brightness(0)}
+#cover .cwrap{position:absolute;inset:0;z-index:4;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;padding:0 40% 0 var(--mx)}
+/* Tier 1, the subject, dominant */
+#cover h1{font-family:var(--fd);font-weight:500;font-size:clamp(56px,10vw,158px);letter-spacing:-.045em;line-height:.86}
+/* Tier 2, positioning line, a subtitle grouped tight under the wordmark */
+#cover .ctag2{margin-top:18px;font-family:var(--fd);font-weight:500;font-size:clamp(19px,1.85vw,27px);letter-spacing:-.018em;line-height:1.24;color:var(--paper-accent);white-space:nowrap}
+#cover .ctag2::before{content:none;display:inline-block;width:.6em;height:.6em;margin-right:.42em;vertical-align:baseline;background:no-repeat center/contain url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2321695C'%3E%3Cpath d='M12 0c.6 5.7 5.7 10.8 12 12-6.3 1.2-11.4 6.3-12 12-.6-5.7-5.7-10.8-12-12C6.3 10.8 11.4 5.7 12 0Z'/%3E%3C/svg%3E")}
+/* Tier 3, the case-study premise, clearly recessive */
+#cover .csub{margin-top:20px;font-size:clamp(15px,1.15vw,18px);color:var(--paper-mut);line-height:1.6;max-width:50ch;font-weight:400}
+#cover .beginrow{display:flex;align-items:center;gap:20px;margin-top:7vh}
+.beginbtn{font-family:var(--fs);font-size:15px;font-weight:600;color:#F4F3EE;background:var(--paper-ink);border:0;border-radius:100px;
+  padding:15px 30px;cursor:pointer;transition:transform .3s var(--ease),box-shadow .3s}
+.beginbtn:hover{transform:translateY(-1px);box-shadow:0 16px 40px -12px rgba(63,168,130,.6)}
+#cover .foot{position:absolute;left:var(--mx);right:42%;bottom:6vh;z-index:4;display:flex;flex-direction:column;align-items:flex-start;gap:14px}
+#cover .fcred{font-size:13.5px;color:var(--paper-mut);font-weight:500;letter-spacing:-.003em}
+#cover .fcred b{color:var(--paper-ink);font-weight:600}
+/* entrance animation removed, it left the button/footer caught mid-fade (grey) on load */
+@keyframes coverrise{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+
+/* ============ DIVIDERS (black, editorial) ============ */
+.divider{color:var(--paper-ink);justify-content:center;
+  background:radial-gradient(44% 56% at 22% 22%,rgba(95,201,166,.055),transparent 70%),linear-gradient(160deg,#F7F6F1 0%,#EFF1EC 100%)}
+.divider::before{content:"";position:absolute;inset:0;pointer-events:none}
+#d2::before,#d3::before,#d4::before,#d5::before{background:none}
+.divider .dvwrap{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;padding:0 var(--mx)}
+.divider .dvtitle{font-family:var(--fd);font-weight:500;font-size:clamp(56px,10vw,150px);letter-spacing:-.04em;line-height:.9;margin-left:-.045em}
+.divider .dvtitle .dvdot{color:var(--paper-accent)}
+.divider .dvsub{margin-top:3.4vh;font-family:var(--fs);font-size:clamp(17px,1.5vw,22px);color:var(--paper-mut);line-height:1.5;max-width:44ch;font-weight:400}
+.divider .dvtitle,.divider .dvsub{opacity:0;transform:translateY(18px);transition:opacity .6s,transform .7s var(--ease)}
+.divider.active .dvtitle,.thumbscene.divider .dvtitle{opacity:1;transform:none;transition-delay:.1s}
+.divider.active .dvsub,.thumbscene.divider .dvsub{opacity:1;transform:none;transition-delay:.24s}
+/* "What we shipped" divider only: centered, not the left-aligned editorial default the other dividers use */
+#d4 .dvwrap{align-items:center;text-align:center}
+#d4 .dvtitle{margin-left:0}
+
+/* the discover/explore/ship tracker, carries the process dots (from "The Process" scene)
+   through each chapter divider so the current phase stays visually anchored throughout */
+.divider .proctrack{display:flex;align-items:center;gap:10px;margin-top:4vh;
+  opacity:0;transform:translateY(18px);transition:opacity .6s,transform .7s var(--ease);transition-delay:.6s}
+.divider.active .proctrack,.thumbscene.divider .proctrack{opacity:1;transform:none}
+.divider .proctrack .ptn{display:flex;align-items:center;gap:8px;font-family:var(--fs);font-size:13px;font-weight:600;color:var(--paper-mut);letter-spacing:-.005em}
+.divider .proctrack .ptn i{width:7px;height:7px;border-radius:50%;background:rgba(24,42,36,.2);display:block}
+.divider .proctrack .ptn.on{color:var(--paper-ink)}
+.divider .proctrack .ptn.on i{background:var(--paper-accent)}
+.divider .proctrack .ptline{width:26px;height:1px;background:rgba(24,42,36,.18)}
+
+/* ============ SCENE 1 · THE BET ============ */
+#s1 .stage{position:relative;height:100%;display:flex;flex-direction:column}
+#s1 .headline{height:33vh;display:flex;flex-direction:column;justify-content:flex-start;position:relative}
+#s1 .hl-line{position:absolute;top:0;left:0;right:6%;font-size:clamp(27px,3.3vw,50px);font-weight:500;letter-spacing:-.024em;line-height:1.08;
+  opacity:0;transform:translateY(24px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
+#s1 .hl-line .yr{font-family:var(--fs);font-size:14px;font-weight:600;letter-spacing:-.005em;color:var(--indigo);display:block;margin-bottom:18px}
+#s1 .hl-line .hl-sub{display:block;font-family:var(--fs);font-size:clamp(16px,1.4vw,21px);font-weight:400;color:var(--mut);line-height:1.5;margin-top:18px;max-width:52ch;letter-spacing:0}
+#s1 .hl-line.show{opacity:1;transform:none}
+#s1 .hl-line.gone{opacity:0;transform:translateY(-24px)}
+#s1 .chartwrap{flex:1;position:relative;margin-top:6vh}
+#s1 svg{width:100%;height:100%;overflow:visible}
+#riseline{stroke:url(#gRise);stroke-width:2.5;fill:none;stroke-linecap:round}
+#fall{stroke:url(#gFall);stroke-width:2.5;fill:none;opacity:0;stroke-linecap:round}
+#s1 .greenwash{position:absolute;inset:-8vh -8vw;background:radial-gradient(55% 65% at 26% 60%,rgba(63,168,130,.10),transparent 70%);
+  opacity:1;transition:opacity 1.4s;pointer-events:none}
+#s1.b2 .greenwash{opacity:0}
+#shipdot{opacity:0}
+#s1 .gridl{stroke:var(--line)}
+#shipflag{position:absolute;font-family:var(--fs);font-size:13px;font-weight:600;letter-spacing:-.005em;color:var(--indigo);
+  opacity:0;transform:translate(-50%,-14px);transition:opacity .5s,transform .6s var(--ease);white-space:nowrap}
+#shipflag::after{content:"";position:absolute;left:50%;top:calc(100% + 4px);width:1.5px;height:38px;background:linear-gradient(var(--indigo),transparent)}
+#s1.b1 #shipflag{opacity:1;transform:translate(-50%,0)}
+#s1 .mandates{position:absolute;left:0;right:0;top:44%;transform:translateY(-30%) translateY(16px);display:grid;grid-template-columns:repeat(3,1fr);gap:3vw;
+  opacity:0;transition:opacity .7s .3s,transform .9s .3s var(--ease);pointer-events:none}
+#s1 .mandates .mand{border-top:1.5px solid var(--ink);padding-top:24px}
+#s1 .mandates .mand .mn{font-family:var(--fs);font-size:14px;letter-spacing:-.005em;color:var(--mut);font-weight:600;display:block;margin-bottom:18px}
+#s1 .mandates .mand p{font-family:var(--fd);font-weight:500;font-size:clamp(19px,1.85vw,27px);line-height:1.28;letter-spacing:-.018em;max-width:22ch}
+#s1.b3 .mandates{opacity:1;transform:translateY(-30%)}
+#s1.b3 .betdark svg,#s1.b3 #retno,#s1.b3 #shipflag{opacity:0;transition:opacity .5s}
+.statblock{position:absolute;top:-10px}
+.statblock .sv{font-family:var(--fd);font-weight:500;font-size:clamp(44px,5vw,74px);line-height:1;letter-spacing:-.03em}
+.statblock .sl{font-family:var(--fs);font-size:13px;letter-spacing:-.005em;color:var(--mut);display:block;margin-top:12px;font-weight:500}
+#retno{right:0;text-align:right;transition:color .8s}
+#s1 .redwash{position:absolute;inset:-8vh -8vw;background:radial-gradient(60% 60% at 72% 62%,rgba(180,68,47,.09),transparent 70%);
+  opacity:0;transition:opacity 1.6s;pointer-events:none}
+#s1.b2 .redwash{opacity:1}
+#s1.b3 .greenwash,#s1.b3 .redwash{opacity:0;transition:opacity .5s}
+
+/* ---- The bet · dark-canvas treatment (beats 0-2); beat 3 flips to the light "Our role" mandate
+   panel below. The old light .stage above is kept dormant/unreachable, it only ever served the
+   pre-reskin beat 3, superseded now by .rolepanel. ---- */
+#s1 .stage{display:none}
+#s1 .rl,#s1 .rr{color:rgba(24,42,36,.5);transition:color .4s}
+#s1.b3 .rl,#s1.b3 .rr{color:var(--lab)}
+#s1 .betdark{position:absolute;inset:0;z-index:1;overflow:hidden;cursor:pointer;transition:opacity .5s var(--ease);
+  /* Light canvas: flat warm paper (the approved reference), no glow. The green-to-red line pops on white. */
+  background:linear-gradient(160deg,#F6F5F0 0%,#EDF0EB 58%,#E4E9E2 100%)}
+#s1.b3 .betdark{opacity:0;pointer-events:none}
+#s1 .betdark .vignette{position:absolute;inset:0;pointer-events:none;z-index:8;box-shadow:none}
+
+#s1 .betdark .heads{position:absolute;left:4.2%;top:12%;right:33%;z-index:5;min-height:36%}
+#s1 .betdark .hl{position:absolute;top:0;left:0;right:0;opacity:0;transform:translateY(1.4vw);
+  transition:opacity .6s var(--ease),transform .7s var(--ease);pointer-events:none}
+#s1 .betdark .hl.show{opacity:1;transform:none}
+#s1 .betdark .hl.gone{opacity:0;transform:translateY(-1.4vw)}
+#s1 .betdark h1.hl-t{font-weight:500;font-size:3.05vw;line-height:1.2;letter-spacing:-.02em;color:#12241E;font-family:var(--fd)}
+#s1 .betdark .hl em{font-style:normal;color:#1F7A5E}
+#s1 .betdark .hl em.loss{color:#D93F30}
+#s1 .betdark .hl .sub{margin-top:.7vw;font-size:1.28vw;font-weight:400;line-height:1.55;color:#5B6B62;max-width:60ch;font-family:var(--fs);
+  opacity:0;transform:translateY(.7vw);transition:opacity .6s .22s var(--ease),transform .6s .22s var(--ease)}
+#s1 .betdark .hl.show .sub{opacity:1;transform:none}
+
+#s1 .betdark .cNum{position:absolute;right:4.2%;top:13.5%;text-align:right;z-index:5}
+#s1 .betdark .cNum .n{font-family:var(--fd);font-size:6.3vw;font-weight:500;letter-spacing:-.03em;line-height:1;color:#12241E;
+  font-variant-numeric:tabular-nums;display:block;transition:color .9s var(--ease)}
+#s1 .betdark .cNum .l{font-family:var(--fs);font-size:.98vw;font-weight:600;color:#5B6B62;display:block;margin-top:.6vw;letter-spacing:.02em}
+#s1.b2 .betdark .cNum .n{color:#D93F30}
+
+#s1 .betdark .cGlow{display:none;position:absolute;left:14%;right:0;bottom:10vh;height:56%;z-index:0;opacity:.55;
+  background:radial-gradient(56% 66% at 66% 60%,rgba(63,168,130,.34),transparent 70%);filter:blur(8px);
+  transition:opacity 1.3s var(--ease)}
+#s1 .betdark .cGlowLoss{display:none;position:absolute;left:34%;right:-6%;bottom:8vh;height:56%;z-index:0;
+  background:radial-gradient(54% 64% at 78% 56%,rgba(217,63,48,.16),transparent 72%);filter:blur(8px);
+  opacity:0;transition:opacity 1.3s var(--ease)}
+#s1.b2 .betdark .cGlow{opacity:.34}
+#s1.b2 .betdark .cGlowLoss{opacity:1}
+
+#s1 .betdark .cChart{position:absolute;left:0;right:0;bottom:13vh;width:100%;height:46vh;z-index:1}
+#s1 .betdark .ln{fill:none;stroke-linecap:round}
+#s1 .betdark .lnglow{display:none}
+#s1 .betdark .core{stroke-width:3}
+/* the decline reads as loss without shouting: softer coral, gentler bloom */
+#s1 .betdark .fall.lnglow{opacity:.42}
+#s1 .betdark .fall.core{stroke-width:2.3}
+#s1 .betdark .rise{stroke-dasharray:1000;stroke-dashoffset:1000}
+#s1 .betdark .fall{stroke-dasharray:520;stroke-dashoffset:520}
+#s1 .betdark #fallGrp{opacity:0;transition:opacity .5s var(--ease)}
+#s1.b2 .betdark #fallGrp{opacity:1}
+
+/* the AI-bet marker, sitting exactly at the curve's peak */
+#s1 .betdark .mark{position:absolute;left:64%;top:54.8%;transform:translate(-50%,-50%) scale(.5);opacity:0;z-index:4;
+  transition:opacity .55s var(--ease),transform .55s var(--ease)}
+#s1.b1 .betdark .mark,#s1.b2 .betdark .mark{opacity:1;transform:translate(-50%,-50%) scale(1)}
+#s1 .betdark .mark i{display:block;width:.7vw;height:.7vw;min-width:8px;min-height:8px;border-radius:50%;background:#1F7A5E;
+  box-shadow:0 0 0 .4vw rgba(31,122,94,.16);transition:background .7s,box-shadow .7s}
+#s1.b2 .betdark .mark i{background:#D93F30;box-shadow:0 0 0 .4vw rgba(217,63,48,.16)}
+
+/* the marker's own callout label, same idiom as production's #shipflag */
+#s1 .betdark .marklabel{position:absolute;left:64%;top:54.8%;transform:translate(-50%,calc(-100% - 18px));z-index:4;
+  font-family:var(--fs);font-size:.92vw;font-weight:500;color:#5B6B62;white-space:nowrap;text-align:center;pointer-events:none;
+  opacity:0;transition:opacity .55s var(--ease),color .7s var(--ease)}
+#s1 .betdark .marklabel::after{content:"";position:absolute;left:50%;top:100%;width:1px;height:16px;
+  background:linear-gradient(#5B6B62,transparent);transform:translateX(-50%);transition:background .7s var(--ease)}
+#s1.b1 .betdark .marklabel,#s1.b2 .betdark .marklabel{opacity:1}
+#s1.b2 .betdark .marklabel{color:#D93F30}
+#s1.b2 .betdark .marklabel::after{background:linear-gradient(#D93F30,transparent)}
+
+/* ---- "Our mandate" · beat 3, light panel: statement + one line that draws up
+   (folded in from healthify-v9-mandate-line-HANDOFF.html). ---- */
+/* full-opacity + its own stacking context (z-index:0) so it sits beneath the bet overlay and
+   its SVG line never lives in an opacity layer. Revealed by the bet overlay fading out at b3. */
+#s1 .rolepanel{position:absolute;inset:0;background:var(--bg);color:var(--ink);z-index:0;pointer-events:none}
+#s1.b3 .rolepanel{pointer-events:auto}
+#s1 .rolepanel .mandeye{position:absolute;left:var(--mx);top:18vh;z-index:3;display:flex;align-items:center;gap:.5vw;
+  font-family:var(--fs);font-size:1.3vw;font-weight:600;color:#21695C;letter-spacing:-.005em;
+  opacity:0;transform:translateY(16px);transition:opacity .6s var(--ease),transform .6s var(--ease)}
+#s1 .rolepanel .mandeye svg{width:1.25vw;height:1.25vw;display:block}
+#s1 .rolepanel .rstmt{position:absolute;left:var(--mx);top:25vh;right:40%;z-index:3;
+  font-family:var(--fd);font-weight:500;font-size:clamp(30px,3.05vw,52px);line-height:1.14;letter-spacing:-.026em;color:var(--ink);
+  opacity:0;transform:translateY(16px);transition:opacity .6s .08s var(--ease),transform .6s .08s var(--ease)}
+#s1 .rolepanel .rstmt em{font-style:normal;color:#21695C}
+#s1.b3 .rolepanel .mandeye,#s1.b3 .rolepanel .rstmt{opacity:1;transform:none}
+#s1 .rolepanel .rgrow{position:absolute;inset:0;z-index:1}
+#s1 .rolepanel .rgrow svg{position:absolute;inset:0;width:100%;height:100%}
+/* Resting state is FULLY DRAWN (offset 0) so the line is never blank even if the entrance draw is
+   skipped or frozen. The draw itself is a setInterval tween (mandDraw), time-based like the bet
+   lines (which animate fine), so it survives a backgrounded tab instead of freezing like CSS. */
+#s1 .rolepanel #mandateRise{fill:none;stroke:#1F7A5E;stroke-width:3;stroke-linecap:round;
+  stroke-dasharray:1850;stroke-dashoffset:0}
+
+/* ============ THE PROCESS, editorial three-step sequence (BB grammar: big concrete
+   headlines lead, body explains, radical whitespace, thin rules; no diagram) ============ */
+#sloop .proc{position:absolute;inset:0;padding:12vh var(--mx) 13vh;display:flex;flex-direction:column;justify-content:center;gap:9vh}
+#sloop .proctitle .big{font-size:clamp(34px,4vw,56px)}
+#sloop .procdot{color:var(--indigo)}
+#sloop .pcols{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;align-items:stretch;gap:0}
+#sloop .pcol{display:flex;flex-direction:column;padding:0 clamp(14px,1.8vw,30px);transition:opacity .45s var(--ease)}
+#sloop .pcol:first-child{padding-left:0}
+#sloop .pcol:not(.on){opacity:.32}
+#sloop .pcol .pnum{font-family:var(--fs);font-weight:600;font-size:14px;letter-spacing:.04em;color:var(--lab);
+  padding-bottom:16px;margin-bottom:20px;border-bottom:1.5px solid var(--line2);transition:color .4s var(--ease),border-color .4s var(--ease)}
+#sloop .pcol.on .pnum{color:var(--indigo);border-color:var(--indigo)}
+#sloop .pcol .ph{font-family:var(--fd);font-weight:500;font-size:clamp(23px,2.4vw,37px);letter-spacing:-.026em;line-height:1.06;margin-bottom:16px}
+#sloop .pcol .pd{font-family:var(--fs);font-size:clamp(14px,1.15vw,17px);color:var(--mut);line-height:1.5;max-width:26ch}
+#sloop .parrow{align-self:center;width:clamp(20px,2vw,34px);height:1.5px;background:var(--line2);position:relative;transition:background .4s var(--ease)}
+#sloop .parrow::after{content:"";position:absolute;right:0;top:50%;width:6px;height:6px;border-top:1.5px solid var(--line2);border-right:1.5px solid var(--line2);transform:translateY(-50%) rotate(45deg);transition:border-color .4s var(--ease)}
+
+/* ============ SCENE 2 · THE DIAGNOSIS ============ */
+#s2 .head{position:absolute;top:11vh;left:var(--mx);right:var(--mx);z-index:5;transition:opacity .55s var(--ease)}
+#s2 .head .big{font-size:clamp(28px,3vw,46px);letter-spacing:-.024em;max-width:30ch;line-height:1.1;text-wrap:balance}
+#s2 .head .hswap{transition:opacity .28s var(--ease)}
+#s2 .head .hswap.swap{opacity:0}
+#s2 .field{position:absolute;inset:0;pointer-events:none}
+#s2 .people{position:absolute;inset:0;pointer-events:none}
+#s2 .cohface{position:absolute;top:40vh;left:var(--cx0);width:19vw;max-width:250px;pointer-events:auto;cursor:pointer;
+  opacity:0;transform:translateY(20px);transition:opacity .55s var(--ease),transform .65s var(--ease)}
+#s2.b1 .cohface{opacity:1;transform:none}
+/* beat 2 · the cards visibly lift/settle as the people arrive, so the change reads as something
+   happening to the row (not just a decorative wire fading in underneath, unchanged otherwise) */
+#s2.b2 .cohface{opacity:1;transform:translateY(-6px);transition:opacity .55s var(--ease),transform .6s var(--ease)}
+#s2.b3 .cohface{opacity:0;transform:translateY(-14px) scale(.96);transition:opacity .4s,transform .5s var(--ease)}
+/* a shared wash sweeps the row once, in sync with the wires, as an obvious "something just
+   happened here" cue rather than relying on four small per-card motions alone */
+#s2 .peoplewash{position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(42% 38% at 50% 55%,rgba(63,168,130,.14),transparent 70%);
+  opacity:0;transition:opacity .4s .1s}
+#s2.b2 .peoplewash{opacity:1}
+#s2.b3 .peoplewash{opacity:0;transition:opacity .3s}
+#s2 .cohface:nth-of-type(2){transition-delay:.09s}
+#s2 .cohface:nth-of-type(3){transition-delay:.18s}
+#s2 .cohface:nth-of-type(4){transition-delay:.27s}
+#s2 .cf-portrait{--ps:134px;width:var(--ps);height:var(--ps);border-radius:calc(var(--ps)*0.155);background:var(--indigo-soft);overflow:hidden;
+  display:flex;align-items:center;justify-content:center;margin-bottom:16px;
+  transition:width .6s var(--ease),height .6s var(--ease),border-radius .6s var(--ease),box-shadow .25s,transform .25s var(--ease);box-shadow:0 0 0 0 rgba(63,168,130,0)}
+#s2 .cf-portrait img{width:104%;height:104%;object-fit:cover;object-position:center}
+#s2 .cohface:hover .cf-portrait{box-shadow:0 0 0 3px var(--indigo-soft),0 18px 34px -18px rgba(63,168,130,.5);transform:translateY(-2px)}
+#s2.b2 .cf-portrait{--ps:104px}
+@keyframes cfpulse{0%{box-shadow:0 0 0 0 rgba(63,168,130,0)}45%{box-shadow:0 0 0 6px var(--indigo-soft)}100%{box-shadow:0 0 0 0 rgba(63,168,130,0)}}
+/* profession/title reads first (was previously upstaged by a status pill above it), then one
+   plain sentence carrying existing/new + OS + geography, no separate pill/icon component */
+#s2 .cf-who{font-family:var(--fd);font-size:18px;font-weight:600;letter-spacing:-.015em;line-height:1.3;min-height:23px}
+#s2 .cf-where{font-family:var(--fs);font-size:13px;color:var(--mut);margin-top:6px;line-height:1.45;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#s2 .cf-more{font-family:var(--fs);font-size:12px;color:var(--indigo);font-weight:600;margin-top:10px;min-height:16px;opacity:0;transition:opacity .3s,text-decoration-color .2s;
+  text-decoration:underline;text-decoration-color:transparent;text-underline-offset:3px}
+#s2.b1 .cf-more{opacity:1}
+#s2 .cohface:hover .cf-more{text-decoration-color:var(--indigo)}
+#s2 .cf-link{position:relative;height:2px;margin-top:16px}
+#s2 .cf-wire{position:absolute;left:0;right:6px;top:0;height:1.5px;background:var(--indigo);
+  transform:scaleX(0);transform-origin:left;transition:transform .5s var(--ease);transition-delay:var(--wd,0s)}
+#s2.b2 .cf-wire{transform:scaleX(1)}
+#s2 .cf-seats{display:flex;gap:8px;margin-top:10px}
+/* the 20 recruits, one dot per person, five per cohort card (5 x 4 = 20). Dots, not numbers:
+   the numbering read as if there were 20 people in EACH cohort.
+   SHARED: .seat is deliberately global, not scoped to #s2. #s3's testing band reuses the exact
+   same dot so the viewer reads it as the same unit: one dot = one user interview. Change it here
+   and both scenes move together. Each scene owns its own reveal rule (see #testpanel.show .seat). */
+.seat{width:13px;height:13px;border-radius:50%;background:var(--indigo);
+  opacity:0;transform:translateY(-7px) scale(.5);
+  transition:opacity .4s var(--ease),transform .4s var(--ease);
+  transition-delay:var(--sd,0s)}
+#s2.b2 .seat{opacity:1;transform:none}
+/* promoted to a real H2 (was tiny subtext), a proper second line under the H1, not a caption */
+#s2 .axesline{margin-top:14px;font-family:var(--fs);font-weight:400;font-size:clamp(15px,1.3vw,18px);color:var(--mut);line-height:1.5;max-width:58ch;
+  opacity:0;transform:translateY(8px);transition:opacity .5s .2s,transform .55s .2s var(--ease)}
+#s2 .axesline b{color:var(--ink);font-weight:600}
+#s2.b1 .axesline,#s2.b2 .axesline{opacity:1;transform:none}
+#s2.b3 .axesline{opacity:0;transition:opacity .25s}
+/* beat 2 · a new line appears at the bottom of the slide instead of swapping the H1, the
+   swap wasn't reading as a real change, so this is an addition you can actually see happen */
+#s2 .beatline{position:absolute;left:var(--mx);right:var(--mx);bottom:15.5vh;font-family:var(--fd);font-weight:500;
+  font-size:clamp(24px,2.4vw,36px);letter-spacing:-.02em;color:var(--indigo);line-height:1.1;
+  opacity:0;transform:translateY(12px);transition:opacity .5s var(--ease),transform .55s var(--ease)}
+#s2.b2 .beatline{opacity:1;transform:none}
+#s2.b3 .beatline{opacity:0;transition:opacity .25s}
+
+/* beat 0 · the 3 discovery questions (moved from the old "Our role" slide) */
+/* beat 0 · the three questions as the deck's "what's inside" agenda component (two-column:
+   heading beside a numbered row list). The top head is hidden on b0 so the heading shows once. */
+#s2.b0 .head{opacity:0;pointer-events:none}
+#s2 .tocwrap{position:absolute;left:var(--mx);right:var(--mx);top:50%;transform:translateY(-50%);
+  display:grid;grid-template-columns:1fr 1fr;gap:5vw;align-items:center;
+  opacity:0;pointer-events:none;transition:opacity .5s var(--ease)}
+#s2.b0 .tocwrap{opacity:1;pointer-events:auto}
+/* beat classes are cumulative (b0 persists into b1+), so explicitly reverse the b0 state at b1:
+   bring the top head back and clear the toc. These win over the b0 rules by source order. */
+#s2.b1 .head{opacity:1;pointer-events:auto}
+#s2.b1 .tocwrap{opacity:0;pointer-events:none}
+#s2 .toc-h{font-family:var(--fd);font-weight:500;font-size:clamp(40px,4.7vw,78px);line-height:1.0;letter-spacing:-.03em;max-width:12ch;text-wrap:balance}
+#s2 .toc{max-width:440px;justify-self:start;width:100%}
+#s2 .toc .row{display:flex;align-items:center;gap:18px;padding:2.4vh 0;border-top:1px solid var(--line);
+  opacity:0;transform:translateY(12px);transition:opacity .55s var(--ease),transform .55s var(--ease)}
+#s2 .toc .row:last-child{border-bottom:1px solid var(--line)}
+#s2.b0 .toc .row{opacity:1;transform:none}
+#s2.b0 .toc .row:nth-child(2){transition-delay:.08s}
+#s2.b0 .toc .row:nth-child(3){transition-delay:.16s}
+#s2 .toc .cnum{flex:none;width:clamp(26px,2.1vw,34px);height:clamp(26px,2.1vw,34px);border:1.5px solid var(--ink);border-radius:50%;
+  display:inline-flex;align-items:center;justify-content:center;font-family:var(--fs);font-size:clamp(12px,1.05vw,15px);font-weight:600;opacity:.8}
+#s2 .toc .row .t{font-family:var(--fd);font-weight:500;font-size:clamp(18px,1.85vw,27px);letter-spacing:-.018em;line-height:1.14;max-width:24ch}
+#s2 .discoverq-legacy{position:absolute;left:var(--mx);right:var(--mx);top:38vh;display:grid;grid-template-columns:repeat(3,1fr);gap:3.5vw;
+  opacity:0;pointer-events:none;transition:opacity .4s var(--ease)}
+#s2.b0 .discoverq{opacity:1;pointer-events:auto}
+#s2.b1 .discoverq{opacity:0;pointer-events:none;transition:opacity .3s}
+#s2 .dq{border-top:1.5px solid var(--ink);padding-top:22px;opacity:0;transform:translateY(16px);transition:opacity .55s var(--ease),transform .55s var(--ease)}
+#s2.b0 .dq{opacity:1;transform:none}
+#s2.b0 .dq[data-b="2"]{transition-delay:.1s}
+#s2.b0 .dq[data-b="3"]{transition-delay:.2s}
+#s2 .dqnum{display:block;font-family:var(--fs);font-size:13px;font-weight:600;color:var(--indigo);margin-bottom:16px}
+#s2 .dq p{font-family:var(--fd);font-weight:500;font-size:clamp(19px,1.85vw,27px);line-height:1.28;letter-spacing:-.018em;max-width:22ch}
+#s2 .artifact{position:absolute;left:50%;bottom:10vh;transform:translate(-50%,20px);display:flex;align-items:center;gap:14px;
+  border:1px solid var(--line2);border-radius:100px;background:var(--bg);padding:13px 24px 13px 20px;cursor:pointer;
+  font-family:var(--fs);font-size:14px;color:var(--mut);opacity:0;pointer-events:none;
+  box-shadow:0 16px 40px -18px rgba(17,17,17,.18);
+  transition:opacity .6s .5s,transform .7s .5s var(--ease),border-color .25s,box-shadow .25s}
+#s2 .artifact b{color:var(--ink);font-weight:600}
+#s2 .artifact:hover{border-color:var(--indigo);box-shadow:0 0 0 1px var(--indigo-soft),0 22px 48px -18px rgba(63,168,130,.3)}
+/* The "View the feature check" pill used to appear here on b5. Pulled per the owner's slide-3
+   note ("those pills are not there, slide 3 needs to look kickass"), it also crowded the new
+   tab-stacks, sitting ~10px under the left column. The feature-check overlay itself is untouched
+   and still reachable from the contents menu (#mpmf → openDetail('pmf',0)). One line to restore:
+   #s2.b5 .artifact{opacity:1;transform:translate(-50%,0);pointer-events:auto} */
+.insight{position:absolute;width:min(25vw,520px);padding:20px 20px 18px;border:1px solid var(--line);border-radius:16px;background:var(--bg);overflow:hidden;
+  font-family:var(--fd);font-weight:500;font-size:clamp(15px,1.25vw,17.5px);color:var(--ink);line-height:1.36;letter-spacing:-.015em;box-shadow:0 16px 40px -18px rgba(17,17,17,.16);cursor:pointer;opacity:0;
+  pointer-events:none;transition:transform 1s var(--ease),opacity .7s,border-color .3s,box-shadow .3s;
+  transform:translate(var(--sx),var(--sy)) rotate(var(--sr)) scale(.86);z-index:var(--z)}
+.insight .no{font-family:var(--fs);font-size:12px;font-weight:600;letter-spacing:-.003em;color:var(--indigo);display:block;margin-bottom:12px}
+.insight .peek{position:absolute;right:15px;bottom:14px;font-family:var(--fs);font-size:11.5px;color:var(--lab);opacity:0;transition:opacity .25s}
+.insight:hover{border-color:var(--indigo);
+  box-shadow:0 0 0 1px var(--indigo-soft),0 24px 54px -20px rgba(63,168,130,.28)}
+.insight:hover .peek{opacity:1}
+#s2.b3 .insight{opacity:1;pointer-events:auto;transform:translate(var(--sx),var(--sy)) rotate(var(--sr));transition-delay:var(--sd,0s)}
+/* .itshort is dead markup as of the b4/b5 rebuild, the card is ONE fixed size for the whole
+   scene now and always shows the full insight. Kept only because other scenes read INSIGHTS.short. */
+.insight .itshort{display:none}
+/* beat 4 · the cards sort into 3 columns. The card is IDENTICAL to b3, same width, same padding,
+   same type, same grey tag, same shadow. It only straightens its tilt and walks to its column.
+   Grouping is carried by proximity alone (12px within a column vs ~64px between them): no numerals,
+   no rules, no labels, no panels. Nothing is named yet, which is what leaves b5 something to reveal. */
+#s2.b4 .insight{opacity:1;pointer-events:auto;
+  transform:translate(var(--cx),var(--cy));
+  transition:transform .95s var(--ease),opacity .5s var(--ease),border-color .3s,box-shadow .3s}
+/* beat 5 · the payoff. Each column's cards gather into ONE tab-stack at the foot of the column and
+   the problem rises into the space they vacate. The buried cards show exactly their "Insight 0X"
+   tab (PEEK in s2Layout is tuned to the card's top padding + tag line), so the stack reads as a
+   legible index of what fed the problem rather than as cards clipped by accident.
+   The cards stay full size and fully OPAQUE, stacking translucent cards muddies them, so they
+   recede by going grey, and any one lifts back out on hover. */
+#s2.b5 .insight{opacity:1;pointer-events:auto;color:#8B948C;border-color:var(--line);
+  transform:translate(var(--cx),var(--py));
+  box-shadow:0 10px 26px -16px rgba(20,19,24,.30);
+  transition:transform .85s var(--ease),color .5s var(--ease),border-color .35s,box-shadow .35s}
+#s2.b5 .insight .no{color:#AAB2AB}
+#s2.b5 .insight .peek{opacity:0}
+#s2.b5 .insight:hover{color:var(--ink);border-color:var(--indigo);z-index:30;
+  transform:translate(var(--cx),var(--py)) translateY(-12px);
+  box-shadow:0 0 0 1px var(--indigo-soft),0 28px 60px -22px rgba(63,168,130,.30)}
+#s2.b5 .insight:hover .no{color:var(--mut)}
+/* the problem (replaces .clusterlabel AND the old centered .problem cards). Three tiers, no chrome:
+   the name small and quiet, the statement as the hero sentence, the body under it. Nothing boxed,
+   no rule, no numeral, no bullet. */
+.theme{position:absolute;top:31.5vh;width:min(25vw,520px);pointer-events:none;z-index:6;opacity:0}
+.tkey{display:block;font-family:var(--fs);font-weight:500;font-size:13.5px;letter-spacing:-.005em;color:var(--lab);
+  opacity:0;transform:translateY(10px);transition:opacity .5s var(--ease),transform .6s var(--ease)}
+.tname{font-family:var(--fd);font-weight:500;font-size:clamp(22px,2.35vw,31px);letter-spacing:-.024em;line-height:1.12;color:var(--ink);margin-top:11px;
+  opacity:0;transform:translateY(12px);transition:opacity .6s var(--ease),transform .7s var(--ease)}
+.tstate{font-family:var(--fs);font-weight:400;font-size:clamp(13.5px,1.16vw,15.5px);color:var(--mut);line-height:1.5;margin-top:13px;max-width:31ch;
+  opacity:0;transform:translateY(12px);transition:opacity .6s var(--ease),transform .7s var(--ease)}
+/* b3 + b4 · no problem exists yet. The reveal is the whole point of b5. */
+#s2.b5 .theme{opacity:1}
+#s2.b5 .tkey,#s2.b5 .tname,#s2.b5 .tstate{opacity:1;transform:none}
+#s2.b5 .tname{transition-delay:.06s}
+#s2.b5 .tstate{transition-delay:.12s}
+#s2.b5 .theme[data-c="1"] .tkey{transition-delay:.1s}
+#s2.b5 .theme[data-c="1"] .tname{transition-delay:.16s}
+#s2.b5 .theme[data-c="1"] .tstate{transition-delay:.22s}
+#s2.b5 .theme[data-c="2"] .tkey{transition-delay:.2s}
+#s2.b5 .theme[data-c="2"] .tname{transition-delay:.26s}
+#s2.b5 .theme[data-c="2"] .tstate{transition-delay:.32s}
+
+/* ============ SCENE 3 · THE EXPLORATION ============ */
+#s3{padding:11vh var(--mx) 9vh}
+#s3 .head{position:relative;z-index:5;height:22vh}
+#s3 .head .hswap{position:absolute;top:0;left:0;right:0;opacity:0;transform:translateY(16px);transition:opacity .5s,transform .55s var(--ease);pointer-events:none}
+#s3 .head .hswap.show{opacity:1;transform:none}
+#s3 .head .big{font-size:clamp(24px,2.5vw,38px);letter-spacing:-.022em;max-width:26ch;line-height:1.1}
+#s3 .head .subh{font-family:var(--fs);font-size:clamp(14px,1.2vw,16.5px);color:var(--mut);line-height:1.38;margin-top:11px;max-width:64ch;letter-spacing:-.008em}
+
+/* ---- grid stage ---- */
+#stage{position:relative;height:55vh}
+
+/* beat 1 · the 12 shrink (like the cohort cards) and one line notes they were tested */
+#s3 .s3bot{position:absolute;left:var(--mx);right:var(--mx);bottom:15vh;text-align:center;font-family:var(--fd);font-weight:500;
+  font-size:clamp(21px,2.3vw,34px);letter-spacing:-.022em;color:var(--indigo);line-height:1.1;
+  opacity:0;transform:translateY(12px);transition:opacity .5s var(--ease),transform .55s var(--ease);z-index:5;pointer-events:none}
+#s3 .s3bot.show{opacity:1;transform:none}
+
+/* concept card, a POSTER in the grid (full-bleed image + title over a gradient), morphs to a
+   thumbnail+name ROW in the sorted columns. --tw is the image width: the whole card as a poster,
+   a small tile as a row, so the image morphs across instead of snapping. b0/b1 are identical
+   treatments (neutral), nothing is judged until b2. */
+#s3 .con{position:absolute;top:0;left:0;border-radius:14px;overflow:hidden;cursor:pointer;isolation:isolate;
+  background:#0c0c10;box-shadow:0 12px 30px -18px rgba(17,17,17,.28);opacity:0;
+  transform:var(--pos,none) translateY(22px) scale(.94);
+  transition:transform .7s var(--ease),width .82s var(--ease),height .82s var(--ease),
+             opacity .6s var(--ease),box-shadow .35s,background .4s,border-radius .5s var(--ease);
+  transition-delay:var(--d,0s)}
+#s3 .con.in{opacity:1;transform:var(--pos,none) translateY(0) scale(1)}
+#s3 .con .cthumb{position:absolute;left:0;top:0;width:var(--tw,100%);height:100%;object-fit:cover;z-index:0;border-radius:0;
+  transition:width .82s var(--ease),border-radius .5s var(--ease),filter .6s var(--ease),opacity .4s;
+  transition-delay:var(--d,0s)}
+#s3 .con .grad{position:absolute;left:0;top:0;width:var(--tw,100%);height:100%;z-index:1;pointer-events:none;
+  background:linear-gradient(180deg,rgba(8,8,12,.10),rgba(8,8,12,0) 40%,rgba(8,8,12,.5) 72%,rgba(8,8,12,.85));
+  transition:opacity .5s,width .82s var(--ease);transition-delay:var(--d,0s)}
+/* the name is bottom-anchored in BOTH forms; --cnb re-centres it beside the thumbnail in a row,
+   so the caption slides across rather than jumping positioning models mid-morph */
+#s3 .con .cn{position:absolute;left:var(--cnl,14px);right:14px;bottom:var(--cnb,12px);z-index:3;color:#fff;
+  font-family:var(--fd);font-weight:600;font-size:clamp(13px,1.1vw,16px);line-height:1.15;letter-spacing:-.014em;
+  text-shadow:0 1px 12px rgba(0,0,0,.45);
+  transition:color .4s,text-shadow .4s,left .82s var(--ease),bottom .6s var(--ease),right .5s var(--ease);
+  transition-delay:var(--d,0s)}
+#s3 .con .pk{position:absolute;right:12px;top:11px;z-index:4;font-family:var(--fs);font-size:11px;font-weight:600;color:#fff;
+  background:rgba(255,255,255,.2);backdrop-filter:blur(4px);border-radius:100px;padding:4px 9px;opacity:0;transition:opacity .25s}
+#s3 .con:hover .pk{opacity:1}
+/* poster hover: a small lift + deeper shadow reads as "pick this up", not just a shadow tweak.
+   Only the grid/poster state gets it, .row (the sorted-column list state) stays flat, no lift.
+   A short transition override makes the raise feel immediate; the settle back down borrows the
+   base .7s ease so it doesn't feel like a separate, disconnected motion. */
+#s3 .con:not(.row):hover{box-shadow:0 30px 64px -22px rgba(17,17,17,.5);
+  transform:var(--pos,none) translateY(-6px) scale(1);
+  transition:transform .25s var(--ease),box-shadow .3s var(--ease)}
+
+/* ROW state (b2, columns), small thumbnail + name on white. The column IS the verdict, so there
+   is no badge; only elimination is drained, which reads at a glance. */
+#s3 .con.row{border-radius:0;overflow:visible;isolation:auto;background:transparent;box-shadow:none}
+#s3 .con.row:hover{box-shadow:none}
+#s3 .con.row .grad{opacity:0}
+#s3 .con.row .pk{display:none}
+#s3 .con.row .cthumb{border-radius:8px}
+#s3 .con.row .cn{color:var(--ink);text-shadow:none;font-weight:500;font-size:clamp(14px,1.15vw,17px);
+  letter-spacing:-.01em;right:0;white-space:nowrap}
+#s3 .con.row.v-hold .cthumb{filter:grayscale(1);opacity:.42}
+#s3 .con.row.v-hold .cn{color:var(--lab)}
+
+/* ---- column headers: one shared hairline, three plain labels, no counts ----
+   pointer-events:none is load-bearing here: layout('grid'/'shrink') never repositions these
+   (only layout('cols') does), so after precomputeThumbs() silently renders the b2 thumbnail on
+   page load, they're left sitting at their b2 pixel position, overlapping the top of the b0
+   card grid, invisible but (without this) still eating hover/click. Neither element is ever a
+   click target, so disabling pointer-events is always safe, not just a workaround for the stale
+   position. */
+#s3 .colhead{position:absolute;display:flex;align-items:flex-end;padding-bottom:15px;
+  opacity:0;transform:translateY(-6px);transition:opacity .5s var(--ease),transform .5s var(--ease);
+  pointer-events:none}
+#s3 .colhead.show{opacity:1;transform:none}
+#s3 .colhead .clab{font-family:var(--fd);font-weight:500;font-size:clamp(21px,2.2vw,31px);letter-spacing:-.024em;color:var(--ink)}
+#s3crule{position:absolute;left:0;right:0;height:1px;background:var(--line2);transform:scaleX(0);transform-origin:left;
+  opacity:0;transition:transform .75s var(--ease),opacity .35s var(--ease);transition-delay:.05s;
+  pointer-events:none}
+#s3crule.show{opacity:1;transform:none}
+
+/* ---- testing band (b1) ----
+   Its own row, not a sidebar. Absolutely placed so it never shifts the stage on b0/b2.
+   b1's headline ends ~142px and the band opens at 27vh (~216px): a ~74px gap against ~18px
+   of spacing inside the band, so proximity does the grouping. The count leads, one plain
+   body copy sits under it, and the thirteen dots park at the right. ---- */
+#testpanel{position:absolute;left:var(--mx);right:var(--mx);top:27vh;z-index:5;pointer-events:none;
+  display:flex;align-items:center;justify-content:space-between;gap:5%}
+#testpanel .tp-left{flex:none}
+#testpanel .tp-head{display:flex;align-items:flex-end;gap:clamp(12px,1.3vw,18px);margin-bottom:clamp(13px,2vh,20px);
+  opacity:0;transform:translateY(12px);transition:opacity .55s var(--ease),transform .65s var(--ease)}
+/* Optical alignment, not box alignment. The numeral carries ~.098em of left side bearing while
+   the body copy's "A" carries ~.017em, so a box-aligned "13" reads ~9px indented against the
+   copy beneath it. Pull it back by the difference so the ink edges line up. In em, so it holds
+   across the clamp. Proportional figures, not tabular: tabular pads the narrow "1" out to a
+   fixed advance and makes the inset worse. */
+#testpanel .tp-num{font-family:var(--fd);font-weight:600;font-size:clamp(58px,6.4vw,96px);line-height:.8;
+  letter-spacing:-.05em;color:var(--indigo);margin-left:-.095em}
+#testpanel .tp-lab{font-family:var(--fs);font-weight:600;font-size:clamp(15px,1.3vw,19px);line-height:1.28;
+  color:var(--ink);letter-spacing:-.014em;padding-bottom:6px}
+/* one body copy: one size, one colour, no inline emphasis */
+#testpanel .tp-note{max-width:50ch;font-family:var(--fs);font-weight:400;font-size:clamp(14px,1.15vw,16.5px);
+  line-height:1.55;letter-spacing:-.004em;color:var(--mut);
+  opacity:0;transform:translateY(12px);transition:opacity .55s var(--ease),transform .65s var(--ease);transition-delay:.1s}
+#testpanel.show .tp-head,#testpanel.show .tp-note{opacity:1;transform:none}
+/* the 13 sessions, one dot per interview, the SAME .seat as #s2's cohort recruits (see the
+   shared rule up in scene 2), and the same five-per-row rhythm: 5 · 5 · 3 */
+#testpanel .tp-seats{flex:none;display:flex;flex-direction:column;align-items:flex-start;gap:8px}
+#testpanel .tp-srow{display:flex;gap:8px}
+#testpanel.show .seat{opacity:1;transform:none}
+
+/* ============ SCENE 5 · WHAT WE SHIPPED, real screens on bounded pine stages (from ship-v2) ============ */
+#s5{padding:0 var(--mx)}
+#s5 .shipslide{position:absolute;inset:0;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .5s var(--ease),visibility 0s .5s}
+#s5.active .shipslide.on,.thumbscene .shipslide.on{opacity:1;visibility:visible;pointer-events:auto;transition:opacity .5s var(--ease)}
+
+/* head · left column (rides in with its slide) */
+#s5 .head{position:absolute;left:var(--mx);top:50%;transform:translateY(-50%);z-index:7;max-width:min(31vw,412px)}
+#s5 .head .big{font-family:var(--fd);font-weight:500;font-size:clamp(29px,3vw,46px);letter-spacing:-.03em;line-height:1.06;max-width:15ch;color:var(--ink)}
+#s5 .head .cb{margin-top:18px;max-width:32ch;font-family:var(--fs);font-size:16px;color:var(--mut);line-height:1.55}
+
+/* bounded pine stage, grid-centres its phone; a zoom scales the phone about its centre */
+#s5 .estage{position:absolute;right:var(--mx);top:6.5vh;bottom:6.5vh;width:min(47vw,660px);border-radius:34px;overflow:hidden;z-index:2;
+  display:grid;place-items:center;
+  background:linear-gradient(158deg,#EAF4EE 0%,#DDEEE4 60%,#D3E9DB 100%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.7),inset 0 0 0 1px rgba(24,60,48,.05),0 30px 60px -40px rgba(28,28,48,.2)}
+
+/* framed graphite handset */
+#s5 .dev{transition:transform .85s var(--ease)}
+#s5 .dev .bezel{--dh:70vh;height:var(--dh);width:calc(var(--dh)*0.462);position:relative;overflow:hidden;
+  background:linear-gradient(152deg,#3c3b45 0%,#242329 44%,#151419 100%);
+  border-radius:calc(var(--dh)*0.052);padding:calc(var(--dh)*0.0115);
+  box-shadow:inset 0 1.2px 0 rgba(255,255,255,.16),inset 0 0 0 1px rgba(255,255,255,.045),0 2px 4px rgba(20,19,24,.18),0 22px 38px -20px rgba(28,28,48,.34),0 46px 82px -46px rgba(28,28,48,.5)}
+#s5 .dev .bezel .scr{position:absolute;inset:calc(var(--dh)*0.0115);border-radius:calc(var(--dh)*0.043);overflow:hidden;background:#fff}
+#s5 .scr img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top center;display:block}
+#s5 .scr .st{position:absolute;inset:0;opacity:0;transition:opacity .55s var(--ease)}
+#s5 .scr .st.on{opacity:1}
+
+/* entry · fixed centre frame + bare peek cards that slide in from behind */
+#s5 .shipslide[data-g="entry"] .estage{display:block}
+#s5 .shipslide[data-g="entry"] .dev{--dh:62vh}
+#s5 #entryFrame{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:3}
+#s5 .epeek{position:absolute;left:50%;top:50%;width:calc(62vh*0.462);height:62vh;border-radius:calc(62vh*0.052);
+  overflow:hidden;box-shadow:0 22px 50px -26px rgba(28,28,48,.45);transition:transform .8s var(--ease),opacity .5s var(--ease)}
+#s5 .epeek img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top center;display:block}
+
+/* glassy pill, floated across the stage's left edge */
+#s5 .pill{position:absolute;z-index:8;max-width:min(20vw,262px);
+  background:rgba(255,255,255,.72);backdrop-filter:blur(24px) saturate(1.7);-webkit-backdrop-filter:blur(24px) saturate(1.7);
+  border:1px solid rgba(255,255,255,.9);border-radius:17px;padding:15px 19px;
+  box-shadow:0 1px 2px rgba(20,19,24,.05),0 2px 10px rgba(20,19,24,.04),0 28px 54px -24px rgba(28,28,48,.32);
+  font-family:var(--fd);font-weight:500;font-size:clamp(14px,1.02vw,16px);line-height:1.42;letter-spacing:-.013em;color:var(--ink);
+  opacity:0;transform:translateY(8px);transition:opacity .5s var(--ease),transform .5s var(--ease);pointer-events:none}
+#s5 .pill.on{opacity:1;transform:none}
+#s5 .shipslide[data-g="home"] .p1{left:35vw;top:29%}
+#s5 .shipslide[data-g="home"] .p2{left:35vw;top:35%}
+
+/* ============ SCENE 4 · WHAT IT DROVE ============ */
+#s4 .owrap{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;padding:11vh var(--mx) 13vh}
+#s4 .okick,#s4 .obig{opacity:0;transform:translateY(16px);transition:opacity .6s,transform .7s var(--ease)}
+#s4.active .okick,.thumbscene#s4 .okick{opacity:1;transform:none;transition-delay:.1s}
+#s4.active .obig,.thumbscene#s4 .obig{opacity:1;transform:none;transition-delay:.22s}
+#s4 .okick{margin-bottom:22px;display:block}
+#s4 .obig{font-family:var(--fd);font-weight:500;font-size:clamp(30px,4vw,60px);line-height:1.06;letter-spacing:-.028em;max-width:20ch;margin-bottom:8vh}
+#s4 .ostats{display:grid;grid-template-columns:repeat(4,1fr);gap:2.6vw}
+#s4 .ostat{padding-top:22px;opacity:0;transform:translateY(18px);transition:opacity .6s,transform .7s var(--ease)}
+#s4.b1 .ostat{opacity:1;transform:none}
+#s4.b1 .ostat:nth-child(2){transition-delay:.12s}
+#s4.b1 .ostat:nth-child(3){transition-delay:.24s}
+#s4.b1 .ostat:nth-child(4){transition-delay:.36s}
+#s4 .ostat .n{font-family:var(--fd);font-weight:500;font-size:clamp(40px,5vw,76px);line-height:.92;letter-spacing:-.035em;color:var(--indigo)}
+#s4 .ostat .l{font-family:var(--fs);font-size:clamp(13.5px,1.1vw,16px);color:var(--mut);margin-top:16px;line-height:1.4}
+#s4 .opanel1{transition:opacity .5s var(--ease)}
+#s4.b2 .opanel1{opacity:0;pointer-events:none}
+/* close card lives on black, a terminal composition shift */
+#s4 .opanel2{position:absolute;inset:0;background:#000;color:#fff;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;padding:11vh var(--mx) 15vh;
+  opacity:0;pointer-events:none;transition:opacity .5s .35s var(--ease)}
+/* sleek close: the Healthify line-vector field on pure black, masked so it breathes in the open
+   space (upper-right) and fades to clean black behind the copy on the left */
+#s4 .opanel2::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background:url("Assets/Healthify Assets/Background Vectors.svg") center/cover no-repeat;opacity:.55;
+  -webkit-mask-image:radial-gradient(135% 120% at 86% 4%,#000 22%,rgba(0,0,0,.4) 58%,transparent 92%);
+          mask-image:radial-gradient(135% 120% at 86% 4%,#000 22%,rgba(0,0,0,.4) 58%,transparent 92%)}
+#s4.b2 .opanel2{opacity:1;pointer-events:auto}
+#s4.b2 .rl,#s4.b2 .rr{opacity:0;transition:opacity .3s}
+/* Parallel logo, top-left, echoes the cover's .clogo; native fill is white so no filter needed here */
+#s4 .opanel2 .wlogo{position:absolute;top:5.4vh;left:var(--mx);z-index:6;width:clamp(116px,10vw,150px);height:auto;display:block}
+#s4 .opanel2 .wbig{font-family:var(--fd);font-weight:500;font-size:clamp(34px,4.6vw,68px);line-height:1.02;letter-spacing:-.035em;max-width:18ch;margin:0 0 8vh;position:relative}
+#s4 .pillars{display:grid;grid-template-columns:repeat(4,1fr);gap:2.4vw;width:100%;position:relative}
+#s4 .pillar{border-top:1.5px solid rgba(255,255,255,.4);padding-top:20px;text-align:left;opacity:0;transform:translateY(16px);transition:opacity .6s,transform .7s var(--ease)}
+#s4.b2 .pillar{opacity:1;transform:none;transition-delay:.45s}
+#s4.b2 .pillar:nth-child(2){transition-delay:.57s}
+#s4.b2 .pillar:nth-child(3){transition-delay:.69s}
+#s4.b2 .pillar:nth-child(4){transition-delay:.81s}
+#s4 .pillar .pt{font-family:var(--fd);font-weight:500;font-size:clamp(17px,1.5vw,22px);margin-bottom:11px;letter-spacing:-.018em}
+#s4 .pillar .pd{font-family:var(--fs);font-size:clamp(13px,1.05vw,15px);color:var(--dmut);line-height:1.55}
+#s4 .oacts{position:absolute;left:var(--mx);bottom:11vh;display:flex;align-items:center;gap:24px;opacity:0;z-index:3;transition:opacity .7s .5s}
+#s4.b1 .oacts{opacity:1}
+#s4.b2 .oacts{opacity:0;pointer-events:none;transition:opacity .3s}
+#s4 .figbtn{font-family:var(--fs);font-size:14px;font-weight:600;color:var(--bg);background:var(--ink);border:0;border-radius:100px;
+  padding:14px 26px;cursor:pointer;transition:box-shadow .3s,transform .3s var(--ease)}
+#s4 .figbtn:hover{transform:translateY(-1px);box-shadow:0 16px 40px -12px rgba(63,168,130,.5)}
+#s4 .oacts a{font-family:var(--fs);font-size:14px;color:var(--mut);text-decoration:none;border-bottom:1px solid var(--line2);padding-bottom:2px;transition:color .2s,border-color .2s}
+#s4 .oacts a:hover{color:var(--ink);border-color:var(--ink)}
+
+/* ============ FIGMA EMBED ============ */
+#figma .fbar{position:absolute;top:20px;left:28px;right:84px;display:flex;align-items:center;gap:16px;z-index:210}
+#figma .flabel{font-family:var(--fs);font-size:13px;letter-spacing:-.005em;font-weight:600;color:var(--mut)}
+/* this overlay always sits on white, regardless of which scene was behind it, never let
+   body.chrome-dark's low-contrast glass pill (meant for dark canvases) bleed into #figLib */
+#figma .navbtn{color:var(--mut);background:var(--bg);border-color:var(--line2)}
+#figma .navbtn:hover{color:var(--ink);border-color:var(--line3)}
+#figma .fstage{position:absolute;inset:76px 28px 28px}
+#figma .floader{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--fd);font-weight:500;font-size:20px;color:var(--lab)}
+#figma iframe{position:relative;width:100%;height:100%;border:1px solid var(--line);border-radius:16px;background:transparent;
+  box-shadow:0 30px 80px -24px rgba(17,17,17,.28)}
+
+/* ============ CHROME / NAV ============ */
+#chrome{position:fixed;bottom:0;left:0;right:0;display:flex;justify-content:space-between;align-items:center;
+  padding:16px 26px;z-index:60;transition:opacity .4s}
+body.bare #chrome,body.bare #hint{opacity:0;pointer-events:none}
+.navbtn{font-family:var(--fs);font-size:13px;font-weight:600;color:var(--mut);background:var(--bg);border:1px solid var(--line2);border-radius:100px;
+  padding:10px 17px;cursor:pointer;transition:color .2s,border-color .2s,box-shadow .2s;text-decoration:none;display:inline-block}
+.navbtn:hover{color:var(--ink);border-color:var(--line3)}
+.navbtn:disabled{opacity:.35;cursor:default}
+.navgrp{display:flex;gap:9px;align-items:center}
+#center{display:flex;flex-direction:column;align-items:center;gap:10px}
+#beats{display:flex;gap:6px;align-items:center}
+#beats .bd{position:relative;width:8px;height:8px;border-radius:50%;background:var(--line2);cursor:pointer;transition:background .3s,transform .3s}
+#beats .bd::before{content:"";position:absolute;inset:-9px;border-radius:50%}
+#beats .bd:hover{background:var(--line3)}
+#beats .bd.done{background:var(--line3)}
+#beats .bd.now{background:var(--indigo);transform:scale(1.5)}
+#beats .sep{width:14px}
+#scenelab{display:none}
+/* the ship scene already names itself top-left ("What we shipped"); drop the top-right label there */
+#s5 .rr{display:none}
+/* dark-scene chrome: glassy low-contrast buttons + light dots, applied only while the active view
+   sits on a dark canvas (the bet's beats 0-2, the dividers, the close), toggled in updateChrome(). */
+body.chrome-dark .navbtn{color:rgba(244,245,243,.62);background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.14)}
+body.chrome-dark .navbtn:hover{color:#fff;border-color:rgba(255,255,255,.32)}
+body.chrome-dark #beats .bd{background:rgba(255,255,255,.22)}
+body.chrome-dark #beats .bd:hover{background:rgba(255,255,255,.42)}
+body.chrome-dark #beats .bd.done{background:rgba(255,255,255,.42)}
+body.chrome-dark #beats .bd.now{background:#5FC9A6}
+body.chrome-dark #scenelab{color:rgba(244,245,243,.5)}
+#hint{position:fixed;bottom:76px;left:50%;transform:translateX(-50%);font-family:var(--fs);font-size:13px;color:var(--mut);
+  z-index:59;background:var(--bg);border:1px solid var(--line2);border-radius:100px;padding:9px 18px;transition:opacity .5s;
+  box-shadow:0 12px 34px -12px rgba(17,17,17,.16)}
+
+/* dot hover preview */
+#dotprev{position:fixed;z-index:80;display:flex;flex-direction:column;align-items:center;pointer-events:none;
+  opacity:0;transform:translate(-50%,10px) scale(.96);
+  transition:opacity .16s ease,transform .2s var(--ease),left .22s var(--ease),bottom .22s var(--ease);
+  will-change:left,bottom,transform,opacity}
+#dotprev.on{opacity:1;transform:translate(-50%,0) scale(1)}
+#dotprev .thumbport{width:var(--tw,270px);height:var(--th,169px);border-radius:12px;overflow:hidden;position:relative;
+  background:var(--bg);box-shadow:0 26px 64px -10px rgba(17,17,17,.28),0 0 0 1px var(--line2)}
+#dotprev .thumbstage{position:absolute;top:0;left:0;transform-origin:top left}
+#dotprev .thumbcap{margin-top:10px;font-family:var(--fs);font-size:12px;color:var(--mut);white-space:nowrap;letter-spacing:-.003em}
+#dotprev .thumbcap b{color:var(--ink);font-weight:600}
+.thumbscene{opacity:1!important;visibility:visible!important}
+.thumbscene,.thumbscene *{transition:none!important;animation:none!important;transition-delay:0s!important;animation-delay:0s!important}
+
+/* ============ OVERLAYS ============ */
+.overlay{position:fixed;inset:0;z-index:200;background:rgba(255,255,255,.86);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  opacity:0;visibility:hidden;transition:opacity .3s,visibility 0s .3s}
+.overlay.open{opacity:1;visibility:visible;transition:opacity .3s}
+.oclose{position:fixed;top:24px;right:28px;width:40px;height:40px;border-radius:50%;border:1px solid var(--line2);background:var(--bg);
+  color:var(--mut);font-size:19px;cursor:pointer;z-index:210;transition:color .2s,border-color .2s}
+.oclose:hover{color:var(--ink);border-color:var(--ink)}
+#menu{background:rgba(0,0,0,.28);backdrop-filter:none;-webkit-backdrop-filter:none}
+#menu .mwrap{position:absolute;left:0;top:0;bottom:0;width:min(440px,88vw);display:flex;flex-direction:column;justify-content:center;
+  padding:8vh 52px;overflow:auto;background:var(--bg);border-right:1px solid var(--line);
+  box-shadow:30px 0 80px -30px rgba(17,17,17,.3);transform:translateX(-102%);transition:transform .45s var(--ease)}
+#menu.open .mwrap{transform:none}
+#menu .mtitle{font-family:var(--fs);font-size:13px;letter-spacing:-.005em;font-weight:600;color:var(--indigo);margin-bottom:30px}
+#menu .mgroup{margin-bottom:24px}
+#menu .mnum{font-family:var(--fs);font-size:12px;color:var(--lab);margin-bottom:6px;font-weight:600}
+#menu .mlink{font-family:var(--fd);font-weight:500;font-size:clamp(24px,2.8vw,38px);color:var(--ink);cursor:pointer;display:inline-block;
+  transition:color .2s,transform .2s var(--ease);line-height:1.25;letter-spacing:-.024em}
+#menu .mlink:hover{color:var(--indigo);transform:translateX(6px)}
+#menu .msub{display:flex;flex-wrap:wrap;gap:8px 22px;margin-top:11px}
+#menu .msub span{font-family:var(--fs);font-size:14.5px;color:var(--mut);cursor:pointer;transition:color .2s;border-bottom:1px solid transparent}
+#menu .msub span:hover{color:var(--ink);border-bottom-color:var(--line2)}
+
+/* ============ DETAIL ============ */
+#detail{background:rgba(0,0,0,.34);backdrop-filter:none;-webkit-backdrop-filter:none}
+#detail>.oclose{display:none}
+#detail .dgrid{position:absolute;inset:calc(4vh + 56px) 4vw 4vh;display:grid;grid-template-columns:44% 56%;
+  background:var(--bg);border:1px solid var(--line2);border-top:0;border-radius:0 0 20px 20px;overflow:hidden;
+  box-shadow:0 40px 100px -30px rgba(17,17,17,.45)}
+#dhead{position:absolute;top:4vh;left:4vw;right:4vw;height:56px;background:var(--bg);border:1px solid var(--line2);
+  border-bottom:1px solid var(--line);border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:space-between;
+  padding:0 14px 0 24px;z-index:206}
+#dhead #dcrumb{font-family:var(--fs);font-size:13.5px;color:var(--mut)}
+#dhead #dcrumb b{color:var(--ink);font-weight:600}
+#dhead .dhr{display:flex;align-items:center;gap:10px}
+#dhead .dhr small{font-size:11px;color:var(--lab)}
+#detail .dleft{padding:6vh 3vw 6vh 4vw;display:flex;flex-direction:column;justify-content:center;overflow:auto}
+#detail .dright{position:relative;display:grid;place-items:center;
+  background:radial-gradient(80% 70% at 50% 42%,rgba(17,17,17,.03),transparent 70%);border-left:1px solid var(--line)}
+/* v7 · the real concept board in the exploration detail */
+#detail .detailboard{height:88%;width:auto;aspect-ratio:1237/1400;max-width:92%;border-radius:18px;overflow:hidden;
+  border:1px solid var(--line);background:#fff;box-shadow:0 34px 80px -34px rgba(20,19,24,.45)}
+#detail .detailboard img{width:100%;height:100%;object-fit:cover;display:block}
+#detail .dkick{font-family:var(--fs);font-size:13px;letter-spacing:-.005em;font-weight:600;color:var(--indigo);margin-bottom:18px}
+#detail .dtitle{font-family:var(--fd);font-weight:500;font-size:clamp(28px,3.1vw,44px);line-height:1.12;letter-spacing:-.028em;margin-bottom:20px}
+#detail .ddoes{font-family:var(--fd);font-weight:500;font-size:clamp(17px,1.45vw,21px);color:var(--ink);line-height:1.45;margin-bottom:32px;max-width:36ch;letter-spacing:-.015em}
+#detail .dsub{font-family:var(--fs);font-size:12px;font-weight:600;color:var(--indigo);letter-spacing:-.003em;margin-bottom:16px}
+/* which of the 3 discovery problems this concept addresses, lives in the detail view only,
+   not on the main grid, so it never collides with the (now-removed) solution-category badges */
+#detail .dprobs{display:flex;flex-wrap:wrap;gap:9px;margin-bottom:30px}
+#detail .dprob{display:inline-flex;align-items:center;gap:7px;font-family:var(--fs);font-size:12.5px;font-weight:600;color:var(--pc);
+  border:1px solid var(--pc);border-radius:100px;padding:5px 13px 5px 10px;opacity:.9}
+#detail .dprob .dot{width:7px;height:7px;border-radius:50%;background:var(--pc)}
+#detail .dsaid{list-style:none;display:flex;flex-direction:column;gap:15px;max-width:44ch}
+#detail .dsaid li{font-family:var(--fs);font-size:clamp(14.5px,1.2vw,16.5px);color:var(--mut);line-height:1.55;padding-left:20px;position:relative}
+#detail .dsaid li::before{content:"";position:absolute;left:0;top:9px;width:6px;height:6px;border-radius:50%;background:var(--indigo)}
+#detail .dverd{display:flex;align-items:center;gap:11px;margin-top:34px;font-family:var(--fs)}
+#detail .dverd .dot{width:10px;height:10px;border-radius:50%;background:currentColor}
+#detail .dverd .vl{font-size:14.5px;font-weight:600;white-space:nowrap}
+#detail .dverd .sig{color:var(--mut);font-weight:400;font-size:14px;border-left:1px solid var(--line2);padding-left:13px;margin-left:2px}
+#detail .dcount{position:fixed;bottom:calc(4vh + 16px);left:calc(4vw + 26px);font-family:var(--fs);font-size:12.5px;color:var(--lab);z-index:207}
+#detail .darrows{display:contents}
+#detail .darrows button{position:fixed;top:50%;transform:translateY(-50%);width:44px;height:44px;border-radius:50%;border:1px solid var(--line2);
+  background:var(--bg);color:var(--mut);font-size:16px;cursor:pointer;transition:color .2s,border-color .2s;z-index:210;
+  box-shadow:0 12px 30px -10px rgba(17,17,17,.3)}
+#detail #dprev{left:calc(4vw - 22px)}
+#detail #dnext{right:calc(4vw - 22px)}
+#detail.single #dprev,#detail.single #dnext{display:none}
+#detail .darrows button:hover{color:var(--ink);border-color:var(--ink)}
+/* cohort detail, dossier: profession/AI tools/cities as labeled rows */
+#detail .dossier{border:1px solid var(--line2);border-radius:16px;overflow:hidden;max-width:46ch}
+#detail .drow{display:grid;grid-template-columns:104px 1fr;gap:18px;padding:18px 20px;border-top:1px solid var(--line)}
+#detail .drow:first-child{border-top:0}
+#detail .drow .k{font-family:var(--fs);font-size:12px;font-weight:600;color:var(--lab);padding-top:2px}
+#detail .drow .v{font-family:var(--fs);font-size:14.5px;color:var(--ink);line-height:1.6}
+
+/* cohort profile modal, approved "editorial split" direction (see healthify-v9-cohort-profile.html):
+   a contained ~940x560 card centered on the dim scrim, portrait left, deduped identity right -
+   not the near-fullscreen .dgrid the other detail kinds (insight/concept/pmf/ref) use. Reuses the
+   same #dhead+.dgrid pair and dprev/dnext/esc/click-scrim wiring, just recentred and resized. */
+#detail.cohort-modal #dhead{top:calc(50vh - 280px);left:calc(50vw - 470px);right:auto;width:940px;
+  border-radius:24px 24px 0 0}
+#detail.cohort-modal .dgrid{top:calc(50vh - 280px + 56px);left:calc(50vw - 470px);right:auto;bottom:auto;
+  width:940px;height:504px;grid-template-columns:38% 1fr;border:0;border-radius:0 0 24px 24px;
+  box-shadow:0 60px 140px -50px rgba(6,14,10,.55),0 10px 30px -14px rgba(6,14,10,.35)}
+#detail.cohort-modal .dleft{background:var(--indigo-soft);padding:24px;
+  display:flex;align-items:center;justify-content:center;overflow:hidden}
+#detail.cohort-modal .dleft img{width:auto;height:60%;max-width:80%;display:block}
+#detail.cohort-modal .dright{background:none;border-left:0;place-items:unset;
+  display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;
+  padding:40px 44px;overflow:auto}
+#detail.cohort-modal .dmeta{font-family:var(--fs);font-size:14px;color:var(--mut);font-weight:500;margin-top:12px}
+#detail.cohort-modal .dmeta b{color:var(--ink);font-weight:600}
+#detail.cohort-modal .dossier{margin-top:26px}
+#detail.cohort-modal #dprev{left:calc(50vw - 530px);right:auto}
+#detail.cohort-modal #dnext{right:calc(50vw - 530px);left:auto}
+#detail.cohort-modal .dcount{left:50%;right:auto;bottom:auto;top:calc(50vh + 280px + 18px);transform:translateX(-50%)}
+
+/* phone */
+.phone{position:relative;width:min(300px,80%);aspect-ratio:9/19;background:var(--pbg);border-radius:38px;
+  box-shadow:0 34px 80px -18px rgba(17,17,17,.3),0 0 0 1px var(--line);overflow:hidden;color:var(--pink);font-family:var(--fs);font-size:12px}
+.phone .notch{position:absolute;top:9px;left:50%;transform:translateX(-50%);width:110px;height:24px;background:#111;border-radius:14px;z-index:3}
+.phscreen{position:absolute;inset:0;display:flex;flex-direction:column}
+.phstat{display:flex;justify-content:space-between;padding:12px 20px 2px;font-size:11px;font-weight:600}
+.phbody{flex:1;overflow:hidden;padding:8px 15px 14px;display:flex;flex-direction:column;gap:11px}
+.phbar{display:flex;align-items:center;justify-content:space-between;padding:4px 0 2px}
+.phbar h4{font-size:16px;font-weight:600;letter-spacing:-.01em}
+.phbar .loc{font-size:11px;color:var(--pmut);font-weight:500}
+.phbar .av{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#5FC9A6,#21695C)}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.tile{background:var(--pcard);border:1px solid var(--pline);border-radius:14px;overflow:hidden}
+.tile .img{height:56px;position:relative}
+.tile .tb{padding:8px 9px 9px}
+.tile b{font-size:12px;font-weight:600;display:block;line-height:1.2}
+.tile small{color:var(--pmut);font-size:10px;display:block;margin-top:3px}
+.chip{display:inline-block;padding:3px 8px;border-radius:999px;font-size:9.5px;font-weight:600;margin-top:6px}
+.chip.local{background:#E4F1EC;color:#184F45}.chip.doc{background:#F3F3F3;color:#6C6B70}.chip.pcos{background:#E4F1EC;color:#21695C}
+.phwhy{background:var(--pcard);border:1px solid var(--pline);border-radius:12px;padding:10px 12px;font-size:11.5px;color:var(--pink);line-height:1.4}
+.phwhy b{color:var(--pg)}
+.tabbar{margin-top:auto;display:flex;justify-content:space-around;align-items:flex-end;padding:8px 4px 4px;border-top:1px solid var(--pline);color:#C2C2C7}
+.tabbar i{width:18px;height:18px;border-radius:5px;background:#D2D2D7;display:block}
+.tabbar .mid{width:46px;height:46px;border-radius:50%;background:var(--pg);color:#fff;display:grid;place-items:center;margin-top:-20px;
+  box-shadow:0 8px 18px rgba(63,168,130,.4);font-size:22px}
+.phone.ph-empty{background:#F5F5F6;border:1px dashed var(--line3);box-shadow:0 24px 60px -18px rgba(20,19,24,.14);color:var(--mut)}
+.ph-empty .pe{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:30px;text-align:center}
+.ph-empty .peco{font-family:var(--fd);font-weight:500;font-size:22px;color:var(--ink);line-height:1.3;letter-spacing:-.02em}
+.ph-empty .pelabel{font-family:var(--fs);font-size:11.5px;letter-spacing:-.003em;color:var(--lab);font-weight:600}
+.ph-empty .pebars{width:70%;display:flex;flex-direction:column;gap:9px;margin-top:6px}
+.ph-empty .pebars i{height:10px;border-radius:5px;background:var(--line)}
+.ph-empty .pebars i:nth-child(2){width:82%}.ph-empty .pebars i:nth-child(3){width:64%}
+.protowrap{position:relative;height:min(78vh,740px);aspect-ratio:375/812;max-width:88%;
+  border:1px solid var(--line);border-radius:28px;overflow:hidden;background:#fff;
+  box-shadow:0 34px 80px -18px rgba(17,17,17,.3)}
+.protowrap .protoload{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:0 24px;
+  font-family:var(--fd);font-weight:500;font-size:16px;color:var(--lab)}
+.protowrap iframe{position:relative;width:375px;height:812px;border:0;background:transparent;transform-origin:top left}
+#detail.single .darrows{display:none}
+.pmf{width:min(640px,92%);display:flex;flex-direction:column;gap:0;background:var(--bg);border:1px solid var(--line);border-radius:16px;
+  overflow:hidden;box-shadow:0 20px 50px -18px rgba(17,17,17,.16)}
+.pmf .pr{display:grid;grid-template-columns:30% 19% 1fr;gap:12px;align-items:center;padding:14px 22px 14px 20px;border-bottom:1px solid var(--line)}
+.pmf .pr:last-child{border-bottom:0}
+.pmf .pr .pf{font-family:var(--fd);font-weight:500;font-size:15px;letter-spacing:-.01em}
+.pmf .pr .pv{font-family:var(--fs);font-size:12px;font-weight:600;letter-spacing:-.003em;display:inline-flex;align-items:center;gap:7px}
+.pmf .pr .pv .dot{width:7px;height:7px;border-radius:50%;background:currentColor;flex:none}
+.pmf .pr .pw{font-family:var(--fs);font-size:13px;color:var(--mut);line-height:1.45}
+.pmf .ph{padding:14px 22px 14px 20px;border-bottom:1px solid var(--line);font-family:var(--fs);font-size:11px;font-weight:600;
+  letter-spacing:-.003em;color:var(--lab);display:grid;grid-template-columns:30% 19% 1fr;gap:12px}
+.evidence{width:min(460px,86%);display:flex;flex-direction:column;gap:15px}
+.evidence .ec{background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:18px 20px;
+  font-family:var(--fs);font-size:15.5px;color:var(--mut);line-height:1.55;box-shadow:0 12px 30px -14px rgba(17,17,17,.12)}
+.evidence .en{font-family:var(--fs);font-size:12px;color:var(--indigo);font-weight:600;display:block;margin-bottom:8px}
+.refpanel{width:100%;display:flex;gap:2.2vw;align-items:center;justify-content:center;padding:2vh 1.5vw}
+.refshot{flex:1;min-width:0;max-width:330px;display:flex;flex-direction:column;align-items:center;gap:16px}
+.refshot .fr{width:100%;height:min(54vh,510px);display:grid;place-items:center;background:#fff;
+  border:1px solid var(--line);border-radius:22px;overflow:hidden;padding:16px;box-shadow:0 24px 56px -24px rgba(17,17,17,.24)}
+.refshot .fr img{max-width:100%;max-height:100%;object-fit:contain;border-radius:10px;display:block}
+.refshot .rcap{font-family:var(--fd);font-weight:500;font-size:15.5px;color:var(--ink);text-align:center;letter-spacing:-.01em}
+
+/* ============ ROUND CURSOR ============ */
+@media (pointer:fine){
+  *{cursor:none!important}
+  #cursor{position:fixed;left:0;top:0;width:10px;height:10px;border-radius:50%;background:#fff;
+    mix-blend-mode:difference;pointer-events:none;z-index:2000;opacity:0;
+    transform:translate(-50%,-50%);
+    transition:width .3s var(--ease),height .3s var(--ease),opacity .25s}
+  #cursor.on{opacity:1}
+  #cursor.hot{width:34px;height:34px}
+  #cursor.press{width:20px;height:20px}
+  body.figma-open *{cursor:auto!important}
+  body.figma-open #cursor{opacity:0!important}
+}
+@media (prefers-reduced-motion:reduce){
+  *{transition-duration:.001s!important;animation-duration:.001s!important;transition-delay:0s!important}
+}
+@media(max-width:900px){
+  .insight{width:40vw;font-size:13px}
+  #detail .dgrid{grid-template-columns:1fr;grid-template-rows:auto 1fr}
+  #detail .dleft{padding:8vh 8vw 3vh}
+  #s4 .ostats{grid-template-columns:1fr 1fr;gap:5vw 3vw}
+  #s4 .pillars{grid-template-columns:1fr 1fr;gap:4vw 3vw}
+}
+
+</style>
+</head>
+<body>
+<div id="prog"></div>
+<div id="errbar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:3000;background:#B4442F;color:#fff;font:600 13px/1.4 var(--fs);padding:10px 16px;white-space:pre-wrap"></div>
+<script>window.addEventListener('error',function(e){var b=document.getElementById('errbar');if(!b)return;b.style.display='block';b.textContent='Script error: '+(e.message||e.error)+'  ·  '+(e.filename||'')+':'+(e.lineno||'');});</script>
+
+<div id="curtain"><div class="ct"></div></div>
+
+<!-- COVER -->
+<section class="scene active" id="cover" data-beats="1">
+  <div class="chero vb">
+    <div class="glow"></div>
+    <div class="phone back"><img src="Assets/Healthify%20Assets/Single%20Food%20in%20a%20snap.png" alt="Healthify meal score"></div>
+    <div class="phone front"><img src="Assets/Healthify%20Assets/Change%20quantity_track.png" alt="Healthify speak to Ria"></div>
+  </div>
+  <img class="clogo" src="Assets/Healthify%20Assets/Parallel%20Logo%20(type).svg" alt="Parallel">
+  <div class="cwrap">
+    <h1>Healthify</h1>
+    <h2 class="ctag2">India's leading AI health and nutrition app</h2>
+    <p class="csub">Their AI-first relaunch in 2023 was losing users. We identified the gaps, reimagined new AI features from scratch and validated the new concepts before their US launch.</p>
+    <div class="beginrow"><button class="beginbtn" id="beginBtn">Begin the story →</button></div>
+  </div>
+  <div class="foot">
+    <span class="fcred">Backed by <b>Khosla Ventures</b> &amp; <b>Leapfrog</b> · Featured on <b>OpenAI DevDay</b></span>
+  </div>
+</section>
+
+<!-- SCENE 1 · THE BET -->
+<section class="scene" id="s1" data-beats="4">
+  <span class="rr">Healthify × Parallel</span>
+
+  <!-- "Our mandate" · beat 3. Sits BENEATH the dark bet overlay and stays full-opacity (never an
+       opacity layer, so its SVG line rasters reliably). The bet overlay fades out to reveal it. -->
+  <div class="rolepanel">
+    <div class="rgrow"><svg viewBox="0 0 1600 1000" preserveAspectRatio="none"><path id="mandateRise" d="M0 905 C 360 888, 640 812, 880 645 C 1130 478, 1350 432, 1600 372"/></svg></div>
+    <div class="mandeye"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0c.6 5.7 5.7 10.8 12 12-6.3 1.2-11.4 6.3-12 12-.6-5.7-5.7-10.8-12-12C6.3 10.8 11.4 5.7 12 0Z" fill="#21695C"/></svg>Our mandate</div>
+    <h1 class="rstmt">Identify the <em>friction points</em> and redesign the app before expanding to the <em>new market</em>.</h1>
+  </div>
+
+  <div class="betdark">
+    <div class="vignette"></div>
+    <div class="cGlow"></div>
+    <div class="cGlowLoss"></div>
+    <svg class="cChart" viewBox="0 0 1000 300" preserveAspectRatio="none">
+      <defs>
+        <linearGradient id="gRiseD" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="#1F7A5E"/><stop offset="1" stop-color="#7BE0B0"/>
+        </linearGradient>
+        <linearGradient id="gFallD" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="#D93F30"/><stop offset="1" stop-color="#E8776A"/>
+        </linearGradient>
+        <filter id="blurD" x="-20%" y="-80%" width="140%" height="260%"><feGaussianBlur stdDeviation="7"/></filter>
+      </defs>
+      <line x1="0" y1="100" x2="1000" y2="100" stroke="rgba(24,42,36,.07)"/>
+      <line x1="0" y1="200" x2="1000" y2="200" stroke="rgba(24,42,36,.07)"/>
+
+      <path class="ln lnglow rise" stroke="url(#gRiseD)" filter="url(#blurD)" d="M0 262 C 130 250, 250 222, 380 182 C 470 156, 560 118, 640 90"/>
+      <path class="ln core rise" stroke="url(#gRiseD)" d="M0 262 C 130 250, 250 222, 380 182 C 470 156, 560 118, 640 90"/>
+
+      <g id="fallGrp">
+        <path class="ln lnglow fall" stroke="url(#gFallD)" filter="url(#blurD)" d="M640 90 C 720 100, 800 150, 880 208 C 930 240, 970 258, 1000 268"/>
+        <path class="ln core fall" stroke="url(#gFallD)" d="M640 90 C 720 100, 800 150, 880 208 C 930 240, 970 258, 1000 268"/>
+      </g>
+    </svg>
+    <div class="mark"><i></i></div>
+    <div class="marklabel">AI features shipped</div>
+
+    <div class="heads">
+      <div class="hl" data-b="0"><h1 class="hl-t">Healthify helps <em>50 million</em> people<br>eat better and live healthier.</h1></div>
+      <div class="hl" data-b="1"><h1 class="hl-t">In 2023, they shipped a wave<br>of new <em>AI features.</em></h1></div>
+      <div class="hl" data-b="2"><h1 class="hl-t">But growth stalled, and<br>retention began to <em class="loss">decline.</em></h1>
+        <p class="sub">Existing users couldn't adopt these features,<br>and new users weren't excited by them.</p></div>
+    </div>
+
+    <div class="cNum"><span class="n" id="betret">100</span><span class="l">Retention index</span></div>
+  </div>
+  <div class="stage">
+    <div class="greenwash"></div>
+    <div class="redwash"></div>
+    <div class="headline">
+      <div class="hl-line big" data-b="0">Healthify helps <span class="g">50 million</span> people eat better and live healthier.</div>
+      <div class="hl-line big" data-b="1">In 2023, they shipped a wave of new AI features.</div>
+      <div class="hl-line big" data-b="2">Despite unlocking advanced features, retention began to <span class="r">decline.</span><span class="hl-sub">Existing users weren't adopting the AI-first experience, and it wasn't attracting enough new users either.</span></div>
+      <div class="hl-line big" data-b="3"><span class="yr">The mandate</span>Imagine an AI-first Healthify app that unlocks adoption and retention.</div>
+    </div>
+    <div class="chartwrap">
+      <div class="statblock" id="retno"><span class="sv" id="retval">100</span><span class="sl">Retention index</span></div>
+      <div class="mandates">
+        <div class="mand"><span class="mn">Mandate 01</span><p>Where does AI genuinely help the user's core job?</p></div>
+        <div class="mand"><span class="mn">Mandate 02</span><p>Where does it get in the way?</p></div>
+        <div class="mand"><span class="mn">Mandate 03</span><p>What makes users trust AI enough to rely on it?</p></div>
+      </div>
+      <svg viewBox="0 0 1000 420" preserveAspectRatio="none" aria-hidden="true">
+        <defs>
+          <linearGradient id="gRise" x1="0" y1="0" x2="560" y2="0" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#1F7A5E"/><stop offset="1" stop-color="#7BE0B0"/>
+          </linearGradient>
+          <linearGradient id="gFall" x1="560" y1="0" x2="990" y2="0" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#C98A2E"/><stop offset="1" stop-color="#B4442F"/>
+          </linearGradient>
+        </defs>
+        <line class="gridl" x1="0" y1="105" x2="1000" y2="105"/>
+        <line class="gridl" x1="0" y1="210" x2="1000" y2="210"/>
+        <line class="gridl" x1="0" y1="315" x2="1000" y2="315"/>
+        <path id="riseline" d="M0 340 C 120 322, 220 300, 330 268 C 420 242, 500 210, 560 186"/>
+        <path id="fall" d="M560 186 C 640 190, 700 226, 770 272 C 830 312, 900 352, 990 382"/>
+        <circle id="shipdot" cx="560" cy="186" r="5.5" fill="#5FC9A6"/>
+      </svg>
+      <div id="shipflag">AI features shipped</div>
+    </div>
+  </div>
+</section>
+
+<!-- THE PROCESS · one continuous loop -->
+<!-- (The process scene was removed; the Discover / Imagine / Validate arc now lives only in the persistent divider proctrack.) -->
+
+<!-- DIVIDER · THE DIAGNOSIS -->
+<section class="scene divider" id="d2" data-beats="1">
+  <div class="dvwrap">
+    <h2 class="dvtitle">Discovery</h2>
+    <p class="dvsub">Uncovering real problems by asking the right questions.</p>
+  </div>
+</section>
+
+<!-- SCENE 2 · THE DIAGNOSIS -->
+<section class="scene" id="s2" data-beats="6">
+  <span class="rl">Discovery</span>
+  <span class="rr">Healthify × Parallel</span>
+  <div class="head">
+    <div class="hswap"><h2 class="big" data-h="0">We set out to answer three things.</h2></div>
+    <h3 class="axesline">Across five axes: <b>operating system</b>, <b>new vs existing</b>, <b>profession</b>, <b>geography</b>, <b>AI usage</b>.</h3>
+  </div>
+  <p class="beatline">Then we recruited 20 people and conducted user interviews.</p>
+  <!-- beat 0 · the three questions, in the deck's "what's inside" agenda component (circled
+       numbers, big rows, hairlines). The top head is suppressed on b0 so the heading reads once, here. -->
+  <div class="tocwrap">
+    <div class="toc-h">We set out to answer three things.</div>
+    <div class="toc">
+      <div class="row"><span class="cnum">1</span><span class="t">Where does AI genuinely help users?</span></div>
+      <div class="row"><span class="cnum">2</span><span class="t">Where does it get in the way?</span></div>
+      <div class="row"><span class="cnum">3</span><span class="t">What makes AI trustworthy enough?</span></div>
+    </div>
+  </div>
+  <div class="peoplewash"></div>
+  <div class="people" id="people"></div>
+  <div class="field" id="field"></div>
+  <div class="artifact" id="pmfBtn"><span>And every existing feature got a verdict</span><b>View the feature check ↗</b></div>
+</section>
+
+<!-- DIVIDER · THE EXPLORATION -->
+<section class="scene divider" id="d3" data-beats="1">
+  <div class="dvwrap">
+    <h2 class="dvtitle">Exploration</h2>
+    <p class="dvsub">Imagining new experiences and validating them.</p>
+  </div>
+</section>
+
+<!-- SCENE 3 · THE EXPLORATION -->
+<section class="scene" id="s3" data-beats="3">
+  <span class="rl">Exploration</span>
+  <span class="rr">Healthify × Parallel</span>
+  <div class="head">
+    <div class="hswap show" data-h="0"><h2 class="big">We explored 12 AI solutions from scratch.</h2></div>
+    <div class="hswap" data-h="2"><h2 class="big">We prioritised the features based on our findings.</h2><p class="subh">Features based on personal context won over external signals.</p></div>
+  </div>
+
+  <p class="s3bot" id="s3bot">And we tested them with a new set of users.</p>
+
+  <div id="stage"><div id="s3crule"></div></div>
+</section>
+
+<!-- DIVIDER · THE SHIP -->
+<section class="scene divider" id="d4" data-beats="1">
+  <div class="dvwrap">
+    <h2 class="dvtitle">What we shipped</h2>
+  </div>
+</section>
+
+<!-- SCENE 5 · THE SHIP -->
+<section class="scene" id="s5" data-beats="7">
+  <span class="rl">What we shipped</span>
+  <span class="rr">Healthify × Parallel</span>
+
+  <!-- 1 · HOME (3 beats: full → pill1+zoom top → pill2+zoom bottom) -->
+  <div class="shipslide" data-g="home">
+    <div class="head"><h2 class="big">Tracking became the primary action</h2><p class="cb">People come to Healthify to track their food, so it's the first thing they see now.</p></div>
+    <div class="estage"><div class="dev"><div class="bezel"><div class="scr"><img src="Assets/ship/01-home.png" alt="The Healthify home, built around tracking"></div></div></div></div>
+    <div class="pill p1">Logging sits at the top of the screen, impossible to miss.</div>
+    <div class="pill p2">Frequently tracked and saved meals make logging even faster.</div>
+  </div>
+
+  <!-- 2 · ENTRY (carousel, auto ping-pong) -->
+  <div class="shipslide" data-g="entry">
+    <div class="head"><h2 class="big">Snap, search or speak are no longer separate tools</h2><p class="cb">They open from one place and hand off to each other so logging never breaks step.</p></div>
+    <div class="estage">
+      <div class="epeek" data-c="0"><img src="Assets/ship/03-snap.png" alt="Snap to track"></div>
+      <div class="epeek" data-c="1"><img src="Assets/ship/04-search.png" alt="Search to track"></div>
+      <div class="epeek" data-c="2"><img src="Assets/ship/05-speak.png" alt="Speak to track"></div>
+      <div class="dev" id="entryFrame"><div class="bezel"><div class="scr">
+        <div class="st on" data-c="0"><img src="Assets/ship/03-snap.png" alt="Snap to track"></div>
+        <div class="st" data-c="1"><img src="Assets/ship/04-search.png" alt="Search to track"></div>
+        <div class="st" data-c="2"><img src="Assets/ship/05-speak.png" alt="Speak to track"></div>
+      </div></div></div>
+    </div>
+  </div>
+
+  <!-- 3 · RIA (auto state machine: speak → type → correct → confirm) -->
+  <div class="shipslide" data-g="ria">
+    <div class="head"><h2 class="big">Switch between modalities without losing context</h2><p class="cb">You can start the log by speaking and finish with typing.</p></div>
+    <div class="estage"><div class="dev"><div class="bezel"><div class="scr">
+      <div class="st on" data-st="0"><img src="Assets/ship/06-speak-state.png" alt="Speaking to Ria"></div>
+      <div class="st" data-st="1"><img src="Assets/ship/07-type-state.png" alt="Switching to the keyboard mid-log"></div>
+      <div class="st" data-st="2"><img src="Assets/ship/08-correct-state.png" alt="Correcting what Ria logged"></div>
+      <div class="st" data-st="3"><img src="Assets/ship/16-oj-confirmed.png" alt="The log updated to 2 glasses of orange juice"></div>
+    </div></div></div></div>
+  </div>
+
+  <!-- 4 · SCORE (auto zoom into the reasoning) -->
+  <div class="shipslide" data-g="score">
+    <div class="head"><h2 class="big">Every score comes with a why</h2><p class="cb">Ria grades the meal with a single number and explains the reasoning behind it.</p></div>
+    <div class="estage"><div class="dev"><div class="bezel"><div class="scr"><img src="Assets/ship/09-score.png" alt="A meal scored, with Ria's reasoning below"></div></div></div></div>
+  </div>
+
+  <!-- 5 · INSIGHTS (auto zoom into the action card) -->
+  <div class="shipslide" data-g="insights">
+    <div class="head"><h2 class="big">Insights that tell you what to do next</h2><p class="cb">How the week went, in words, so you don't have to interpret graphs.</p></div>
+    <div class="estage"><div class="dev"><div class="bezel"><div class="scr"><img src="Assets/ship/11-insights.png" alt="The weekly Nourish read"></div></div></div></div>
+  </div>
+</section>
+
+<!-- DIVIDER · WHAT IT DROVE -->
+<section class="scene divider" id="d5" data-beats="1">
+  <div class="dvwrap">
+    <h2 class="dvtitle">What it drove</h2>
+    <p class="dvsub">The numbers after the new flows went live.</p>
+  </div>
+</section>
+
+<!-- SCENE 4 · WHAT IT DROVE -->
+<section class="scene" id="s4" data-beats="3">
+  <span class="rr">Healthify × Parallel</span>
+  <div class="owrap">
+    <div class="opanel1">
+      <p class="kicker okick">What it drove</p>
+      <h2 class="obig">Healthify launched in the US and added 10 million new users.</h2>
+      <div class="ostats">
+        <div class="ostat"><div class="n">77%</div><div class="l">Queries handled by AI</div></div>
+        <div class="ostat"><div class="n">10M</div><div class="l">New users</div></div>
+        <div class="ostat"><div class="n">$1M</div><div class="l">ARR · post-pilot, US</div></div>
+        <div class="ostat"><div class="n">$24.5M</div><div class="l">FY24 revenue, India</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="endwash"></div>
+  <div class="opanel2">
+    <img class="wlogo" src="Assets/Healthify%20Assets/Parallel%20Logo%20(type).svg" alt="Parallel">
+    <h2 class="wbig">We turn ambitious AI ideas into products people adopt.</h2>
+    <div class="pillars">
+      <div class="pillar"><div class="pt">Evidence-led strategy</div><div class="pd">Research becomes a plan: what to build, what to fix, what to cut.</div></div>
+      <div class="pillar"><div class="pt">AI fluency</div><div class="pd">A point of view on AI beyond chat, designed for trust.</div></div>
+      <div class="pillar"><div class="pt">Design taste</div><div class="pd">Craft that makes the AI feel effortless.</div></div>
+      <div class="pillar"><div class="pt">Embedded velocity</div><div class="pd">We work inside your team and ship in weekly cycles.</div></div>
+    </div>
+  </div>
+  <div class="oacts">
+    <button class="figbtn" id="figBtn">Explore the design file →</button>
+    <a href="index.html" id="endlib">← Back to the library</a>
+  </div>
+</section>
+
+<!-- CHROME -->
+<div id="hint">← → or the buttons to move · click any card to dive in · press C for contents</div>
+<div id="chrome">
+  <div class="navgrp">
+    <a class="navbtn" href="index.html" id="libBtn">← Library</a>
+    <button class="navbtn" id="menuBtn">Contents</button>
+  </div>
+  <div id="center">
+    <div id="beats"></div>
+    <span id="scenelab"></span>
+  </div>
+  <div class="navgrp">
+    <button class="navbtn" id="backBtn">← Back</button>
+    <button class="navbtn" id="nextBtn">Next →</button>
+  </div>
+</div>
+
+<div id="dotprev"><div class="thumbport"><div class="thumbstage" id="thumbstage"></div></div><div class="thumbcap" id="thumbcap"></div></div>
+
+<!-- CONTENTS MENU -->
+<div class="overlay" id="menu">
+  <button class="oclose" data-close="menu">✕</button>
+  <div class="mwrap">
+    <p class="mtitle">Contents · jump anywhere</p>
+    <div class="mgroup">
+      <div class="mnum">01</div>
+      <span class="mlink" data-go="1,0">The bet</span>
+      <div class="msub">
+        <span data-go="1,0">The rise</span>
+        <span data-go="1,2">The fall</span>
+        <span data-go="1,3">Our mandate</span>
+      </div>
+    </div>
+    <div class="mgroup">
+      <div class="mnum">02</div>
+      <span class="mlink" data-go="3,0">Discovery</span>
+      <div class="msub">
+        <span data-go="3,0">Three questions</span>
+        <span data-go="3,1">The method</span>
+        <span data-go="3,3">Seven insights</span>
+        <span data-go="3,5">Three problems</span>
+        <span id="mpmf">The feature check</span>
+      </div>
+    </div>
+    <div class="mgroup">
+      <div class="mnum">03</div>
+      <span class="mlink" data-go="5,0">Exploration</span>
+      <div class="msub">
+        <span data-go="5,0">Twelve solutions</span>
+        <span data-go="5,1">Tested with users</span>
+        <span data-go="5,2">Prioritised</span>
+      </div>
+    </div>
+    <div class="mgroup">
+      <div class="mnum">04</div>
+      <span class="mlink" data-go="7,0">What we shipped</span>
+      <div class="msub">
+        <span data-go="7,0">Tracking is primary</span>
+        <span data-go="7,3">Three ways to log</span>
+        <span data-go="7,4">Switch mid-log</span>
+        <span data-go="7,5">Every score, a why</span>
+        <span data-go="7,6">Weekly insights</span>
+      </div>
+    </div>
+    <div class="mgroup">
+      <div class="mnum">05</div>
+      <span class="mlink" data-go="9,0">What it drove</span>
+      <div class="msub">
+        <span data-go="9,1">The numbers</span>
+        <span data-go="9,2">Why Parallel</span>
+        <span id="mfigma">The design file ↗</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FIGMA EMBED -->
+<div class="overlay" id="figma">
+  <button class="oclose" data-close="figma">✕</button>
+  <div class="fbar">
+    <button class="navbtn" id="figLib">← Library</button>
+    <span class="flabel">Healthify · Design handoff</span>
+  </div>
+  <div class="fstage">
+    <div class="floader">Opening the design file…</div>
+    <iframe id="figframe" allowfullscreen title="Healthify design handoff in Figma"></iframe>
+  </div>
+</div>
+
+<!-- DETAIL -->
+<div class="overlay" id="detail">
+  <button class="oclose" data-close="detail">✕</button>
+  <div id="dhead"><span id="dcrumb"></span><span class="dhr"><button class="navbtn" id="dclose">Close ✕</button><small>esc</small></span></div>
+  <div class="dgrid">
+    <div class="dleft" id="dleft"></div>
+    <div class="dright" id="dright"></div>
+  </div>
+  <div class="dcount" id="dcount"></div>
+  <div class="darrows"><button id="dprev">←</button><button id="dnext">→</button></div>
+</div>
+
+<script>
+/* ---------------- DATA ---------------- */
+/* cluster colours are categorical (themes), NOT judgements, green/amber/red stay reserved for verdicts */
+/* .k / .d = theme name + rolled-up description, reused by the beat-4 theme label and the insight
+   detail overlay. .ph / .pb = the punchier statement shown on the beat-5 problem card only.
+   .c is one hoarded indigo accent for all three (the old indigo→light→grey ran like a broken
+   gradient, the third problem read as disabled). */
+const PROBLEMS=[
+  {k:"Clarity of the core job", kw:"Clarity", d:"The redesign made the one action users came for, fast and reliable tracking, harder to reach.", c:"#21695C",
+   ph:"Core job of tracking was buried", pb:"Tracking is why people open Healthify. The redesign pushed it out of reach."},
+  {k:"Discoverability of features", kw:"Visibility", d:"Most users never knew Ria, Snap or insights existed at all. The features never surfaced themselves.", c:"#21695C",
+   ph:"New features were invisible", pb:"Ria, Snap and Insights were the strongest features. Most people never knew they existed."},
+  {k:"Trust in AI", kw:"Trust", d:"Curiosity about the AI features gave way to doubt over accuracy, control and personalisation.", c:"#21695C",
+   ph:"Users didn't trust AI output", pb:"Curiosity around the features was overshadowed by questions about accuracy and control."}
+];
+const INSIGHTS=[
+  {t:"The 'clean redesign' buried the core action of meal tracking", short:"The redesign buried tracking", cluster:0, obs:[
+    "Users liked the homogenised look and seeing meal insights up front.",
+    "But existing users missed the clear, instant 'track a meal' CTA and felt lost about where to track.",
+    "They came to track meals and were blind to the 'active choice' welcome. Features went undiscovered."]},
+  {t:"Users trust manual search but doubt Snap's accuracy", short:"Manual is trusted. Snap isn't.", cluster:2, obs:[
+    "Existing users default to manual search out of habit and trust; new users are more open to Snap.",
+    "Snap drew curiosity but failed on accuracy: portion size, healthy swaps.",
+    "One bad capture sent them back to manual for good; privacy and clumsy edits compounded the distrust."]},
+  {t:"'Track with Ria' was powerful but nearly invisible", short:"Ria was nearly invisible", cluster:1, obs:[
+    "Not one existing-user participant had tried tracking via Ria. It wasn't a consistent choice on the home screen.",
+    "Many didn't know how to phrase commands, unsure what the AI needed.",
+    "When they did log via Ria, inaccuracies and hard-to-fix entries quickly cost it credibility."]},
+  {t:"Users want insights that tell them what to do next", short:"Insights must say what's next", cluster:0, obs:[
+    "Insights act as motivation and education, driving consistency.",
+    "Existing users asked for early signals on whether they're meeting calorie goals.",
+    "They wanted actionable, goal-curated guidance, not generic tips."]},
+  {t:"Users thought Ria was paywalled and preferred taps over typing", short:"Ria felt paywalled", cluster:1, obs:[
+    "Existing users were hesitant; some assumed Ria was paid/pro after the UI upgrade and never tried.",
+    "New users discovered Ria more organically.",
+    "When nudged in, most entered through active choices and prompts. They didn't know how to start a free-form chat."]},
+  {t:"Users expect the in-app AI to know more than ChatGPT", short:"It must beat ChatGPT", cluster:2, obs:[
+    "They expect Ria to use their logs, goals and dietary preferences in every answer.",
+    "A bias that AI can't truly customise to their body sends nutrition questions to coaches and friends.",
+    "They reject bot-like preset replies and will trade more input for a genuinely engaging conversation."]},
+  {t:"To users, Healthify is 'the calorie tracker', and that must stay sacred", short:"The calorie tracker is sacred", cluster:0, obs:[
+    "Its value is 'the calorie tracker', not a holistic fitness app.",
+    "Power users come for Indian recipes and India-aware measurement: 'a tablespoon', not abstract grams.",
+    "Implication: AI must strengthen the core tracking job first."]}
+];
+const CLUSTER=INSIGHTS.map(i=>i.cluster);
+const CCOL=['#21695C','#21695C','#21695C'];
+const CONCEPTS=[
+  {name:"Multi-modality tracking",terr:"mm",v:"pri",probs:[0,2],does:"Track meals using search, voice, photo or barcode, all feeding one log.",
+   said:["Users are loyal to one modality, chosen for its accuracy.","Voice excites, but only if it can be trusted to log accurately.","Existing users know Snap's limits and fall back to manual search."],
+   sig:"Wanted, but each modality must earn trust on accuracy."},
+  {name:"Voice-based planning",terr:"mm",v:"exp",probs:[0,1],does:"Plan and log meals hands-free by talking to Ria.",
+   said:["Reaction split by comfort with voice.","Non-users saw no use case; fans expected a spoken reply, not text.","Strong only if it's accurate and allows hyper-detailed logging."],
+   sig:"Split by comfort; ship opt-in with spoken replies."},
+  {name:"Video Ria interaction",terr:"mm",v:"exp",probs:[1],does:"Short recipe videos from Ria to help you decide what to cook.",
+   said:["Users want videos that enable a quick decision.","They need ingredients, difficulty and cook-time shown up front.","Without that, they won't invest time watching."],
+   sig:"Useful only if ingredients and effort are shown up front."},
+  {name:"Suggestions from your logs",terr:"pr",v:"exp",probs:[0],does:"Meal ideas generated from what you usually log.",
+   said:["Majority saw value but were wary of repeat recommendations.","They know their regular meals by heart and want new, healthy ideas.","Best when suggestions stay close to what they already eat."],
+   sig:"Liked, but want new ideas, not repeats of usual meals."},
+  {name:"Location-based suggestions",terr:"pr",v:"pri",probs:[1],does:"Healthy options nearby for ordering in or eating out.",
+   said:["Majority keen to find healthy options away from home.","Also wanted it while choosing restaurants or deciding where to eat.","Sceptics worried about privacy, or avoid outside food entirely."],
+   sig:"Keen for healthy options when eating out or ordering in."},
+  {name:"Picked for you",terr:"pr",v:"pri",probs:[1,2],does:"A personalised, of-the-moment set of meals chosen for each user.",
+   said:["Most popular concept: 11 of 13 keen to use it.","Wanted authentic, geography-specific picks with local ingredients.","For conditions like PCOS, wanted doctor-recommended assurance."],
+   sig:"Most popular (11/13): wanted authentic, local, doctor-backed picks.", full:true},
+  {name:"Coach recommends",terr:"pr",v:"pri",probs:[1,2],does:"Meal guidance from an AI coach based on your goals.",
+   said:["Coach-plan users saw the greatest value and wanted it up front.","Non-users were open to a hyper-personalised AI coach.","Some saw it merging naturally with 'Picked for you'."],
+   sig:"Strong openness to guidance from a human or AI coach."},
+  {name:"Live health meter",terr:"pr",v:"pri",probs:[0,2],does:"An at-a-glance read on how healthy a meal is for you.",
+   said:["High value, but users needed clarity on how 'health' is judged.","Many wanted a macro-level meter tied to their goals.","The word 'health' alone read as vague."],
+   sig:"High value: show macros, not a vague 'health' score."},
+  {name:"Suggestions from social saves",terr:"co",v:"exp",probs:[1,2],does:"Meal ideas drawn from posts you've saved on social media.",
+   said:["Polarising: half loved it, half found it invasive.","Fans liked ideas from their saved healthy posts.","Others cited privacy, and that saves are aesthetic, not intent."],
+   sig:"Loved by some, invasive to others; make it opt-in."},
+  {name:"Popular around you",terr:"co",v:"hold",probs:[1],does:"See what people near you are eating.",
+   said:["Large majority had no interest in user-generated meal content.","Peers' preferences and goals felt irrelevant to copy.","Engaging with AI on a 'story' felt like overkill."],
+   sig:"Little interest: 'I don't want to copy people'.",
+   proto:"https://embed.figma.com/proto/dDLYimw9n8LlAGO3vsR3Bg/Handoff-%7C-Apr---Jun-2026?node-id=163-2946&viewport=4395%2C2389%2C0.39&scaling=min-zoom&content-scaling=fixed&starting-point-node-id=590%3A158584&page-id=148%3A8888&embed-host=share&hide-ui=1"},
+  {name:"What celebrities eat",terr:"co",v:"hold",probs:[1],does:"Browse the diets and meals of celebrities.",
+   said:["Most found no real value in it.","Any interest was curiosity, not utility.","Users trusted their own tastes over a celebrity's."],
+   sig:"Curiosity only, no real utility."},
+  {name:"Q&A / polls",terr:"co",v:"hold",probs:[1],does:"Community questions and polls about food and cravings.",
+   said:["Least popular concept in the study.","Users couldn't find a relevant use case.","They already know what they're craving."],
+   sig:"No relevant use case; least popular in the study."}
+];
+const VMETA={pri:{l:"Ship now",c:"#21695C"},exp:{l:"Save for later",c:"#6C6B70"},hold:{l:"Eliminate",c:"#9A9AA0"}};
+/* PMF feature check, every existing feature scored during the diagnosis (deck: 'define what to improve and in what order') */
+const PMF=[
+  {f:"New UI",v:"Ready",r:"3-tab split and progress rings are working well"},
+  {f:"Insights",v:"Priority",r:"What users most want to see; needs deeper personalisation"},
+  {f:"Track with Ria",v:"Priority",r:"Valued feature: improve discoverability and smooth the interaction"},
+  {f:"Active Choices",v:"Refine",r:"Reframe as a support role to calorie tracking with access to Ria"},
+  {f:"Manual Snap",v:"Refine",r:"Establish accuracy, build assurance, and recover from errors"},
+  {f:"Talk to Ria",v:"Refine",r:"Needs engaging copy and valuable, actionable responses"},
+  {f:"Logs (Timeline)",v:"Neutral",r:"Neutral response from users, no strong signal either way"},
+  {f:"Auto Snap",v:"Hold",r:"Heavy privacy concern; users are reluctant to even try it"}
+];
+const PMFC={Ready:"#5FC9A6",Priority:"#21695C",Refine:"#B07C1E",Neutral:"rgba(20,19,24,.35)",Hold:"#B4442F"};
+
+/* design directions we set for each problem, each shown through the real products we referenced (deck slides 32–38).
+   bucket maps to PROBLEMS: 0 clarity · 1 discoverability · 2 trust. reference screens are the deck's own exports. */
+const DIRS=[
+  {bucket:0,title:"Bring focus to one main action",line:"Combine the separate tracking paths into one clear entry point.",
+   refs:[{app:"MyFitnessPal",note:"Colour emphasises the primary action, and keeping it sticky at the bottom makes it always accessible.",img:"Assets/ref-d1a.png"},
+         {app:"January AI",note:"Keeps the home screen clean, with one action users can take: tracking food.",img:"Assets/ref-d1b.png"}]},
+  {bucket:0,title:"Use the power of defaults",line:"Frequently tracked and saved meals should follow the user into every mode.",
+   refs:[{app:"January AI",note:"Puts recently tracked, frequently tracked and saved meals up front, before any AI log.",img:"Assets/ref-d2a.png"},
+         {app:"Natural AI",note:"Surfaces saved and nearby options as the default first step.",img:"Assets/ref-d2b.png"}]},
+  {bucket:2,title:"Leverage the labour illusion",line:"People trust results that arrive after visible work, so show some of what Snap does to read a dish and its portions.",
+   refs:[{app:"Arc Browser",note:"Shows skeleton screens and descriptive copy while results load.",img:"Assets/ref-d3a.png"},
+         {app:"Google Image Search",note:"Frames the object you are trying to identify.",img:"Assets/ref-d3b.png"}]},
+  {bucket:2,title:"Provide transparency and control",line:"Show the ingredients and measurements behind a calorie count, and let users add their own healthy swaps.",
+   refs:[{app:"Withings",note:"Summarises ingredient macros and suggests the most relevant swaps.",img:"Assets/ref-d4a.png"},
+         {app:"Hevy",note:"Gives granular control while creating or customising a workout.",img:"Assets/ref-d4b.png"}]},
+  {bucket:1,title:"Ease the transition with tell-show-do",line:"Let users try the change one task at a time.",
+   refs:[{app:"Slack",note:"Onboards new users with a tell-show-do sequence.",img:"Assets/ref-d5a.png"},
+         {app:"Natural AI",note:"Uses guide tips with a little animation.",img:"Assets/ref-d5b.png"}]},
+  {bucket:1,title:"Remove friction to AI",line:"Give actionable responses, ask follow-ups, and make it easy to correct when the AI gets it wrong.",
+   refs:[{app:"Atoms",note:"Offers prompts for quick selection and a path to custom answers.",img:"Assets/ref-d6a.png"},
+         {app:"ProfitPlate",note:"Nudges users to add portion size and dietary preferences for better recipes.",img:"Assets/ref-d6b.png"}]},
+  {bucket:1,title:"Think beyond chat to fluid UI",line:"Let the interface change with context, and replace long text with scannable cards.",
+   refs:[{app:"Layla",note:"Cards replace long descriptions, making flight and hotel options easy to browse.",img:"Assets/ref-d7a.png"},
+         {app:"Natural AI",note:"Scannable cards instead of long text for ordering and options.",img:"Assets/ref-d7b.png"}]}
+];
+
+/* ---------------- SCENE 2 FIELD ---------------- */
+const field=document.getElementById('field');
+/* Shared column anchor. COLX is each column's intended VISUAL CENTRE, used by BOTH the insight
+   cards' --cx and the .theme block's left, so b5's problem lands in exactly the column its cards
+   gathered into. translate() puts a card's visual centre at cx + half the card's ~25vw width, so
+   HALF is subtracted from --cx and from the theme's left, or the columns render systematically
+   off-centre and the right one clips off-canvas. */
+const COLX=[20,50,80];
+const HALF=12.5;
+/* beat-3 scatter, hand-placed, symmetric 2-3-2 (two inset up top, a full row of three, two inset
+   at the bottom); fills the width, no lone dangling card. Small ±1-2deg tilt (was ±3-7deg, which
+   read as messy). Cards are a true 25vw now, so this is WYSIWYG across screen widths. */
+const SPREAD=[[22,34],[53,33],[6,53],[37,54],[68,52],[22,72],[53,73]];
+const TILT=[-1.5,1.2,-1,1.4,-1.2,1,-1.4];
+const s2Cards=[];
+INSIGHTS.forEach((ins,i)=>{
+  const d=document.createElement('div');
+  d.className='insight';
+  d.innerHTML='<span class="no">Insight 0'+(i+1)+'</span><span class="itx"><span class="itfull">'+ins.t+'</span><span class="itshort">'+ins.short+'</span></span><span class="peek">Read ↗</span>';
+  const [sx,sy]=SPREAD[i];
+  d.style.setProperty('--sx',sx+'vw');d.style.setProperty('--sy',sy+'vh');d.style.setProperty('--sr',TILT[i]+'deg');
+  const c=CLUSTER[i];
+  const within=CLUSTER.slice(0,i).filter(x=>x===c).length;
+  d.style.setProperty('--cx',(COLX[c]-HALF)+'vw');
+  d.style.setProperty('--z',2+within);   // b5 tab-stack: later cards sit over earlier ones
+  d.style.setProperty('--sd',(i*0.06)+'s'); // b3 entrance stagger only; b4/b5 reset delay via their transition shorthand
+  d.addEventListener('click',()=>openDetail('insight',i));
+  field.appendChild(d);s2Cards.push(d);
+});
+/* --cy (b4 column) and --py (b5 tab-stack) are MEASURED in px, not written as vh at build time:
+   the cards keep their full b3 size at every beat now, so their heights vary with title length and
+   a fixed vh step either gaps or overlaps. Safe to run while #s2 is off-screen, .scene is
+   visibility:hidden, not display:none, so offsetHeight is real. Must run BEFORE precomputeThumbs()
+   (which serializes inline styles into each thumbnail) and again once Hanken lands, since the
+   webfont changes every card's height. Named s2* because #s3 already owns global layout()/cards. */
+function s2Layout(){
+  /* PEEK is tuned to the card's own top padding + tag line: the buried cards show exactly their
+     "Insight 0X" tab and nothing more, so the stack reads as an index rather than as clipping. */
+  const H=innerHeight, GAP=12, PEEK=38;
+  const y4=Math.round(H*.315), y5=Math.round(H*.595);
+  const c4=[y4,y4,y4], c5=[y5,y5,y5];
+  s2Cards.forEach((el,i)=>{
+    const c=CLUSTER[i];
+    el.style.setProperty('--cy',c4[c]+'px'); c4[c]+=el.offsetHeight+GAP;
+    el.style.setProperty('--py',c5[c]+'px'); c5[c]+=PEEK;
+  });
+}
+PROBLEMS.forEach((p,c)=>{
+  const t=document.createElement('div');
+  t.className='theme';t.dataset.c=c;
+  t.style.left=(COLX[c]-HALF)+'vw';
+  t.innerHTML='<h3 class="tname">'+p.ph+'</h3><p class="tstate">'+p.pb+'</p>';
+  field.appendChild(t);
+});
+
+/* the method, four cohort profiles, each recruited across five sessions. Data recovered
+   verbatim from the source cohort cards (Assets/Cohort 2–5.svg); click a face for the full profile. */
+const people=document.getElementById('people');
+const COHDEF=[
+  {u:"Existing user",os:"iOS",who:"Product managers",whereLead:"Delhi, Bangalore",
+    prof:["Product Manager","Tax Consultant","Film-maker","Govt. Service","IT Prof."],
+    ai:["ChatGPT","EYQ","Midjourney","AI based CRM"],
+    city:["Delhi","Bangalore","Pune","Mumbai"]},
+  {u:"Existing user",os:"Android",who:"Small-business owners",whereLead:"Pimpri-Chinchwad, Bangalore",
+    prof:["Small Business Owner","IT Prof.","Travel Planner"],
+    ai:["ChatGPT","Flo (AI Predictions)","Co-Pilot","Gemini"],
+    city:["Pimpri-Chinchwad","Bangalore","Kochi","Delhi","Coimbatore"]},
+  {u:"New user",os:"iOS",who:"Freelancers",whereLead:"Saharanpur, Kochi",
+    prof:["Freelancer","Finance","Family Business","Corporate Prof."],
+    ai:["ChatGPT","Midjourney","Electronic Devices"],
+    city:["Saharanpur","Kochi","Delhi","Visakhapatnam","Bangalore"]},
+  {u:"New user",os:"Android",who:"Teachers &amp; designers",whereLead:"Delhi, Noida",
+    prof:["Teacher","Corporate Prof.","Designer","Small Business Owner"],
+    ai:["ChatGPT","WhatsApp AI","Photoshop","Canva/Image generators"],
+    city:["Delhi","Noida","Kolkata","Gurugram"]}
+];
+const COHX=[7,29.5,52,74.5]; // card left edges, vw
+COHDEF.forEach((d,c)=>{
+  const el=document.createElement('div');el.className='cohface';
+  el.style.setProperty('--cx0',COHX[c]+'vw');
+  el.style.setProperty('--pd',(c*0.13+0.42)+'s'); // portrait pulse, after that card's wave settles
+  const wireDelay=c*0.13+0.70; // wires draw after the "recruited 20 people" line has landed
+  const seats=[0,1,2,3,4].map(s=>{
+    const delay=wireDelay+0.16+s*0.06; // one dot settles onto the wire per person, five per cohort
+    return '<span class="seat" style="--sd:'+delay+'s"></span>';
+  }).join('');
+  el.innerHTML=
+    '<div class="cf-portrait"><img src="Assets/cohort-0'+(c+1)+'-portrait.png" alt="Cohort '+(c+1)+' portrait"></div>'
+    +'<div class="cf-who">'+d.who+'</div>'
+    +'<div class="cf-where">'+d.u.replace(' user','')+' · '+d.os+' · '+d.city[0]+'</div>'
+    +'<div class="cf-more">See more details →</div>'
+    +'<div class="cf-link" style="--wd:'+wireDelay+'s"><div class="cf-wire"></div></div>'
+    +'<div class="cf-seats">'+seats+'</div>';
+  el.addEventListener('click',e=>{e.stopPropagation();openDetail('cohort',c);});
+  people.appendChild(el);
+});
+
+/* ---------------- SCENE 3 STAGE (12 concept cards, morphing grid → columns) ---------------- */
+const s3stage=document.getElementById('stage');
+/* exploration-grid card art: the real landscape "Concept 01-05" cards for the first five concepts,
+   the portrait concept boards (cropped) as fallback for the rest until the other cards arrive */
+function ecardImg(i){return i<5?('Assets/hf-ecard-0'+(i+1)+'.jpg'):conceptImg(i);}
+/* No verdict badge and no "Tested" tag: b1 is neutral (the band carries the testing story) and
+   on b2 the column a card lands in IS its verdict. */
+const cards=CONCEPTS.map((c,i)=>{
+  const d=document.createElement('div');
+  d.className='con v-'+c.v;
+  d.innerHTML='<img class="cthumb" src="'+ecardImg(i)+'" alt="">'
+    +'<div class="grad"></div>'
+    +'<div class="cn">'+c.name+'</div>'
+    +'<span class="pk">Open ↗</span>';
+  d.style.setProperty('--d',(i*0.055)+'s');
+  d.addEventListener('click',e=>{e.stopPropagation();openDetail('concept',i);});
+  s3stage.appendChild(d);
+  return d;
+});
+const ORDER0=[5,9,0,3,10,6,1,11,7,4,2,8];
+const bucket=v=>CONCEPTS.map((c,i)=>[c,i]).filter(([c])=>c.v===v).map(([,i])=>i);
+const BUCKETS={pri:bucket('pri'),exp:bucket('exp'),hold:bucket('hold')};
+const S3_COLS=[
+  {v:'pri',label:VMETA.pri.l},
+  {v:'exp',label:VMETA.exp.l},
+  {v:'hold',label:VMETA.hold.l}
+];
+const colheads=S3_COLS.map(col=>{
+  const h=document.createElement('div');
+  h.className='colhead c-'+col.v;
+  h.innerHTML='<span class="clab">'+col.label+'</span>';
+  s3stage.appendChild(h);
+  return h;
+});
+const s3crule=document.getElementById('s3crule');
+const s3bot=document.getElementById('s3bot');
+function layout(mode){
+  const W=s3stage.clientWidth,H=s3stage.clientHeight;
+  if(mode==='grid'||mode==='shrink'){
+    /* shrink is b1: SAME 4-col grid, SAME widths and x-positions, only the row HEIGHT shrinks,
+       so the cards flatten in place (like the cohort collapse) and free the bottom for the
+       "tested" line. No uniform scale, no re-centering. */
+    const gap=18,fullCw=(W-3*gap)/4,fullCh=(H-2*gap)/3;
+    const cw=fullCw;
+    const ch=(mode==='shrink')?fullCh*0.66:fullCh;
+    ORDER0.forEach((ci,slot)=>{const col=slot%4,row=Math.floor(slot/4);
+      const el=cards[ci];el.style.width=cw+'px';el.style.height=ch+'px';
+      el.style.setProperty('--pos','translate('+(col*(cw+gap))+'px,'+(row*(ch+gap))+'px)');
+      el.style.setProperty('--tw',cw+'px');
+      el.style.setProperty('--cnl','14px');
+      el.style.setProperty('--cnb','12px');});
+    return;
+  }
+  if(mode==='cols'){
+    /* `top` pushes the headers clear of the subhead, which only b2 carries */
+    const colGap=W*0.045,colW=(W-2*colGap)/3,
+      top=H*0.05,headH=Math.max(46,H*0.10),rowsTop=top+headH+Math.max(26,H*0.055),
+      pitch=Math.min(84,(H-rowsTop)/5),rowH=Math.min(46,pitch*0.55),tw=Math.round(rowH*1.34);
+    S3_COLS.forEach((col,ci)=>{
+      const x=ci*(colW+colGap);
+      const h=colheads[ci];
+      h.style.left=x+'px';h.style.width=colW+'px';h.style.top=top+'px';h.style.height=headH+'px';
+      h.style.transitionDelay=(0.1+ci*0.07)+'s';
+      BUCKETS[col.v].forEach((idx,s)=>{const el=cards[idx];
+        el.style.width=colW+'px';el.style.height=rowH+'px';
+        el.style.setProperty('--pos','translate('+x+'px,'+(rowsTop+s*pitch)+'px)');
+        el.style.setProperty('--tw',tw+'px');
+        el.style.setProperty('--cnl',(tw+14)+'px');
+        el.style.setProperty('--cnb',Math.round((rowH-19)/2)+'px');});
+    });
+    s3crule.style.top=(top+headH)+'px';
+    return;
+  }
+}
+
+/* ---------------- SCENE HOOKS ---------------- */
+const scenes=[...document.querySelectorAll('.scene')];
+const S1=document.getElementById('s1');
+const rise=document.getElementById('riseline'),fall=document.getElementById('fall');
+const retval=document.getElementById('retval');
+let cdTimer=null;
+/* accurate partial draw without ever throwing on file://, getTotalLength is guarded, with measured fallbacks */
+function pathLen(el){try{const L=el.getTotalLength();if(L&&isFinite(L)&&L>1)return L;}catch(e){}return el.id==='fall'?490:600;}
+function setLine(el,drawn){const L=pathLen(el);el.style.strokeDasharray=L;el.style.strokeDashoffset=L*(1-drawn);}
+let introTimer=null;
+// time-based tween (setInterval, not rAF) so it stays correct even if the tab is backgrounded
+function introDraw(line,fromN,toN,dur){clearInterval(introTimer);const t0=performance.now();setLine(line,0);retval.textContent=Math.round(fromN);
+  introTimer=setInterval(()=>{const p=Math.min(1,(performance.now()-t0)/dur);
+    setLine(line,1-Math.pow(1-p,3));
+    retval.textContent=Math.round(fromN+(toN-fromN)*(1-Math.pow(1-p,2)));
+    if(p>=1){setLine(line,1);retval.textContent=toN;clearInterval(introTimer);}},16);}
+function headlines(sc,b){sc.querySelectorAll('.hl-line').forEach(h=>{const hb=+h.dataset.b;h.classList.toggle('show',hb===b);h.classList.toggle('gone',hb<b);});}
+function startCountdown(){clearInterval(cdTimer);let secs=180*24*3600;const el=document.getElementById('cd');
+  cdTimer=setInterval(()=>{secs-=37;const d=Math.floor(secs/86400),h=Math.floor(secs%86400/3600),m=Math.floor(secs%3600/60);
+    el.textContent=String(d).padStart(3,'0')+' : '+String(h).padStart(2,'0')+' : '+String(m).padStart(2,'0');},50);}
+const shipflag=document.getElementById('shipflag');
+const shipdot=document.getElementById('shipdot');
+function placeMarks(){
+  const svg=S1.querySelector('svg');const r=svg.getBoundingClientRect(),w=S1.querySelector('.chartwrap').getBoundingClientRect();
+  shipflag.style.left=(r.left-w.left+560/1000*r.width)+'px';
+  shipflag.style.top=(r.top-w.top+186/420*r.height-52)+'px';
+}
+function retColor(c){document.getElementById('retno').style.color=c;}
+/* ---- The bet · dark-canvas chart driver (beats 0-2). The old rise/fall/retval/shipflag/
+   placeMarks helpers above stay dormant, they only ever served beat 3, which is now
+   unreachable (data-beats=3) until that slide gets its own dark-treatment redesign. ---- */
+const betRise=[...document.querySelectorAll('#s1 .betdark .rise')];
+const betFall=[...document.querySelectorAll('#s1 .betdark .fall')];
+const betret=document.getElementById('betret');
+let betRetTimer=null;
+function betSetOff(els,v){els.forEach(p=>{p.style.strokeDashoffset=v;});}
+function betSetTr(els,v){els.forEach(p=>{p.style.transition=v;});}
+function betTweenRet(from,to,dur){clearInterval(betRetTimer);const t0=performance.now();
+  betRetTimer=setInterval(()=>{const p=Math.min(1,(performance.now()-t0)/dur),e=1-Math.pow(1-p,2);
+    betret.textContent=Math.round(from+(to-from)*e);
+    if(p>=1){betret.textContent=to;clearInterval(betRetTimer);}},16);}
+// time-based JS tween (setInterval), not a CSS transition, same pattern as introDraw/betTweenRet
+// above. A CSS transition needs a reflow to land BETWEEN setting the transition property and
+// changing the value, or the browser coalesces both into one paint and it just jumps to the end
+// state; manually stepping the value every frame sidesteps that timing entirely.
+let betDrawTimer=null;
+function betDraw(els,animate,dash,dur){
+  clearInterval(betDrawTimer);betSetTr(els,'none');
+  if(!animate){betSetOff(els,'0');return;}
+  betSetOff(els,dash);
+  const t0=performance.now();
+  betDrawTimer=setInterval(()=>{
+    const p=Math.min(1,(performance.now()-t0)/dur),eased=1-Math.pow(1-p,3);
+    betSetOff(els,dash*(1-eased));
+    if(p>=1){betSetOff(els,'0');clearInterval(betDrawTimer);}
+  },16);
+}
+// mandate line (beat 3): setInterval tween like the bet lines, time-based (backgrounded-tab safe)
+// and in-place stroke-dashoffset repaints reliably (the bet lines prove it). Resting CSS is offset 0.
+let mandTimer=null;
+function mandDraw(animate){
+  const el=document.getElementById('mandateRise'); if(!el)return;
+  clearInterval(mandTimer);
+  if(!animate){el.style.strokeDashoffset='0';return;}
+  el.style.strokeDashoffset='1850';
+  const t0=performance.now(),dur=1750;
+  mandTimer=setInterval(()=>{
+    const p=Math.min(1,(performance.now()-t0)/dur);
+    const e=p<.5?4*p*p*p:1-Math.pow(-2*p+2,3)/2;
+    el.style.strokeDashoffset=(1850*(1-e)).toFixed(1);
+    if(p>=1){el.style.strokeDashoffset='0';clearInterval(mandTimer);}
+  },16);
+}
+const hookS1=(b,silent)=>{
+  document.querySelectorAll('#s1 .betdark .hl').forEach(h=>{const hb=+h.dataset.b;h.classList.toggle('show',hb===b);h.classList.toggle('gone',hb<b);});
+  if(b===3){mandDraw(!silent);}
+  if(b===0){
+    betSetTr(betFall,'none');betSetOff(betFall,'520');
+    betDraw(betRise,!silent,1000,1700);
+    clearInterval(betRetTimer);betret.textContent='100';
+  }
+  if(b===1){
+    clearInterval(betRetTimer);betret.textContent='100';
+    betSetTr(betFall,'none');betSetOff(betFall,'520');
+  }
+  if(b===2){
+    betDraw(betFall,!silent,520,1900);
+    if(!silent){betTweenRet(100,64,1900);}else{clearInterval(betRetTimer);betret.textContent='64';}
+  }
+};
+let s2HeadT=null,s2LastHead=null;
+function s2HeadFor(b){
+  if(b>=5)return 'And narrowed down to three main problems.';
+  if(b===4)return 'We grouped similar findings together.';
+  if(b===3)return 'Analysing those conversations surfaced <span style="color:var(--indigo)">7 key insights</span>.';
+  if(b===1||b===2)return 'We designed four cohorts.'; // b2 keeps the b1 heading (no change → no fade)
+  return 'We set out to answer three things.';
+}
+// fade the heading between beats instead of swapping textContent instantly (silent = set instantly)
+const hookS2=(b,silent)=>{
+  const wrap=document.querySelector('#s2 .head .hswap'),h=wrap.querySelector('[data-h="0"]');
+  const t=s2HeadFor(b);
+  if(silent||t===s2LastHead){wrap.classList.remove('swap');h.innerHTML=t;s2LastHead=t;return;}
+  wrap.classList.add('swap');clearTimeout(s2HeadT);
+  s2HeadT=setTimeout(()=>{h.innerHTML=t;wrap.classList.remove('swap');s2LastHead=t;},220);
+};
+/* b0 grid → b1 the band arrives and the grid drops to clear it (cards stay neutral) → b2 the
+   cards travel into the three buckets as thumbnail+name rows. Beat classes are cumulative, so
+   every toggle keys off `b` here rather than a #s3.bN selector. */
+const hookS3=(b,silent)=>{
+  const heads=document.getElementById('s3').querySelectorAll('.hswap');
+  /* head 0 ("12 AI solutions") stays put through b0 AND b1, the cards shrink beneath an
+     unchanged heading, like the cohort beat. head 2 (prioritise) only arrives at b2. */
+  heads.forEach(h=>{const hb=+h.dataset.h;h.classList.toggle('show',hb===2?(b===2):(b<=1));});
+  s3bot.classList.toggle('show',b===1);
+  colheads.forEach(h=>h.classList.toggle('show',b===2));
+  s3crule.classList.toggle('show',b===2);
+  layout(b===2?'cols':(b===1?'shrink':'grid'));
+  cards.forEach((el,i)=>{
+    el.classList.add('in');
+    el.classList.toggle('row',b===2);
+    let d=0;
+    if(!silent){
+      if(b===0)d=i*0.055;
+      else if(b===1)d=ORDER0.indexOf(i)*0.03;
+      /* b2 fans out column by column, then down each column */
+      else d=S3_COLS.findIndex(c=>c.v===CONCEPTS[i].v)*0.08+BUCKETS[CONCEPTS[i].v].indexOf(i)*0.055;
+    }
+    el.style.setProperty('--d',d+'s');
+  });
+};
+/* ==== What we shipped, six real product screens, one per problem-solving move. Each slide is a
+   .sgroup; beats reveal pills cumulatively (one per beat), crossfade states (ria), or zoom into a
+   region of the real screen (score/insights/places). 15 beats total → 6 dots. The copy load is
+   deliberately uneven (2·1·1·0·0·1 pills): the later screens explain themselves, so a pill only
+   exists where the headline doesn't already say it. ==== */
+/* CONCEPTS[i] ⇄ Assets/hf-concept-NN.jpg (kept, used by the exploration scene + detail overlay) */
+function conceptImg(i){return 'Assets/hf-concept-'+String(i+1).padStart(2,'0')+'.jpg';}
+/* ==== What we shipped, five real product screens on bounded pine stages, each auto-playing
+   (from healthify-v9-ship-v2). Beats: home 0/1/2 (pills + zoom), entry (auto ping-pong carousel),
+   ria (auto speak→type→correct→confirm state machine), score/insights (auto zoom). 7 beats → 5 dots. */
+const SHIP_G=['home','home','home','entry','ria','score','insights'];
+const SHIP_HB=[0,1,2,0,0,0,0];
+const BEATS=SHIP_G.map((g,i)=>({g,hb:SHIP_HB[i]}));
+const S5_DOTS=[0,0,0,1,2,3,4];
+
+let shipTimers=[];
+let shipLastG=null;   // last ship sub-slide shown live; entering a new one places its device instantly
+function shipClear(){shipTimers.forEach(id=>{clearTimeout(id);clearInterval(id);});shipTimers=[];}
+const shipT=(fn,ms)=>{const id=setTimeout(fn,ms);shipTimers.push(id);return id;};
+
+/* whole-device zoom about centre; pan folded into one translate so it interpolates as one motion */
+function zoomDev(dev,s,anchor,pushY){
+  if(!dev)return;pushY=pushY||0;dev.style.transformOrigin='50% 50%';
+  if(!s||s<=1.001){dev.style.transform=pushY?('translateY('+pushY+'px)'):'none';return;}
+  const t=((anchor-0.5)*(1-s)*100).toFixed(3);
+  dev.style.transform='translateY(calc('+t+'% + '+pushY+'px)) scale('+s+')';
+}
+
+function playEntry(sc){
+  const frame=sc.querySelector('#entryFrame');
+  frame.style.transform='';frame.style.transformOrigin='';
+  const sts=[...frame.querySelectorAll('.st')],peeks=[...sc.querySelectorAll('.epeek')];
+  const SEQ=[0,1,2,1],HOLD=2000,FIRST_HOLD=1400;
+  let step=0;
+  function layout(active){
+    sts.forEach(s=>s.classList.toggle('on',+s.dataset.c===active));
+    peeks.forEach(p=>{
+      const idx=+p.dataset.c;
+      if(idx===active){p.style.zIndex='1';p.style.opacity='0';p.style.transform='translate(-50%,-50%) scale(1)';}
+      else{const dist=Math.abs(idx-active),side=idx<active?-1:1;
+        const off=dist===1?46:82,s=dist===1?0.95:0.87,op=dist===1?0.82:0.48;
+        p.style.zIndex=String(dist===1?2:1);p.style.opacity=String(op);
+        p.style.transform='translate(calc(-50% + '+(side*off)+'%), -50%) scale('+s+')';}
+    });
+  }
+  peeks.forEach(p=>p.style.transition='none');
+  layout(SEQ[0]);
+  peeks.forEach(p=>p.offsetHeight);
+  peeks.forEach(p=>p.style.transition='');
+  function run(holdMs){shipT(()=>{step=(step+1)%SEQ.length;layout(SEQ[step]);run(HOLD);},holdMs);}
+  run(FIRST_HOLD);
+}
+
+function playRia(sc){
+  const dev=sc.querySelector('.dev'),sts=[...sc.querySelectorAll('.st')];
+  const setState=n=>sts.forEach(s=>s.classList.toggle('on',+s.dataset.st===n));
+  const STEPS=[
+    {st:0,s:1.9,a:0.92,hold:2000},{st:1,s:1.9,a:0.92,hold:2000},{st:2,s:1.9,a:0.92,hold:2000},
+    {st:2,s:1,a:0.5,hold:1400},{st:3,s:1,a:0.5,hold:2800},{st:0,s:1,a:0.5,hold:2000}
+  ];
+  let step=0;
+  function apply(i){const b=STEPS[i];setState(b.st);zoomDev(dev,b.s,b.a);}
+  function run(){apply(step);shipT(()=>{step=(step+1)%STEPS.length;run();},STEPS[step].hold);}
+  shipT(run,650);
+}
+
+const hookS5=(b,silent)=>{
+  const s5=document.getElementById('s5'),bd=BEATS[b];if(!bd)return;
+  const g=bd.g,sc=s5.querySelector('.shipslide[data-g="'+g+'"]'),dev=sc.querySelector('.dev');
+  // "live" = this call is for the current on-screen ship beat (not a cumulative pass, not an
+  // off-screen precompute). The auto-play must run on it even when reached via dot/hash (animate=false),
+  // so gate on live rather than on the animate-derived silent flag.
+  const live=(b===beat&&si===IDX.s5);
+  s5.querySelectorAll('.shipslide').forEach(sl=>sl.classList.toggle('on',sl===sc));
+  if(live)shipClear();
+  // reset this slide's transient state
+  sc.querySelectorAll('.pill').forEach(p=>p.classList.remove('on'));
+  sc.querySelectorAll('.st').forEach((st,i)=>st.classList.toggle('on',i===0));
+  // A slide's device must APPEAR already in its resting position, no fall-in, no fly-from-corner,
+  // no zoom-out on arrival. So when the slide itself changes, we place the device in its start
+  // state with the transform transition disabled (instant), then re-enable it so the intentional
+  // auto-play zoom (below) still animates. Within-slide beat changes (home 0/1/2) keep the
+  // transition so their zoom reads as motion.
+  const slideChanged=(g!==shipLastG);
+  const devs=[...sc.querySelectorAll('.dev')];
+  if(slideChanged){
+    devs.forEach(d=>{d.style.transition='none';d.style.transformOrigin='50% 50%';});
+    if(g==='entry'){const f=sc.querySelector('#entryFrame');if(f)f.style.transform='';}
+    else zoomDev(dev,1,0.5);            // rest zoomed out / full phone
+    devs.forEach(d=>d.offsetHeight);    // commit the resting placement
+    devs.forEach(d=>{d.style.transition='';});
+  }else{
+    devs.forEach(d=>{d.style.transformOrigin='50% 50%';});
+  }
+  if(live)shipLastG=g;
+  if(g==='home'){
+    const p1=sc.querySelector('.p1'),p2=sc.querySelector('.p2');
+    p1.classList.toggle('on',bd.hb===1);p2.classList.toggle('on',bd.hb===2);
+    if(bd.hb===0)zoomDev(dev,1,0.5);
+    else if(bd.hb===1)zoomDev(dev,1.7,0);   // top-aligned
+    else zoomDev(dev,1.7,1,40);             // bottom-aligned
+  }else if(g==='entry'){ if(live)playEntry(sc); }
+  else if(g==='ria'){ if(live)playRia(sc); }
+  else if(g==='score'){ if(live)shipT(()=>zoomDev(dev,1.7,0),650); }
+  else if(g==='insights'){ if(live)shipT(()=>zoomDev(dev,1.7,1),650); }
+};
+const noop=()=>{};
+function hookSloop(b){
+  // additive: each beat lights the next step and keeps the earlier ones lit, the loop reads as completed
+  document.querySelectorAll('#sloop .pcol').forEach((n,i)=>n.classList.toggle('on',i<=b));
+}
+const sceneHooks=[noop,hookS1,noop,hookS2,noop,hookS3,noop,hookS5,noop,noop];
+const IDX={s1:1,s2:3,s3:5,s5:7,s4:9};
+
+/* ---------------- BEAT ENGINE ---------------- */
+let si=0,beat=0;
+const beatsEl=document.getElementById('beats');
+const sceneLab=document.getElementById('scenelab');
+const SCENE_NAMES=['Healthify × Parallel','The bet','Discovery','Discovery','Exploration','Exploration','What we shipped','What we shipped','What it drove','What it drove'];
+const hintEl=document.getElementById('hint');let hintGone=false;
+function killHint(){if(!hintGone){hintGone=true;hintEl.style.opacity='0';setTimeout(()=>hintEl.remove(),600);}}
+/* most scenes are one beat = one dot. The ship (see S5_DOTS above) isn't: each pill still
+   gets its own beat so next()/prev() step through them one at a time, but several beats can
+   share one dot in this bar, they're one slide, revealed progressively, not a new slide
+   each time. dotMapFor returns null for every other scene, which keeps the old 1:1 behaviour. */
+function dotMapFor(s){return s===IDX.s5?S5_DOTS:null;}
+function dotCountFor(s){const m=dotMapFor(s);return m?Math.max(...m)+1:+scenes[s].dataset.beats;}
+function firstBeatForDot(s,g){const m=dotMapFor(s);return m?m.indexOf(g):g;}
+function drawBeats(){beatsEl.innerHTML='';
+  for(let s=0;s<scenes.length;s++){
+    if(s>0){const sep=document.createElement('span');sep.className='sep';beatsEl.appendChild(sep);}
+    const dc=dotCountFor(s);
+    const curMap=dotMapFor(si);
+    const curG=curMap?curMap[beat]:beat;
+    for(let g=0;g<dc;g++){const d=document.createElement('span');d.className='bd';
+      if(s<si||(s===si&&g<curG))d.classList.add('done');
+      if(s===si&&g===curG)d.classList.add('now');
+      const fb=firstBeatForDot(s,g);
+      d.addEventListener('click',()=>goTo(s,fb));
+      d.addEventListener('mouseenter',()=>showPreview(s,fb,d));
+      beatsEl.appendChild(d);}}
+  sceneLab.textContent=SCENE_NAMES[si];}
+
+/* ---------- dot hover previews ---------- */
+const THUMB_W=280;let THUMBS=[];
+const BEATCAP=[
+  ['Cover'],
+  ['Fifty million follow','A wave of AI features','Retention falls','The mandate'],
+  ['Phase 1 · Discover'],
+  ['Three questions','Four cohorts','Twenty who fit','Seven insights','Three themes','Three problems'],
+  ['Phase 2 · Imagine'],
+  ['Twelve solutions','Tested with users','Prioritised'],
+  ['Phase 3 · Validate'],
+  ['Tracking is the primary action','Logging at the top','Saved meals speed it up',
+   'Snap, search or speak','Switch mid-log','Every score has a why','Insights, in words'],
+  ['Chapter 05'],
+  ['The headline','The numbers','Why Parallel']
+];
+function precomputeThumbs(){
+  const sS=si,sB=beat;
+  scenes.forEach((sc,s)=>{
+    THUMBS[s]=[];const total=+sc.dataset.beats;
+    for(let b=0;b<total;b++){
+      for(let k=0;k<8;k++)sc.classList.remove('b'+k);
+      for(let k=0;k<=b;k++)sc.classList.add('b'+k);
+      for(let k=0;k<=b;k++)sceneHooks[s](k,true);
+      const c=sc.cloneNode(true);c.classList.add('thumbscene');c.classList.remove('active');
+      THUMBS[s][b]=c.outerHTML;
+    }
+    for(let k=0;k<8;k++)sc.classList.remove('b'+k);
+    // the concept cards' entrance (opacity + rise-in motion) must only ever play on the
+    // viewer's real first visit to #s3, this silent pass just resolved the live cards to
+    // their fully-"in" state to capture a thumbnail, which would leave them permanently
+    // pre-resolved (no transition to play) by the time the viewer actually gets here. Undo it.
+    if(sc.id==='s3')cards.forEach(el=>el.classList.remove('in','row'));
+  });
+  layout('grid');
+  show(sS,sB,false);
+}
+const dotprev=document.getElementById('dotprev'),thumbstage=document.getElementById('thumbstage'),thumbcap=document.getElementById('thumbcap');
+let prevHideT=null;
+function showPreview(s,b,dot){
+  if(!THUMBS[s]||THUMBS[s][b]==null)return;
+  clearTimeout(prevHideT);
+  const r=dot.getBoundingClientRect();
+  const scale=THUMB_W/innerWidth;
+  thumbstage.style.width=innerWidth+'px';thumbstage.style.height=innerHeight+'px';
+  thumbstage.style.transform='scale('+scale+')';
+  dotprev.style.setProperty('--tw',THUMB_W+'px');
+  dotprev.style.setProperty('--th',Math.round(innerHeight*scale)+'px');
+  thumbstage.innerHTML=THUMBS[s][b];
+  thumbcap.innerHTML='<b>'+SCENE_NAMES[s]+'</b> · '+BEATCAP[s][b];
+  dotprev.style.left=(r.left+r.width/2)+'px';
+  dotprev.style.bottom=(innerHeight-r.top+16)+'px';
+  dotprev.classList.add('on');
+}
+function hidePreview(){prevHideT=setTimeout(()=>dotprev.classList.remove('on'),80);}
+function updateNav(){document.getElementById('backBtn').disabled=(si===0&&beat===0);
+  document.getElementById('nextBtn').disabled=(si===scenes.length-1&&beat===+scenes[si].dataset.beats-1);}
+/* cover + the four chapter dividers are black; the close panel (s4 beat 2) also goes black */
+const DARK=new Set([0]);
+function updateChrome(){let total=0,cum=0;
+  for(let s=0;s<scenes.length;s++){const t=+scenes[s].dataset.beats;total+=t;if(s<si)cum+=t;}
+  cum+=beat;
+  const prog=document.getElementById('prog');
+  if(prog){prog.style.width=(cum/Math.max(1,total-1)*100)+'%';
+    prog.classList.toggle('on-dark',DARK.has(si));
+    prog.classList.toggle('hide',si===IDX.s4&&beat===2);}
+  document.body.classList.toggle('bare',DARK.has(si));
+  document.body.classList.toggle('chrome-dark',DARK.has(si)||(si===IDX.s4&&beat===2));}
+function render(animate){const sc=scenes[si];
+  if(si!==IDX.s1){clearInterval(cdTimer);clearInterval(introTimer);clearInterval(mandTimer);}
+  if(si!==IDX.s5){shipClear();shipLastG=null;}
+  for(let b=0;b<8;b++)sc.classList.remove('b'+b);
+  for(let b=0;b<=beat;b++)sc.classList.add('b'+b);
+  for(let b=0;b<=beat;b++)sceneHooks[si](b,!(animate&&b===beat));
+  drawBeats();updateNav();updateChrome();}
+function show(s,b,animate){scenes.forEach((sc,idx)=>sc.classList.toggle('active',idx===s));si=s;beat=b;render(animate);
+  history.replaceState(null,'','#'+s+'.'+b);}
+function next(){killHint();const total=+scenes[si].dataset.beats;
+  if(beat<total-1)show(si,beat+1,true);
+  else if(si<scenes.length-1)show(si+1,0,true);}
+function prev(){killHint();
+  if(beat>0)show(si,beat-1,false);
+  else if(si>0)show(si-1,+scenes[si-1].dataset.beats-1,false);}
+function goTo(s,b){killHint();closeAll();show(s,b,false);}
+
+/* ---------------- DETAIL OVERLAY ---------------- */
+const detail=document.getElementById('detail'),dleft=document.getElementById('dleft'),dright=document.getElementById('dright'),dcount=document.getElementById('dcount');
+let dKind=null,dIndex=0,dRefList=[],dRefPos=0;
+function phonePicked(){
+  return '<div class="phone"><div class="notch"></div><div class="phscreen">'
+   +'<div class="phstat"><span>9:41</span><span>▮▮▮ ⌁ 100%</span></div>'
+   +'<div class="phbody">'
+   +'<div class="phbar"><div><h4>Picked for you</h4><div class="loc">Bengaluru · updated this morning</div></div><div class="av"></div></div>'
+   +'<div class="tiles">'
+   +'<div class="tile"><div class="img" style="background:linear-gradient(135deg,#E4F1EC,#EAEAEC)"></div><div class="tb"><b>Ragi dosa set</b><small>320 kcal · high fibre</small><span class="chip local">Local pick</span></div></div>'
+   +'<div class="tile"><div class="img" style="background:linear-gradient(135deg,#F3F3F3,#EAEAEC)"></div><div class="tb"><b>Millet khichdi</b><small>410 kcal · balanced</small><span class="chip pcos">PCOS-friendly</span></div></div>'
+   +'<div class="tile"><div class="img" style="background:linear-gradient(135deg,#E4F1EC,#F3F3F3)"></div><div class="tb"><b>Paneer thali</b><small>520 kcal · high protein</small><span class="chip doc">Doctor-backed</span></div></div>'
+   +'<div class="tile"><div class="img" style="background:linear-gradient(135deg,#F3F3F3,#EAEAEC)"></div><div class="tb"><b>Sprout chaat</b><small>210 kcal · light</small><span class="chip local">Local pick</span></div></div>'
+   +'</div>'
+   +'<div class="phwhy"><b>Why these?</b> Chosen from your goals, your city\'s ingredients, and doctor guidance for your profile.</div>'
+   +'<div class="tabbar"><i></i><i></i><div class="mid">+</div><i></i><i></i></div>'
+   +'</div></div></div>';
+}
+function protoEmbed(src){
+  return '<div class="protowrap"><div class="protoload">Opening the prototype…</div>'
+   +'<iframe src="'+src+'" allowfullscreen title="Figma prototype"></iframe></div>';
+}
+function fitProto(){
+  const pw=dright.querySelector('.protowrap');if(!pw)return;
+  const fr=pw.querySelector('iframe');if(!fr)return;
+  fr.style.transform='scale('+(pw.clientHeight/812)+')';
+}
+function phonePlaceholder(name){
+  return '<div class="phone ph-empty"><div class="pe">'
+   +'<div class="pelabel">Prototype</div>'
+   +'<div class="peco">'+name+'</div>'
+   +'<div class="pebars"><i></i><i></i><i></i></div>'
+   +'<div class="pelabel" style="margin-top:6px">Mockup to follow</div>'
+   +'</div></div>';
+}
+function renderDetail(){
+  if(dKind==='cohort'){
+    const c=COHDEF[dIndex];
+    dleft.innerHTML='<img src="Assets/cohort-0'+(dIndex+1)+'-face.png" alt="'+c.who+' portrait">';
+    dright.innerHTML='<div class="dkick">Cohort profile</div>'
+      +'<h2 class="dtitle">'+c.who+'</h2>'
+      +'<p class="dmeta"><b>'+c.u+'</b> · '+c.os+'</p>'
+      +'<div class="dossier">'
+      +'<div class="drow"><span class="k">Profession</span><span class="v">'+c.prof.join(', ')+'</span></div>'
+      +'<div class="drow"><span class="k">AI tools</span><span class="v">'+c.ai.join(', ')+'</span></div>'
+      +'<div class="drow"><span class="k">Cities</span><span class="v">'+c.city.join(', ')+'</span></div>'
+      +'</div>';
+    dcount.textContent='Cohort '+(dIndex+1)+' / '+COHDEF.length+'  ·  ← → to browse';
+    document.getElementById('dcrumb').innerHTML='The discovery · <b>Cohort '+(dIndex+1)+' of '+COHDEF.length+'</b>';
+    return;
+  }
+  if(dKind==='pmf'){
+    dleft.innerHTML='<div class="dkick">The discovery · Artifact</div>'
+      +'<h2 class="dtitle">The feature check</h2>'
+      +'<p class="ddoes">Before designing anything new, every existing feature was scored against what users actually did in the sessions.</p>'
+      +'<div class="dsub">What it was for</div>'
+      +'<ul class="dsaid"><li>Define what to improve, and in what order.</li>'
+      +'<li>Separate what was already working (the new UI held up) from what was quietly failing (Auto Snap\'s privacy problem).</li>'
+      +'<li>This scoring, plus the three problems, set the agenda for the design sprint that follows.</li></ul>';
+    dright.innerHTML='<div class="pmf"><div class="ph"><span>Feature</span><span>Verdict</span><span>What we recommended</span></div>'
+      +PMF.map(p=>'<div class="pr"><span class="pf">'+p.f+'</span>'
+        +'<span class="pv" style="color:'+PMFC[p.v]+'"><span class="dot"></span>'+p.v+'</span>'
+        +'<span class="pw">'+p.r+'</span></div>').join('')+'</div>';
+    dcount.textContent='Artifact · The PMF feature check';
+    document.getElementById('dcrumb').innerHTML='The discovery · <b>The feature check</b>';
+    return;
+  }
+  if(dKind==='ref'){
+    const d=DIRS[dRefList[dRefPos]],p=PROBLEMS[d.bucket];
+    dleft.innerHTML='<div class="dkick" style="color:'+p.c+'">The direction · '+p.k+'</div>'
+      +'<h2 class="dtitle">'+d.title+'</h2>'
+      +'<p class="ddoes">'+d.line+'</p>'
+      +'<div class="dsub">What we referenced</div>'
+      +'<ul class="dsaid">'+d.refs.map(r=>'<li><b>'+r.app+'</b>: '+r.note+'</li>').join('')+'</ul>';
+    dright.innerHTML='<div class="refpanel">'+d.refs.map(r=>
+      '<figure class="refshot"><div class="fr"><img src="'+r.img+'" alt="'+r.app+'"></div>'
+      +'<figcaption class="rcap">'+r.app+'</figcaption></figure>').join('')+'</div>';
+    dcount.textContent=(dRefList.length>1?'Direction '+(dRefPos+1)+' / '+dRefList.length+'  ·  ← → to browse':'The direction');
+    document.getElementById('dcrumb').innerHTML='The discovery · <b>'+p.k+'</b>';
+    return;
+  }
+  if(dKind==='concept'){
+    const c=CONCEPTS[dIndex],vm=VMETA[c.v];
+    const probChips=(c.probs||[]).map(pi=>'<span class="dprob" style="--pc:'+PROBLEMS[pi].c+'"><span class="dot"></span>'+PROBLEMS[pi].k+'</span>').join('');
+    dleft.innerHTML='<div class="dkick">The exploration</div>'
+      +'<h2 class="dtitle">'+c.name+'</h2>'
+      +'<p class="ddoes">'+c.does+'</p>'
+      +'<div class="dsub">Solves for</div>'
+      +'<div class="dprobs">'+probChips+'</div>'
+      +'<div class="dsub">What users said</div>'
+      +'<ul class="dsaid">'+c.said.map(s=>'<li>'+s+'</li>').join('')+'</ul>'
+      +'<div class="dverd" style="color:'+vm.c+'"><span class="dot"></span><span class="vl">'+vm.l+'</span><span class="sig">'+c.sig+'</span></div>';
+    dright.innerHTML='<div class="detailboard"><img src="'+conceptImg(dIndex)+'" alt="'+c.name+'"></div>';
+    dcount.textContent='Concept '+(dIndex+1)+' / '+CONCEPTS.length+'  ·  ← → to browse';
+    document.getElementById('dcrumb').innerHTML='The exploration · <b>Concept '+(dIndex+1)+' of '+CONCEPTS.length+'</b>';
+  } else {
+    const ins=INSIGHTS[dIndex],p=PROBLEMS[ins.cluster];
+    dleft.innerHTML='<div class="dkick" style="color:'+p.c+'">Rolls up to · '+p.k+'</div>'
+      +'<h2 class="dtitle">'+ins.t+'</h2>'
+      +'<p class="ddoes">'+p.d+'</p>';
+    dright.innerHTML='<div class="evidence"><div class="dsub" style="margin-bottom:2px">What we saw in the sessions</div>'
+      +ins.obs.map((s,k)=>'<div class="ec"><span class="en">Observation 0'+(k+1)+'</span>'+s+'</div>').join('')+'</div>';
+    dcount.textContent='Insight '+(dIndex+1)+' / '+INSIGHTS.length+'  ·  ← → to browse';
+    document.getElementById('dcrumb').innerHTML='The discovery · <b>Insight '+(dIndex+1)+' of '+INSIGHTS.length+'</b>';
+  }
+}
+function openDetail(kind,i){killHint();dKind=kind;
+  if(kind==='ref'){dRefList=DIRS.map((d,idx)=>[d,idx]).filter(([d])=>d.bucket===i).map(([,idx])=>idx);dRefPos=0;}
+  else{dIndex=i;}
+  detail.classList.toggle('single',kind==='pmf');
+  detail.classList.toggle('cohort-modal',kind==='cohort');
+  renderDetail();detail.classList.add('open');}
+function stepDetail(dir){if(dKind==='pmf')return;
+  if(dKind==='ref'){dRefPos=(dRefPos+dir+dRefList.length)%dRefList.length;renderDetail();return;}
+  const n=dKind==='cohort'?COHDEF.length:dKind==='concept'?CONCEPTS.length:INSIGHTS.length;dIndex=(dIndex+dir+n)%n;renderDetail();}
+document.getElementById('dprev').addEventListener('click',()=>stepDetail(-1));
+document.getElementById('dnext').addEventListener('click',()=>stepDetail(1));
+
+/* ---------------- MENU / FIGMA ---------------- */
+const menu=document.getElementById('menu'),figmaOv=document.getElementById('figma');
+const FIGMA_SRC='https://embed.figma.com/design/M39nVJePaqyKzyxMgGrOxm/Healthify---Design-handoff?node-id=1-666&embed-host=share';
+function openMenu(){killHint();menu.classList.add('open');}
+function openFigma(){killHint();closeAll();
+  const fr=document.getElementById('figframe');
+  if(!fr.getAttribute('src'))fr.setAttribute('src',FIGMA_SRC);
+  figmaOv.classList.add('open');document.body.classList.add('figma-open');}
+function closeAll(){detail.classList.remove('open');menu.classList.remove('open');
+  figmaOv.classList.remove('open');document.body.classList.remove('figma-open');}
+function anyOpen(){return detail.classList.contains('open')||menu.classList.contains('open')||figmaOv.classList.contains('open');}
+document.getElementById('figBtn').addEventListener('click',openFigma);
+document.getElementById('mfigma').addEventListener('click',openFigma);
+document.getElementById('pmfBtn').addEventListener('click',()=>openDetail('pmf',0));
+document.getElementById('mpmf').addEventListener('click',()=>{closeAll();openDetail('pmf',0);});
+/* The "See the references" button lived on the old centered .problem card and is out of scope per
+   the owner's b4/b5 review. openDetail('ref',bucket) and the DIRS reference data are left intact -
+   re-attach a quiet text link under a .tstate if references come back. Do not reintroduce a pill. */
+document.getElementById('figLib').addEventListener('click',()=>leaveTo('index.html','Parallel'));
+document.querySelectorAll('[data-go]').forEach(el=>el.addEventListener('click',()=>{const[a,b]=el.dataset.go.split(',').map(Number);goTo(a,b);}));
+document.querySelectorAll('[data-close]').forEach(el=>el.addEventListener('click',closeAll));
+[menu,detail,figmaOv].forEach(o=>o.addEventListener('click',e=>{if(e.target===o)closeAll();}));
+document.getElementById('menuBtn').addEventListener('click',openMenu);
+document.getElementById('backBtn').addEventListener('click',prev);
+document.getElementById('nextBtn').addEventListener('click',next);
+document.getElementById('beginBtn').addEventListener('click',next);
+document.getElementById('dclose').addEventListener('click',()=>detail.classList.remove('open'));
+
+/* page-turn zones: left 12vw goes back, the rest advances */
+document.addEventListener('click',e=>{
+  if(anyOpen())return;
+  if(e.target.closest('a,button,iframe,.insight,.con,.bd,.mlink,.msub span,[data-go],.artifact,.featitem,.lnode,.cohface,#chrome,#hint'))return;
+  if(e.clientX<innerWidth*0.12)prev();else next();
+});
+
+/* ---------------- CURTAIN TRANSITIONS ---------------- */
+const curtain=document.getElementById('curtain');
+function leaveTo(href,label){curtain.querySelector('.ct').textContent=label||'';curtain.classList.add('on');
+  setTimeout(()=>location.href=href,520);}
+document.getElementById('libBtn').addEventListener('click',e=>{e.preventDefault();leaveTo(e.currentTarget.href,'Parallel')});
+document.getElementById('endlib').addEventListener('click',e=>{e.preventDefault();leaveTo(e.currentTarget.href,'Parallel')});
+addEventListener('pageshow',()=>{requestAnimationFrame(()=>curtain.classList.remove('on'));});
+
+/* ---------------- ROUND CURSOR ---------------- */
+if(matchMedia('(pointer:fine)').matches){
+  const cur=document.createElement('div');cur.id='cursor';document.body.appendChild(cur);
+  let cx=innerWidth/2,cy=innerHeight/2,mx=cx,my=cy,shown=false;
+  addEventListener('mousemove',e=>{
+    mx=e.clientX;my=e.clientY;
+    if(!shown){shown=true;cx=mx;cy=my;cur.classList.add('on');}
+    const hot=e.target.closest('a,button,.insight,.con,.bd,.mlink,.msub span,[data-go],.artifact,.featitem,.lnode,.cohface');
+    cur.classList.toggle('hot',!!hot);
+  });
+  document.addEventListener('mouseleave',()=>{shown=false;cur.classList.remove('on');});
+  // native cursor takes over inside any embedded iframe (Figma prototypes etc.)
+  document.addEventListener('mouseover',e=>{
+    if(e.target.tagName==='IFRAME')cur.classList.remove('on');
+    else if(shown)cur.classList.add('on');
+  });
+  addEventListener('mousedown',()=>cur.classList.add('press'));
+  addEventListener('mouseup',()=>cur.classList.remove('press'));
+  (function follow(){cx+=(mx-cx)*.35;cy+=(my-cy)*.35;cur.style.left=cx+'px';cur.style.top=cy+'px';requestAnimationFrame(follow);})();
+}
+
+/* ---------------- INPUT ---------------- */
+addEventListener('keydown',e=>{
+  if(anyOpen()){
+    if(e.key==='Escape'){
+      if(detail.classList.contains('open'))detail.classList.remove('open');
+      else if(figmaOv.classList.contains('open')){figmaOv.classList.remove('open');document.body.classList.remove('figma-open');}
+      else menu.classList.remove('open');
+    }
+    else if(detail.classList.contains('open')){if(e.key==='ArrowRight')stepDetail(1);if(e.key==='ArrowLeft')stepDetail(-1);}
+    return;
+  }
+  if(['ArrowRight','ArrowDown',' ','PageDown'].includes(e.key)){e.preventDefault();next();}
+  else if(['ArrowLeft','ArrowUp','PageUp'].includes(e.key)){e.preventDefault();prev();}
+  else if(e.key==='c'||e.key==='C')openMenu();
+  else if(e.key==='1')goTo(IDX.s1,0);else if(e.key==='2')goTo(IDX.s2,0);
+  else if(e.key==='3')goTo(IDX.s3,0);else if(e.key==='4')goTo(IDX.s5,0);
+  else if(e.key==='5')goTo(IDX.s4,0);
+});
+let tx=null;
+addEventListener('touchstart',e=>tx=e.touches[0].clientX,{passive:true});
+addEventListener('touchend',e=>{if(tx===null||anyOpen())return;const dx=e.changedTouches[0].clientX-tx;if(Math.abs(dx)>55)dx<0?next():prev();tx=null;},{passive:true});
+let rzT=null;
+addEventListener('resize',()=>{if(si===IDX.s3)layout(beat===2?'cols':(beat===1?'shrink':'grid'));
+  s2Layout();   // #s2's column + tab-stack positions are measured in px, so they must be re-measured
+  if(detail.classList.contains('open'))fitProto();
+  hidePreview();clearTimeout(rzT);rzT=setTimeout(precomputeThumbs,250);});
+setTimeout(killHint,8000);
+
+/* ---------------- INIT ---------------- */
+curtain.classList.add('on');
+layout('grid');
+s2Layout();             // …before the thumbnails serialize #s2's inline styles
+beatsEl.addEventListener('mouseleave',hidePreview);
+precomputeThumbs();     // capture thumbnails silently first…
+/* Hanken lands after first paint and changes every insight card's height, so re-measure once it
+   has. Thumbnails keep their pre-font positions; at ~200px wide the few px never show. */
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(s2Layout);
+const hm0=location.hash.match(/^#(\d+)\.(\d+)$/);
+if(hm0){const s0=Math.min(+hm0[1],scenes.length-1);show(s0,Math.min(+hm0[2],+scenes[s0].dataset.beats-1),false);}
+else show(0,0,true);    // …then land on the cover
+requestAnimationFrame(()=>requestAnimationFrame(()=>curtain.classList.remove('on')));
+setTimeout(()=>curtain.classList.remove('on'),300); // rAF never fires in throttled/hidden tabs, never let the curtain stick
+</script>
+</body>
+</html>
