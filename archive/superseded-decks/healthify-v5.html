@@ -141,20 +141,121 @@ body{background:var(--bg);color:var(--ink);font-family:var(--fs);-webkit-font-sm
 #s1.b2 .redwash{opacity:1}
 #s1.b3 .greenwash,#s1.b3 .redwash{opacity:0;transition:opacity .5s}
 
-/* ============ THE PROCESS LOOP ============ */
+/* ---- The bet · dark-canvas treatment (beats 0-2); beat 3 flips to the light "Our role" mandate
+   panel below. The old light .stage above is kept dormant/unreachable — it only ever served the
+   pre-reskin beat 3, superseded now by .rolepanel. ---- */
+#s1 .stage{display:none}
+#s1 .rl,#s1 .rr{color:rgba(255,255,255,.42);transition:color .4s}
+#s1.b3 .rl,#s1.b3 .rr{color:var(--lab)}
+#s1 .betdark{position:absolute;inset:0;overflow:hidden;cursor:pointer;transition:opacity .5s var(--ease);
+  background:radial-gradient(120% 90% at 62% 12%,#15161C 0%,#0A0B0F 60%)}
+#s1.b3 .betdark{opacity:0;pointer-events:none}
+#s1 .betdark .vignette{position:absolute;inset:0;pointer-events:none;z-index:8;box-shadow:inset 0 0 14vw 1vw rgba(0,0,0,.45)}
+
+#s1 .betdark .heads{position:absolute;left:4.2%;top:12%;right:33%;z-index:5;min-height:36%}
+#s1 .betdark .hl{position:absolute;top:0;left:0;right:0;opacity:0;transform:translateY(1.4vw);
+  transition:opacity .6s var(--ease),transform .7s var(--ease);pointer-events:none}
+#s1 .betdark .hl.show{opacity:1;transform:none}
+#s1 .betdark .hl.gone{opacity:0;transform:translateY(-1.4vw)}
+#s1 .betdark h1.hl-t{font-weight:500;font-size:3.05vw;line-height:1.2;letter-spacing:-.02em;color:#F4F4F6;font-family:var(--fd)}
+#s1 .betdark .hl em{font-style:normal;color:var(--indigo-lt)}
+#s1 .betdark .hl em.loss{color:#FF9A7C}
+#s1 .betdark .hl .sub{margin-top:1.5vw;font-size:1.28vw;font-weight:400;line-height:1.55;color:rgba(255,255,255,.55);max-width:60ch;font-family:var(--fs);
+  opacity:0;transform:translateY(.7vw);transition:opacity .6s .22s var(--ease),transform .6s .22s var(--ease)}
+#s1 .betdark .hl.show .sub{opacity:1;transform:none}
+
+#s1 .betdark .cNum{position:absolute;right:4.2%;top:13.5%;text-align:right;z-index:5}
+#s1 .betdark .cNum .n{font-family:var(--fd);font-size:6.3vw;font-weight:500;letter-spacing:-.03em;line-height:1;color:#fff;
+  font-variant-numeric:tabular-nums;display:block;transition:color .9s var(--ease)}
+#s1 .betdark .cNum .l{font-family:var(--fs);font-size:.98vw;font-weight:600;color:rgba(255,255,255,.55);display:block;margin-top:.6vw;letter-spacing:.02em}
+#s1.b2 .betdark .cNum .n{color:#FF9A7C}
+
+#s1 .betdark .cGlow{position:absolute;left:16%;right:0;bottom:-10%;height:72%;z-index:0;opacity:.62;
+  background:radial-gradient(58% 68% at 68% 62%,rgba(78,97,214,.30),transparent 72%);filter:blur(6px);
+  transition:opacity 1.3s var(--ease)}
+#s1 .betdark .cGlowLoss{position:absolute;left:32%;right:-6%;bottom:-12%;height:68%;z-index:0;
+  background:radial-gradient(56% 66% at 78% 55%,rgba(232,103,78,.28),transparent 72%);filter:blur(6px);
+  opacity:0;transition:opacity 1.3s var(--ease)}
+#s1.b2 .betdark .cGlow{opacity:.4}
+#s1.b2 .betdark .cGlowLoss{opacity:1}
+
+#s1 .betdark .cChart{position:absolute;left:0;right:0;bottom:0;width:100%;height:58%;z-index:1}
+#s1 .betdark .ln{fill:none;stroke-linecap:round}
+#s1 .betdark .lnglow{stroke-width:6.5;opacity:.85;filter:url(#blurD)}
+#s1 .betdark .core{stroke-width:2.4}
+#s1 .betdark .rise{stroke-dasharray:1000;stroke-dashoffset:1000}
+#s1 .betdark .fall{stroke-dasharray:520;stroke-dashoffset:520}
+#s1 .betdark #fallGrp{opacity:0;transition:opacity .5s var(--ease)}
+#s1.b2 .betdark #fallGrp{opacity:1}
+
+/* the AI-bet marker, sitting exactly at the curve's peak */
+#s1 .betdark .mark{position:absolute;left:64%;top:59.4%;transform:translate(-50%,-50%) scale(.5);opacity:0;z-index:4;
+  transition:opacity .55s var(--ease),transform .55s var(--ease)}
+#s1.b1 .betdark .mark,#s1.b2 .betdark .mark{opacity:1;transform:translate(-50%,-50%) scale(1)}
+#s1 .betdark .mark i{display:block;width:.7vw;height:.7vw;min-width:8px;min-height:8px;border-radius:50%;background:#fff;
+  box-shadow:0 0 0 .45vw rgba(143,160,255,.26),0 0 1.6vw .25vw rgba(143,160,255,.6);transition:background .7s,box-shadow .7s}
+#s1.b2 .betdark .mark i{background:#FF9A7C;box-shadow:0 0 0 .45vw rgba(255,154,124,.24),0 0 1.6vw .25vw rgba(255,154,124,.55)}
+
+/* the marker's own callout label, same idiom as production's #shipflag */
+#s1 .betdark .marklabel{position:absolute;left:64%;top:59.4%;transform:translate(-50%,calc(-100% - 18px));z-index:4;
+  font-family:var(--fs);font-size:.92vw;font-weight:500;color:rgba(255,255,255,.55);white-space:nowrap;text-align:center;pointer-events:none;
+  opacity:0;transition:opacity .55s var(--ease),color .7s var(--ease)}
+#s1 .betdark .marklabel::after{content:"";position:absolute;left:50%;top:100%;width:1px;height:16px;
+  background:linear-gradient(rgba(255,255,255,.55),transparent);transform:translateX(-50%);transition:background .7s var(--ease)}
+#s1.b1 .betdark .marklabel,#s1.b2 .betdark .marklabel{opacity:1}
+#s1.b2 .betdark .marklabel{color:#FF9A7C}
+#s1.b2 .betdark .marklabel::after{background:linear-gradient(#FF9A7C,transparent)}
+
+/* ---- "Our role" · beat 3, light mandate panel (healthify-v5-role-variations.html) ---- */
+#s1 .rolepanel{position:absolute;inset:0;padding:12vh var(--mx) 11vh;display:flex;align-items:center;gap:5.5vw;
+  background:var(--bg);color:var(--ink);opacity:0;pointer-events:none;transition:opacity .5s var(--ease)}
+#s1.b3 .rolepanel{opacity:1;pointer-events:auto}
+#s1 .rolepanel .lead{flex:0 0 42%;align-self:flex-start;margin-top:2vh}
+#s1 .rolepanel .yr{display:flex;flex-direction:column;font-family:var(--fs);font-size:17px;font-weight:700;color:var(--indigo);letter-spacing:-.005em;margin-bottom:26px}
+#s1 .rolepanel .yr::before{content:"";width:34px;height:3px;background:var(--indigo);border-radius:2px;margin-bottom:16px}
+#s1 .rolepanel .hl{font-family:var(--fd);font-weight:500;font-size:clamp(26px,2.85vw,44px);line-height:1.12;letter-spacing:-.022em}
+#s1 .rolepanel .qlist{flex:1;min-width:0;margin-left:2vw;align-self:flex-start;margin-top:2vh}
+#s1 .rolepanel .qtitle{font-family:var(--fs);display:flex;flex-direction:column;font-weight:600;font-size:clamp(15px,1.3vw,18px);
+  letter-spacing:-.005em;color:var(--ink);margin-bottom:20px}
+#s1 .rolepanel .qtitle::before{content:"";width:22px;height:2px;background:var(--line2);border-radius:2px;margin-bottom:14px}
+#s1 .rolepanel .q{display:grid;grid-template-columns:auto 1fr;gap:clamp(20px,1.9vw,34px);align-items:start;
+  padding:clamp(24px,2.9vh,34px) 0;border-top:1px solid var(--line)}
+#s1 .rolepanel .qtitle+.q{border-top:none;padding-top:0}
+#s1 .rolepanel .qnum{width:40px;height:40px;margin-top:4px;border-radius:50%;border:1.5px solid var(--line2);
+  display:flex;align-items:center;justify-content:center;font-family:var(--fs);font-size:15px;font-weight:500;color:var(--mut)}
+#s1 .rolepanel .q p{font-family:var(--fd);font-weight:500;font-size:clamp(23px,2.5vw,38px);line-height:1.16;letter-spacing:-.02em;max-width:20ch}
+/* beat-gated stagger (re-triggers every entry into beat 3) replaces the source file's one-shot load animation */
+#s1 .rolepanel .lead,#s1 .rolepanel .qtitle,#s1 .rolepanel .q{opacity:0;transform:translateY(16px);transition:opacity .6s var(--ease),transform .6s var(--ease)}
+#s1.b3 .rolepanel .lead{opacity:1;transform:none}
+#s1.b3 .rolepanel .qtitle{opacity:1;transform:none;transition-delay:.12s}
+#s1.b3 .rolepanel .q[data-b="1"]{opacity:1;transform:none;transition-delay:.28s}
+#s1.b3 .rolepanel .q[data-b="2"]{opacity:1;transform:none;transition-delay:.42s}
+#s1.b3 .rolepanel .q[data-b="3"]{opacity:1;transform:none;transition-delay:.56s}
+
+/* ============ THE PROCESS LOOP (orbit) ============ */
 #sloop .lwrap{position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:4vw;padding:0 var(--mx)}
-#sloop svg{width:min(56vh,84%);display:block;margin:0 auto;overflow:visible}
+#sloop .lleft{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px}
+#sloop svg{width:min(56vh,86%);display:block;overflow:visible}
+/* the loop arcs bulge past each node's edge rather than tracing a plain circle, so the shape
+   reads as a loop, not a flat triangle; arrows sit at each arc's own endpoint (arriving at the node) */
 #sloop .larc{fill:none;stroke:var(--line3);stroke-width:1.5;stroke-dasharray:2 8;stroke-linecap:round;animation:loopflow 1.5s linear infinite}
 @keyframes loopflow{to{stroke-dashoffset:-10}}
 #sloop .lnode{cursor:pointer}
-#sloop .lnode circle{fill:var(--bg);stroke:var(--line2);stroke-width:1.25;transition:stroke .25s,fill .25s}
-#sloop .lnode text{font-family:var(--fs);font-size:17px;font-weight:600;fill:var(--ink);text-anchor:middle;transition:fill .25s}
-#sloop .lnode:hover circle,#sloop .lnode.on circle{stroke:var(--indigo);fill:var(--indigo-soft)}
-#sloop .lnode:hover text,#sloop .lnode.on text{fill:var(--indigo-dk)}
-#sloop .lright .big{font-size:clamp(30px,3.4vw,52px);margin-top:16px;max-width:15ch;letter-spacing:-.026em;line-height:1.05}
-#sloop .lpanel{margin-top:34px;border-top:1.5px solid var(--ink);padding-top:22px;max-width:42ch;min-height:16vh}
-#sloop .lpanel h3{font-family:var(--fs);font-size:14px;font-weight:600;color:var(--indigo);margin-bottom:12px;letter-spacing:-.005em}
-#sloop .lpanel p{font-family:var(--fs);font-size:clamp(15px,1.25vw,18px);color:var(--mut);line-height:1.6}
+#sloop .lnode circle{fill:var(--bg);stroke:var(--line2);stroke-width:1.25;transition:stroke .35s var(--ease),fill .35s var(--ease)}
+#sloop .lnode text{font-family:var(--fs);font-size:17px;font-weight:600;fill:var(--mut);text-anchor:middle;transition:fill .35s var(--ease)}
+#sloop .lnode.on circle{stroke:var(--indigo);fill:var(--indigo-soft)}
+#sloop .lnode.on text{fill:var(--indigo-dk)}
+#sloop .tok{transform-box:view-box;transform-origin:220px 220px;opacity:0}
+#sloop .tok circle{fill:var(--indigo)}
+#sloop .tok .halo{fill:var(--indigo);opacity:.18}
+#sloop .beatdots{display:flex;gap:9px}
+#sloop .beatdots i{width:8px;height:8px;border-radius:100px;background:var(--line2);transition:width .3s var(--ease),background .3s var(--ease);cursor:pointer}
+#sloop .beatdots i.on{background:var(--indigo);width:24px}
+#sloop .lright{min-width:0}
+#sloop .stage{transition:opacity .32s var(--ease),transform .32s var(--ease)}
+#sloop .stage.swap{opacity:0;transform:translateY(8px)}
+#sloop .stage .t{font-family:var(--fd);font-weight:500;font-size:clamp(40px,4.6vw,72px);letter-spacing:-.032em;line-height:1}
+#sloop .stage .d{font-family:var(--fs);font-size:clamp(17px,1.4vw,22px);color:var(--mut);line-height:1.5;margin-top:20px;max-width:26ch}
 
 /* ============ SCENE 2 · THE DIAGNOSIS ============ */
 #s2 .head{position:absolute;top:11vh;left:var(--mx);right:var(--mx);z-index:5;transition:opacity .55s var(--ease)}
@@ -162,33 +263,44 @@ body{background:var(--bg);color:var(--ink);font-family:var(--fs);-webkit-font-sm
 #s2 .head .big{font-size:clamp(28px,3vw,46px);letter-spacing:-.024em;max-width:22ch}
 #s2 .field{position:absolute;inset:0}
 #s2 .people{position:absolute;inset:0;pointer-events:none}
-#s2 .cohcard{position:absolute;top:26vh;width:20vw;height:49vh;left:var(--cx0);border:1px solid var(--line);border-radius:16px;
-  background:var(--bg);padding:19px 20px 18px;box-shadow:0 18px 44px -20px rgba(17,17,17,.16);overflow:hidden;
+#s2 .cohface{position:absolute;top:40vh;left:var(--cx0);width:19vw;max-width:250px;pointer-events:auto;cursor:pointer;
   opacity:0;transform:translateY(20px);transition:opacity .55s var(--ease),transform .65s var(--ease)}
-#s2.b0 .cohcard{opacity:1;transform:none}
-#s2.b0 .cohcard:nth-of-type(2){transition-delay:.09s}
-#s2.b0 .cohcard:nth-of-type(3){transition-delay:.18s}
-#s2.b0 .cohcard:nth-of-type(4){transition-delay:.27s}
-#s2.b2 .cohcard{opacity:0;transform:translateY(-14px) scale(.96);transition:opacity .4s,transform .5s var(--ease)}
-#s2 .cohcard .chn{font-family:var(--fs);font-size:12px;letter-spacing:-.005em;color:var(--mut);font-weight:600}
-#s2 .cohcard .cht{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:6px 0 13px}
-#s2 .cohcard .cht .un{font-family:var(--fd);font-weight:500;font-size:clamp(17px,1.5vw,22px);letter-spacing:-.02em}
-#s2 .cohcard .os{font-family:var(--fs);font-size:11.5px;font-weight:600;letter-spacing:-.005em;border:1px solid var(--line2);border-radius:100px;padding:4px 12px;color:var(--mut);flex:none}
-#s2 .cohcard .crow{margin-bottom:10px}
-#s2 .cohcard .crl{font-family:var(--fs);font-size:11px;letter-spacing:-.003em;color:var(--lab);font-weight:600;display:block;margin-bottom:6px}
-#s2 .cohcard .chips{display:flex;flex-wrap:wrap;gap:5px}
-#s2 .cohcard .chip2{font-family:var(--fs);font-size:12px;color:var(--ink);border:1px solid var(--line2);border-radius:100px;padding:3.5px 10px;background:var(--bg)}
-#s2 .cohcard .seats{position:absolute;left:20px;right:20px;bottom:18px;display:flex;gap:11px}
-#s2 .cohcard .seats i{width:16px;height:16px;border-radius:50%;border:1px dashed var(--line3);display:block}
-#s2 .person{position:absolute;left:0;top:0;width:16px;height:16px;border-radius:50%;background:var(--indigo);opacity:0;
-  transform:translate(var(--px),var(--py)) scale(.4);transition:transform 1.15s var(--ease),opacity .55s}
-#s2.b1 .person{opacity:1;transform:translate(var(--qx),var(--qy)) scale(1)}
-#s2.b2 .person{opacity:0;transform:translate(var(--qx),var(--qy)) scale(.3);transition:opacity .35s,transform .45s}
-#s2 .axesline{position:absolute;left:var(--mx);right:var(--mx);bottom:9vh;font-family:var(--fs);font-size:clamp(14px,1.2vw,17px);color:var(--mut);line-height:1.6;
-  opacity:0;transform:translateY(10px);transition:opacity .6s .55s,transform .7s .55s var(--ease)}
+#s2.b0 .cohface,#s2.b1 .cohface{opacity:1;transform:none}
+#s2.b2 .cohface{opacity:0;transform:translateY(-14px) scale(.96);transition:opacity .4s,transform .5s var(--ease)}
+#s2 .cohface:nth-of-type(2){transition-delay:.09s}
+#s2 .cohface:nth-of-type(3){transition-delay:.18s}
+#s2 .cohface:nth-of-type(4){transition-delay:.27s}
+#s2 .cf-portrait{width:104px;height:104px;border-radius:26px;background:var(--indigo-soft);overflow:hidden;
+  display:flex;align-items:center;justify-content:center;margin-bottom:16px;
+  transition:box-shadow .25s,transform .25s var(--ease);box-shadow:0 0 0 0 rgba(78,97,214,0)}
+#s2 .cf-portrait img{width:104%;height:104%;object-fit:cover}
+#s2 .cohface:hover .cf-portrait{box-shadow:0 0 0 3px var(--indigo-soft),0 18px 34px -18px rgba(78,97,214,.5);transform:translateY(-2px)}
+#s2.b1 .cf-portrait{animation:cfpulse .6s var(--ease);animation-delay:var(--pd,0s)}
+@keyframes cfpulse{0%{box-shadow:0 0 0 0 rgba(78,97,214,0)}45%{box-shadow:0 0 0 6px var(--indigo-soft)}100%{box-shadow:0 0 0 0 rgba(78,97,214,0)}}
+#s2 .cf-pill{display:inline-flex;align-items:center;gap:7px;font-family:var(--fs);font-size:11.5px;font-weight:600;letter-spacing:-.005em;
+  color:var(--mut);border:1px solid var(--line2);border-radius:100px;padding:4px 12px;margin-bottom:12px}
+#s2 .cf-pill .dot{width:6px;height:6px;border-radius:50%;background:var(--indigo)}
+#s2 .cf-pill.new .dot{background:none;border:1.4px solid var(--indigo)}
+#s2 .cf-who{font-family:var(--fd);font-size:16px;font-weight:600;letter-spacing:-.015em;line-height:1.3;min-height:21px}
+#s2 .cf-where{font-family:var(--fs);font-size:12.5px;color:var(--lab);margin-top:6px;line-height:1.4;min-height:18px}
+#s2 .cf-more{font-family:var(--fs);font-size:12px;color:var(--indigo);font-weight:600;margin-top:10px;min-height:16px;opacity:0;transition:opacity .3s}
+#s2.b0 .cf-more{opacity:1}
+#s2 .cf-link{position:relative;height:2px;margin-top:16px}
+#s2 .cf-wire{position:absolute;left:0;right:6px;top:0;height:1.5px;background:var(--indigo);
+  transform:scaleX(0);transform-origin:left;transition:transform .5s var(--ease);transition-delay:var(--wd,0s)}
+#s2.b1 .cf-wire{transform:scaleX(1)}
+#s2 .cf-seats{display:flex;gap:8px;margin-top:10px}
+#s2 .seat{width:26px;height:26px;border-radius:50%;border:1.4px dashed var(--line2);display:flex;align-items:center;justify-content:center;
+  opacity:0;transform:translateY(-9px) scale(.6);
+  transition:opacity .4s var(--ease),transform .45s cubic-bezier(.34,1.56,.64,1),border-color .3s var(--ease),background .3s var(--ease);
+  transition-delay:var(--sd,0s)}
+#s2 .seat i{width:8px;height:8px;border-radius:50%;background:var(--indigo);opacity:0;transition:opacity .25s;transition-delay:calc(var(--sd,0s) + .12s)}
+#s2.b1 .seat{opacity:1;transform:none;border-style:solid;border-color:var(--indigo);background:var(--indigo-soft)}
+#s2.b1 .seat i{opacity:1}
+#s2 .axesline{margin-top:16px;font-family:var(--fs);font-size:clamp(13px,1.05vw,15px);color:var(--mut);line-height:1.6;
+  opacity:0;transform:translateY(8px);transition:opacity .5s .2s,transform .55s .2s var(--ease)}
 #s2 .axesline b{color:var(--ink);font-weight:600}
-#s2 .axesline .why{display:block;margin-top:11px;color:var(--lab);font-size:13.5px;max-width:96ch;line-height:1.55}
-#s2.b0 .axesline{opacity:1;transform:none}
+#s2.b0 .axesline,#s2.b1 .axesline{opacity:1;transform:none}
 #s2.b2 .axesline{opacity:0;transition:opacity .25s}
 #s2 .artifact{position:absolute;left:50%;bottom:10vh;transform:translate(-50%,20px);display:flex;align-items:center;gap:14px;
   border:1px solid var(--line2);border-radius:100px;background:var(--bg);padding:13px 24px 13px 20px;cursor:pointer;
@@ -460,6 +572,13 @@ body.bare #chrome,body.bare #hint{opacity:0;pointer-events:none}
 #detail #dnext{right:calc(4vw - 22px)}
 #detail.single #dprev,#detail.single #dnext{display:none}
 #detail .darrows button:hover{color:var(--ink);border-color:var(--ink)}
+#detail .dportrait{width:220px;height:220px;border-radius:44px;background:var(--indigo-soft);display:flex;align-items:center;justify-content:center;overflow:hidden;margin-bottom:22px}
+#detail .dportrait img{width:104%;height:104%;object-fit:cover}
+#detail .dpwrap{display:flex;flex-direction:column;align-items:center}
+#detail .cf-pill{display:inline-flex;align-items:center;gap:7px;font-family:var(--fs);font-size:11.5px;font-weight:600;letter-spacing:-.005em;
+  color:var(--mut);border:1px solid var(--line2);border-radius:100px;padding:4px 12px}
+#detail .cf-pill .dot{width:6px;height:6px;border-radius:50%;background:var(--indigo)}
+#detail .cf-pill.new .dot{background:none;border:1.4px solid var(--indigo)}
 
 /* phone */
 .phone{position:relative;width:min(300px,80%);aspect-ratio:9/19;background:var(--pbg);border-radius:38px;
@@ -575,6 +694,57 @@ body.bare #chrome,body.bare #hint{opacity:0;pointer-events:none}
 <!-- SCENE 1 · THE BET -->
 <section class="scene" id="s1" data-beats="4">
   <span class="rl">Chapter 01 · The bet</span><span class="rr">Healthify × Parallel</span>
+  <div class="betdark">
+    <div class="vignette"></div>
+    <div class="cGlow"></div>
+    <div class="cGlowLoss"></div>
+    <svg class="cChart" viewBox="0 0 1000 300" preserveAspectRatio="none">
+      <defs>
+        <linearGradient id="gRiseD" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="#4E5FD1"/><stop offset="1" stop-color="#9FADF9"/>
+        </linearGradient>
+        <linearGradient id="gFallD" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="#C6402E"/><stop offset="1" stop-color="#FF9A7C"/>
+        </linearGradient>
+        <filter id="blurD" x="-20%" y="-80%" width="140%" height="260%"><feGaussianBlur stdDeviation="7"/></filter>
+      </defs>
+      <line x1="0" y1="100" x2="1000" y2="100" stroke="rgba(255,255,255,.05)"/>
+      <line x1="0" y1="200" x2="1000" y2="200" stroke="rgba(255,255,255,.05)"/>
+
+      <path class="ln lnglow rise" stroke="url(#gRiseD)" filter="url(#blurD)" d="M0 262 C 130 250, 250 222, 380 182 C 470 156, 560 118, 640 90"/>
+      <path class="ln core rise" stroke="url(#gRiseD)" d="M0 262 C 130 250, 250 222, 380 182 C 470 156, 560 118, 640 90"/>
+
+      <g id="fallGrp">
+        <path class="ln lnglow fall" stroke="url(#gFallD)" filter="url(#blurD)" d="M640 90 C 720 100, 800 150, 880 208 C 930 240, 970 258, 1000 268"/>
+        <path class="ln core fall" stroke="url(#gFallD)" d="M640 90 C 720 100, 800 150, 880 208 C 930 240, 970 258, 1000 268"/>
+      </g>
+    </svg>
+    <div class="mark"><i></i></div>
+    <div class="marklabel">AI features shipped</div>
+
+    <div class="heads">
+      <div class="hl" data-b="0"><h1 class="hl-t">Healthify helps <em>50 million</em> people<br>eat better and live healthier.</h1></div>
+      <div class="hl" data-b="1"><h1 class="hl-t">In 2023, they partnered with OpenAI,<br>aiming to become a true AI-first product.</h1></div>
+      <div class="hl" data-b="2"><h1 class="hl-t">Despite unlocking advanced features,<br>retention began to <em class="loss">decline.</em></h1>
+        <p class="sub">Existing users weren't adopting the AI-first experience,<br>and it wasn't attracting enough new users either.</p></div>
+    </div>
+
+    <div class="cNum"><span class="n" id="betret">100</span><span class="l">Retention index</span></div>
+  </div>
+
+  <!-- "Our role" · the chapter's last beat flips to a light mandate panel, per healthify-v5-role-variations.html -->
+  <div class="rolepanel">
+    <div class="lead">
+      <span class="yr">Our role</span>
+      <h2 class="hl">Find the friction points<br>and redesign the flows<br>to improve adoption and<br>retention.</h2>
+    </div>
+    <div class="qlist">
+      <div class="qtitle">Questions we set out to answer</div>
+      <div class="q" data-b="1"><span class="qnum">1</span><p>Where does AI genuinely help the user's core job?</p></div>
+      <div class="q" data-b="2"><span class="qnum">2</span><p>Where does it get in the way?</p></div>
+      <div class="q" data-b="3"><span class="qnum">3</span><p>What makes users trust AI enough to rely on it?</p></div>
+    </div>
+  </div>
   <div class="stage">
     <div class="greenwash"></div>
     <div class="redwash"></div>
@@ -613,7 +783,7 @@ body.bare #chrome,body.bare #hint{opacity:0;pointer-events:none}
 </section>
 
 <!-- THE PROCESS · one continuous loop -->
-<section class="scene" id="sloop" data-beats="1">
+<section class="scene" id="sloop" data-beats="3">
   <span class="rl">How we work</span><span class="rr">Healthify × Parallel</span>
   <div class="lwrap">
     <div class="lleft">
@@ -627,14 +797,14 @@ body.bare #chrome,body.bare #hint{opacity:0;pointer-events:none}
         <g class="lnode" data-k="discover" transform="translate(220,70)"><circle r="46"/><text dy="5">Discover</text></g>
         <g class="lnode" data-k="explore" transform="translate(350,295)"><circle r="46"/><text dy="5">Explore</text></g>
         <g class="lnode" data-k="ship" transform="translate(90,295)"><circle r="46"/><text dy="5">Ship</text></g>
+        <g class="tok" id="tok"><circle class="halo" cx="220" cy="70" r="15"/><circle cx="220" cy="70" r="7"/></g>
       </svg>
+      <div class="beatdots" id="beatdots"><i class="on"></i><i></i><i></i></div>
     </div>
     <div class="lright">
-      <p class="kicker">Our process</p>
-      <h2 class="big">One continuous loop: discover, explore, ship.</h2>
-      <div class="lpanel">
-        <h3 id="loopt">Why it loops</h3>
-        <p id="loopd">The loop closes where it started. What we learn from the live product feeds the next round of discovery, so each pass starts smarter than the last.</p>
+      <div class="stage" id="stage">
+        <div class="t">Discover</div>
+        <div class="d">Uncover real problems by talking to users. Every project starts here, before any solution.</div>
       </div>
     </div>
   </div>
@@ -660,10 +830,9 @@ body.bare #chrome,body.bare #hint{opacity:0;pointer-events:none}
   <div class="head">
     <p class="kicker">The discovery</p>
     <div class="hswap"><h2 class="big" data-h="0">We designed four cohorts across five axes.</h2></div>
+    <div class="axesline"><b>Operating system</b> · <b>new vs existing</b> · <b>profession</b> · <b>geography</b> · <b>AI usage</b></div>
   </div>
   <div class="people" id="people"></div>
-  <div class="axesline"><b>Operating system</b> · <b>new vs existing</b> · <b>profession</b> · <b>geography</b> · <b>AI usage</b>
-    <span class="why">A product manager in Delhi on iOS behaves nothing like a small-business owner in Coimbatore on Android. The insights live in the differences. 20 sessions, 60–75 minutes each.</span></div>
   <div class="field" id="field"></div>
   <div class="artifact" id="pmfBtn"><span>And every existing feature got a verdict</span><b>View the feature check ↗</b></div>
   <div class="twistwash"></div>
@@ -1091,37 +1260,47 @@ PROBLEMS.forEach((p,i)=>{
   document.getElementById('s2').appendChild(el);
 });
 
-/* the method — the cohort definitions come first (that's the engineering), then twenty
-   hand-placed people fly in and take the five seats inside each card (that's the recruiting). */
+/* the method — four cohort profiles, each recruited across five sessions. Data recovered
+   verbatim from the source cohort cards (Assets/Cohort 2–5.svg); click a face for the full profile. */
 const people=document.getElementById('people');
 const COHDEF=[
-  {u:"Existing user",os:"iOS",prof:["Product manager","Tax consultant","Film-maker","IT prof."],ai:["ChatGPT","Midjourney","AI-based CRM"],city:["Delhi","Bangalore","Mumbai","Pune"]},
-  {u:"Existing user",os:"Android",prof:["Small-business owner","Travel planner","IT prof."],ai:["ChatGPT","Gemini","Co-Pilot"],city:["Coimbatore","Kochi","Delhi"]},
-  {u:"New user",os:"iOS",prof:["Freelancer","Finance","Corporate prof."],ai:["ChatGPT","Midjourney"],city:["Saharanpur","Visakhapatnam","Kochi"]},
-  {u:"New user",os:"Android",prof:["Teacher","Designer","Small-business owner"],ai:["ChatGPT","WhatsApp AI","Canva"],city:["Noida","Kolkata","Gurugram"]}
+  {u:"Existing user",os:"iOS",who:"Product managers",whereLead:"Delhi, Bangalore",
+    prof:["Product Manager","Tax Consultant","Film-maker","Govt. Service","IT Prof."],
+    ai:["ChatGPT","EYQ","Midjourney","AI based CRM"],
+    city:["Delhi","Bangalore","Pune","Mumbai"]},
+  {u:"Existing user",os:"Android",who:"Small-business owners",whereLead:"Pimpri-Chinchwad, Bangalore",
+    prof:["Small Business Owner","IT Prof.","Travel Planner"],
+    ai:["ChatGPT","Flo (AI Predictions)","Co-Pilot","Gemini"],
+    city:["Pimpri-Chinchwad","Bangalore","Kochi","Delhi","Coimbatore"]},
+  {u:"New user",os:"iOS",who:"Freelancers",whereLead:"Saharanpur, Kochi",
+    prof:["Freelancer","Finance","Family Business","Corporate Prof."],
+    ai:["ChatGPT","Midjourney","Electronic Devices"],
+    city:["Saharanpur","Kochi","Delhi","Visakhapatnam","Bangalore"]},
+  {u:"New user",os:"Android",who:"Teachers &amp; designers",whereLead:"Delhi, Noida",
+    prof:["Teacher","Corporate Prof.","Designer","Small Business Owner"],
+    ai:["ChatGPT","WhatsApp AI","Photoshop","Canva/Image generators"],
+    city:["Delhi","Noida","Kolkata","Gurugram"]}
 ];
 const COHX=[7,29.5,52,74.5]; // card left edges, vw
 COHDEF.forEach((d,c)=>{
-  const el=document.createElement('div');el.className='cohcard';
+  const el=document.createElement('div');el.className='cohface';
   el.style.setProperty('--cx0',COHX[c]+'vw');
-  el.innerHTML='<span class="chn">Cohort 0'+(c+1)+'</span>'
-    +'<div class="cht"><span class="un">'+d.u+'</span><span class="os">'+d.os+'</span></div>'
-    +'<div class="crow"><span class="crl">Profession</span><div class="chips">'+d.prof.map(x=>'<span class="chip2">'+x+'</span>').join('')+'</div></div>'
-    +'<div class="crow"><span class="crl">AI tools</span><div class="chips">'+d.ai.map(x=>'<span class="chip2">'+x+'</span>').join('')+'</div></div>'
-    +'<div class="crow"><span class="crl">Cities</span><div class="chips">'+d.city.map(x=>'<span class="chip2">'+x+'</span>').join('')+'</div></div>'
-    +'<div class="seats"><i></i><i></i><i></i><i></i><i></i></div>';
+  el.style.setProperty('--pd',(c*0.13+0.42)+'s'); // portrait pulse, after that card's wave settles
+  const wireDelay=c*0.13; // the four wires draw in sequence — the "wave"
+  const seats=[0,1,2,3,4].map(s=>{
+    const delay=wireDelay+0.18+s*0.07; // seats drop onto the wire as it passes under them
+    return '<span class="seat" style="--sd:'+delay+'s"><i></i></span>';
+  }).join('');
+  el.innerHTML=
+    '<div class="cf-portrait"><img src="../../Assets/cohort-0'+(c+1)+'-portrait.png" alt="Cohort '+(c+1)+' portrait"></div>'
+    +'<span class="cf-pill'+(d.u==='New user'?' new':'')+'"><span class="dot"></span>'+d.u.replace(' user','')+' · '+d.os+'</span>'
+    +'<div class="cf-who">'+d.who+'</div>'
+    +'<div class="cf-where">Mostly '+d.whereLead+'</div>'
+    +'<div class="cf-more">+ AI tools, more cities →</div>'
+    +'<div class="cf-link" style="--wd:'+wireDelay+'s"><div class="cf-wire"></div></div>'
+    +'<div class="cf-seats">'+seats+'</div>';
+  el.addEventListener('click',e=>{e.stopPropagation();openDetail('cohort',c);});
   people.appendChild(el);
-});
-const CROWD=[[12,46],[18,63],[23,33],[30,55],[35,70],[40,37],[46,59],[51,29],[56,67],[60,46],
-             [65,33],[69,61],[73,44],[77,69],[81,30],[86,55],[27,68],[15,52],[63,72],[85,42]];
-CROWD.forEach(([x,y],i)=>{
-  const p=document.createElement('span');p.className='person';
-  const c=Math.floor(i/5), j=i%5;
-  p.style.setProperty('--px',x+'vw');p.style.setProperty('--py',y+'vh');
-  p.style.setProperty('--qx','calc('+COHX[c]+'vw + 20px + '+(j*27)+'px)'); // the j-th seat in card c
-  p.style.setProperty('--qy','calc(75vh - 34px)');
-  p.style.transitionDelay=(i*0.045)+'s';
-  people.appendChild(p);
 });
 
 /* ---------------- SCENE 3 GRID ---------------- */
@@ -1190,14 +1369,50 @@ function placeMarks(){
   shipflag.style.top=(r.top-w.top+186/420*r.height-52)+'px';
 }
 function retColor(c){document.getElementById('retno').style.color=c;}
-const hookS1=(b,silent)=>{headlines(S1,b);
-  if(b===0){setLine(fall,0);fall.style.opacity=0;shipdot.style.opacity=0;
-    if(!silent){introDraw(rise,0,100,1800);}else{clearInterval(introTimer);setLine(rise,1);retval.textContent='100';}
-    retColor('var(--green)');clearInterval(cdTimer);}
-  if(b===1){placeMarks();shipdot.style.opacity=1;fall.style.opacity=1;setLine(fall,0);}
-  if(b===2){fall.style.opacity=1;
-    if(!silent){introDraw(fall,100,64,2200);}else{clearInterval(introTimer);setLine(fall,1);retval.textContent='64';}
-    retColor('var(--red)');}
+/* ---- The bet · dark-canvas chart driver (beats 0-2). The old rise/fall/retval/shipflag/
+   placeMarks helpers above stay dormant — they only ever served beat 3, which is now
+   unreachable (data-beats=3) until that slide gets its own dark-treatment redesign. ---- */
+const betRise=[...document.querySelectorAll('#s1 .betdark .rise')];
+const betFall=[...document.querySelectorAll('#s1 .betdark .fall')];
+const betret=document.getElementById('betret');
+let betRetTimer=null;
+function betSetOff(els,v){els.forEach(p=>{p.style.strokeDashoffset=v;});}
+function betSetTr(els,v){els.forEach(p=>{p.style.transition=v;});}
+function betTweenRet(from,to,dur){clearInterval(betRetTimer);const t0=performance.now();
+  betRetTimer=setInterval(()=>{const p=Math.min(1,(performance.now()-t0)/dur),e=1-Math.pow(1-p,2);
+    betret.textContent=Math.round(from+(to-from)*e);
+    if(p>=1){betret.textContent=to;clearInterval(betRetTimer);}},16);}
+// time-based JS tween (setInterval), not a CSS transition — same pattern as introDraw/betTweenRet
+// above. A CSS transition needs a reflow to land BETWEEN setting the transition property and
+// changing the value, or the browser coalesces both into one paint and it just jumps to the end
+// state; manually stepping the value every frame sidesteps that timing entirely.
+let betDrawTimer=null;
+function betDraw(els,animate,dash,dur){
+  clearInterval(betDrawTimer);betSetTr(els,'none');
+  if(!animate){betSetOff(els,'0');return;}
+  betSetOff(els,dash);
+  const t0=performance.now();
+  betDrawTimer=setInterval(()=>{
+    const p=Math.min(1,(performance.now()-t0)/dur),eased=1-Math.pow(1-p,3);
+    betSetOff(els,dash*(1-eased));
+    if(p>=1){betSetOff(els,'0');clearInterval(betDrawTimer);}
+  },16);
+}
+const hookS1=(b,silent)=>{
+  document.querySelectorAll('#s1 .betdark .hl').forEach(h=>{const hb=+h.dataset.b;h.classList.toggle('show',hb===b);h.classList.toggle('gone',hb<b);});
+  if(b===0){
+    betSetTr(betFall,'none');betSetOff(betFall,'520');
+    betDraw(betRise,!silent,1000,1700);
+    clearInterval(betRetTimer);betret.textContent='100';
+  }
+  if(b===1){
+    clearInterval(betRetTimer);betret.textContent='100';
+    betSetTr(betFall,'none');betSetOff(betFall,'520');
+  }
+  if(b===2){
+    betDraw(betFall,!silent,520,1900);
+    if(!silent){betTweenRet(100,64,1900);}else{clearInterval(betRetTimer);betret.textContent='64';}
+  }
 };
 const hookS2=(b)=>{const h=document.getElementById('s2').querySelector('[data-h="0"]');
   if(b===0)h.textContent='We designed four cohorts across five axes.';
@@ -1211,8 +1426,54 @@ const hookS5=(b)=>{const s5=document.getElementById('s5');
   s5.querySelectorAll('.hswap').forEach(x=>x.classList.toggle('show',+x.dataset.h===b));
   s5.querySelectorAll('.shipbeat').forEach(x=>x.classList.toggle('show',+x.dataset.sb===b));};
 const noop=()=>{};
-const sceneHooks=[noop,hookS1,noop,noop,hookS2,noop,hookS3,noop,hookS5,noop,noop];
-const IDX={s1:1,s2:4,s3:6,s5:8,s4:10};
+const SEQ_SLOOP=[
+  {k:'discover',t:'Discover',d:'Uncover real problems by talking to users. Every project starts here, before any solution.'},
+  {k:'explore', t:'Explore', d:'Turn problems into testable ideas, and put them in front of the people who would live with them.'},
+  {k:'ship',    t:'Ship',    d:'Build what earns its place. The ideas that survive move into the product.'}
+];
+let sloopTokTimer=0,sloopCapTimer=0;
+let sloopIntroInterval=0;
+function hookSloop(b,silent){
+  const tok=document.getElementById('tok'),stage=document.getElementById('stage');
+  const nodes=[...document.querySelectorAll('#sloop .lnode')];
+  const s=SEQ_SLOOP[b];if(!s)return;
+  // beat 0 is only ever reached fresh (via forward nav into the scene) or via prev(), which is
+  // always silent already — never animate the token arriving at beat 0, or it visibly sweeps
+  // backward from wherever it last sat (e.g. Ship) instead of just resting at Discover.
+  const freshEntry=(b===0&&!silent);
+  if(b===0)silent=true;
+  clearInterval(sloopIntroInterval);
+  tok.style.transition=silent?'none':'transform .8s var(--ease), opacity .35s var(--ease)';
+  tok.style.transform='rotate('+(b*120)+'deg)';
+  clearTimeout(sloopTokTimer);
+  if(silent){tok.style.opacity='0';}
+  else{tok.style.opacity='1';sloopTokTimer=setTimeout(()=>{tok.style.opacity='0';},820);}
+  nodes.forEach(n=>n.classList.toggle('on',n.dataset.k===s.k));
+  [...document.querySelectorAll('#beatdots i')].forEach((d,i)=>d.classList.toggle('on',i===b));
+  clearTimeout(sloopCapTimer);
+  if(silent){stage.innerHTML='<div class="t">'+s.t+'</div><div class="d">'+s.d+'</div>';}
+  else{stage.classList.add('swap');
+    sloopCapTimer=setTimeout(()=>{stage.innerHTML='<div class="t">'+s.t+'</div><div class="d">'+s.d+'</div>';stage.classList.remove('swap');},170);}
+  if(freshEntry)playSloopIntro(tok);
+}
+/* landing on the slide: sweep the dot once around the whole loop, quickly, before it settles at rest.
+   Time-based JS tween (setInterval, not a CSS transition or rAF) so it still plays correctly even
+   if the tab is backgrounded — same pattern as the chart's introDraw() elsewhere in this deck. */
+function playSloopIntro(tok){
+  clearInterval(sloopIntroInterval);
+  tok.style.transition='none';
+  tok.style.opacity='1';
+  const dur=1100,fadeAt=850,t0=performance.now();
+  sloopIntroInterval=setInterval(()=>{
+    const t=performance.now()-t0,p=Math.min(1,t/dur);
+    const eased=1-Math.pow(1-p,3);
+    tok.style.transform='rotate('+(eased*360)+'deg)';
+    if(t>=fadeAt)tok.style.opacity=String(Math.max(0,1-(t-fadeAt)/(dur-fadeAt)));
+    if(p>=1){clearInterval(sloopIntroInterval);tok.style.transform='rotate(0deg)';tok.style.opacity='0';}
+  },16);
+}
+const sceneHooks=[noop,hookS1,hookSloop,noop,hookS2,noop,hookS3,noop,hookS5,noop,noop];
+const IDX={s1:1,sloop:2,s2:4,s3:6,s5:8,s4:10};
 
 /* ---------------- BEAT ENGINE ---------------- */
 let si=0,beat=0;
@@ -1238,7 +1499,7 @@ const THUMB_W=280;let THUMBS=[];
 const BEATCAP=[
   ['Cover'],
   ['Fifty million follow','Partners with OpenAI','Retention falls','Our role'],
-  ['The loop'],
+  ['Discover','Explore','Ship'],
   ['Phase 1 · Discover'],
   ['Four cohorts','Twenty who fit','Seven insights','Three themes','Three problems','The main insight'],
   ['Phase 2 · Explore'],
@@ -1291,7 +1552,7 @@ function updateChrome(){let total=0,cum=0;
   cum+=beat;
   const prog=document.getElementById('prog');
   if(prog){prog.style.width=(cum/Math.max(1,total-1)*100)+'%';
-    prog.classList.toggle('on-dark',DARK.has(si)||(si===IDX.s4&&beat===2));}
+    prog.classList.toggle('on-dark',DARK.has(si)||(si===IDX.s1&&beat<3)||(si===IDX.s4&&beat===2));}
   document.body.classList.toggle('bare',DARK.has(si));}
 function render(animate){const sc=scenes[si];
   if(si!==IDX.s1){clearInterval(cdTimer);clearInterval(introTimer);}
@@ -1345,6 +1606,20 @@ function phonePlaceholder(name){
    +'</div></div>';
 }
 function renderDetail(){
+  if(dKind==='cohort'){
+    const c=COHDEF[dIndex];
+    dleft.innerHTML='<div class="dkick">The discovery · Cohort profile</div>'
+      +'<h2 class="dtitle">'+c.who+'</h2>'
+      +'<p class="ddoes">'+c.u+' on '+c.os+', recruited from '+c.city.slice(0,2).join(' and ')+' and beyond.</p>'
+      +'<div class="dsub">Profession</div><ul class="dsaid">'+c.prof.map(x=>'<li>'+x+'</li>').join('')+'</ul>'
+      +'<div class="dsub">AI tools already in hand</div><ul class="dsaid">'+c.ai.map(x=>'<li>'+x+'</li>').join('')+'</ul>'
+      +'<div class="dsub">Cities</div><ul class="dsaid">'+c.city.map(x=>'<li>'+x+'</li>').join('')+'</ul>';
+    dright.innerHTML='<div class="dpwrap"><div class="dportrait"><img src="../../Assets/cohort-0'+(dIndex+1)+'-portrait.png" alt=""></div>'
+      +'<span class="cf-pill'+(c.u==='New user'?' new':'')+'"><span class="dot"></span>'+c.u.replace(' user','')+' · '+c.os+'</span></div>';
+    dcount.textContent='Cohort '+(dIndex+1)+' / '+COHDEF.length+'  ·  ← → to browse';
+    document.getElementById('dcrumb').innerHTML='The discovery · <b>Cohort '+(dIndex+1)+' of '+COHDEF.length+'</b>';
+    return;
+  }
   if(dKind==='pmf'){
     dleft.innerHTML='<div class="dkick">The discovery · Artifact</div>'
       +'<h2 class="dtitle">The feature check</h2>'
@@ -1404,7 +1679,7 @@ function openDetail(kind,i){killHint();dKind=kind;
   detail.classList.toggle('single',kind==='pmf');renderDetail();detail.classList.add('open');}
 function stepDetail(dir){if(dKind==='pmf')return;
   if(dKind==='ref'){dRefPos=(dRefPos+dir+dRefList.length)%dRefList.length;renderDetail();return;}
-  const n=dKind==='concept'?CONCEPTS.length:INSIGHTS.length;dIndex=(dIndex+dir+n)%n;renderDetail();}
+  const n=dKind==='cohort'?COHDEF.length:dKind==='concept'?CONCEPTS.length:INSIGHTS.length;dIndex=(dIndex+dir+n)%n;renderDetail();}
 document.getElementById('dprev').addEventListener('click',()=>stepDetail(-1));
 document.getElementById('dnext').addEventListener('click',()=>stepDetail(1));
 
@@ -1437,28 +1712,17 @@ document.getElementById('dclose').addEventListener('click',()=>detail.classList.
 /* page-turn zones: left 12vw goes back, the rest advances */
 document.addEventListener('click',e=>{
   if(anyOpen())return;
-  if(e.target.closest('a,button,iframe,.insight,.con,.bd,.mlink,.msub span,[data-go],.artifact,.shipshot,.lnode,#chrome,#hint'))return;
+  if(e.target.closest('a,button,iframe,.insight,.con,.bd,.mlink,.msub span,[data-go],.artifact,.shipshot,.lnode,.beatdots,.cohface,#chrome,#hint'))return;
   if(e.clientX<innerWidth*0.12)prev();else next();
 });
 
-/* the process loop — hover a phase to read what it holds */
+/* the process loop — beat dots + nodes jump straight to that phase */
 (function(){
-  const info={
-    discover:{t:'Discover',d:'Uncover real problems by talking to users. Every project starts here, before any solution gets proposed.'},
-    explore:{t:'Explore',d:'Turn problems into testable ideas, and put them in front of the people who would live with them.'},
-    ship:{t:'Ship',d:'Build what earns its place. The ideas that survive move into the product, and what we learn there starts the loop again.'}
-  };
-  const DEF={t:'Why it loops',d:'The loop closes where it started. What we learn from the live product feeds the next round of discovery, so each pass starts smarter than the last.'};
-  const lt=document.getElementById('loopt'),ld=document.getElementById('loopd');
-  if(!lt)return;
   const nodes=[...document.querySelectorAll('#sloop .lnode')];
-  function set(k){const v=k?info[k]:DEF;lt.textContent=v.t;ld.textContent=v.d;
-    nodes.forEach(n=>n.classList.toggle('on',n.dataset.k===k));}
-  nodes.forEach(n=>{
-    n.addEventListener('mouseenter',()=>set(n.dataset.k));
-    n.addEventListener('mouseleave',()=>set(null));
-    n.addEventListener('click',e=>{e.stopPropagation();set(n.dataset.k);});
-  });
+  const dots=[...document.querySelectorAll('#beatdots i')];
+  const KEYS=['discover','explore','ship'];
+  dots.forEach((d,i)=>d.addEventListener('click',e=>{e.stopPropagation();goTo(IDX.sloop,i);}));
+  nodes.forEach(n=>n.addEventListener('click',e=>{e.stopPropagation();goTo(IDX.sloop,KEYS.indexOf(n.dataset.k));}));
 })();
 
 /* ---------------- CURTAIN TRANSITIONS ---------------- */
@@ -1477,7 +1741,7 @@ if(matchMedia('(pointer:fine)').matches){
   addEventListener('mousemove',e=>{
     mx=e.clientX;my=e.clientY;
     if(!shown){shown=true;cx=mx;cy=my;cur.classList.add('on');}
-    const hot=e.target.closest('a,button,.insight,.con,.bd,.mlink,.msub span,[data-go],.artifact,.shipshot,.lnode');
+    const hot=e.target.closest('a,button,.insight,.con,.bd,.mlink,.msub span,[data-go],.artifact,.shipshot,.lnode,.beatdots,.cohface');
     cur.classList.toggle('hot',!!hot);
     let g='';
     if(!hot&&!anyOpen()){
@@ -1520,7 +1784,7 @@ let tx=null;
 addEventListener('touchstart',e=>tx=e.touches[0].clientX,{passive:true});
 addEventListener('touchend',e=>{if(tx===null||anyOpen())return;const dx=e.changedTouches[0].clientX-tx;if(Math.abs(dx)>55)dx<0?next():prev();tx=null;},{passive:true});
 let rzT=null;
-addEventListener('resize',()=>{if(si===IDX.s3)layout(beat>=2?SORTED:ORDER0);if(si===IDX.s1&&beat>=1)placeMarks();
+addEventListener('resize',()=>{if(si===IDX.s3)layout(beat>=2?SORTED:ORDER0);
   if(detail.classList.contains('open'))fitProto();
   hidePreview();clearTimeout(rzT);rzT=setTimeout(precomputeThumbs,250);});
 setTimeout(killHint,8000);
