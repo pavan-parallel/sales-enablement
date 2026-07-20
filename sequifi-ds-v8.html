@@ -814,9 +814,10 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f);
 #people .ptraits li::before{content:"";position:absolute;left:0;top:11px;width:7px;height:7px;border-radius:50%;background:var(--line2)}
 #people .ppay{margin-top:auto;padding-top:24px;font-size:clamp(16px,1.4vw,20px);line-height:1.4;color:var(--ink);font-weight:500}
 #weight{justify-content:center}
-#weight .wstack{display:flex;flex-direction:column;gap:3vh}
-#weight .wl{font-weight:500;font-size:clamp(24px,2.6vw,42px);line-height:1.08;letter-spacing:-.022em;color:var(--mut);max-width:22ch}
-#weight .wl.big{color:var(--ink);font-size:clamp(30px,3.4vw,54px);max-width:20ch}
+#weight .w3{display:grid;grid-template-columns:repeat(3,1fr);gap:3.6vw;align-items:start}
+#weight .w3 .c{display:flex;flex-direction:column;gap:18px}
+#weight .w3 .cn{font-size:14px;font-weight:600;color:var(--indigo);font-variant-numeric:tabular-nums;letter-spacing:.02em}
+#weight .w3 .ct{font-weight:500;font-size:clamp(21px,2vw,30px);line-height:1.2;letter-spacing:-.018em}
 #prin .plist{display:flex;flex-direction:column;margin-top:3vh}
 #prin .prow{display:grid;grid-template-columns:auto 1fr;gap:26px;align-items:baseline;padding:2.8vh 0;border-top:1px solid var(--line)}
 #prin .pn{font-size:clamp(20px,1.8vw,28px);font-weight:500;color:var(--indigo)}
@@ -913,10 +914,10 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f);
 <!-- 06 THE WEIGHT -->
 <section class="slide" id="weight">
   <div class="rl">The brief</div><div class="rr">Sequifi × Parallel</div>
-  <div class="wstack">
-    <div class="wl">A single admin runs pay for hundreds of reps, every week.</div>
-    <div class="wl">They stare at the tool five or six hours a day.</div>
-    <div class="wl big">One small mistake means reps get paid wrong, and the reps who get paid wrong leave.</div>
+  <div class="w3">
+    <div class="c"><div class="cn">01</div><div class="ct">A single admin runs pay for hundreds of reps, every week.</div></div>
+    <div class="c"><div class="cn">02</div><div class="ct">They stare at the tool five or six hours a day.</div></div>
+    <div class="c"><div class="cn">03</div><div class="ct">One small mistake means reps get paid wrong, and the reps who get paid wrong leave.</div></div>
   </div>
 </section>
 
