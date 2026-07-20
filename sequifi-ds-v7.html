@@ -1,0 +1,1772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<title>Sequifi × Parallel · Sequoia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<!--
+  sequifi-ds-v7.html · from-scratch motion-driven retelling of the Sequoia story.
+  Engine: (si, beat) scene/beat state machine (healthify-v9 pattern). One idea drives
+  the art direction: order out of chaos. Act 1 motion = entropy (screens pile, threads
+  tangle, reps drain). Act 2-3 motion = assembly (colour drains to mono then lands on
+  the action; the system literally builds itself out of live HTML on Sequoia tokens).
+  Act 4 = real before/after wipes. Gotchas honoured: no getTotalLength (fixed
+  dasharray), setInterval tweens (backgrounded-tab safe), seeded scatter, no-cache
+  meta + onerror banner for file:// review.
+-->
+<style>
+:root{
+  --bg:#FFFFFF; --ink:#17161A; --mut:#55565C; --lab:#8A8B92;
+  --line:rgba(20,19,24,.10); --line2:rgba(20,19,24,.18); --line3:rgba(20,19,24,.32);
+  --dark:#000; --dmut:#8B8B92; --dline:rgba(255,255,255,.14);
+  --indigo:#4E61D6; --indigo-lt:#7E8DF4; --soft:#ECEEFB; --err:#8E0B16; --red:#B4442F;
+  --fd:'Hanken Grotesk',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  --mx:6.2vw;
+  --ease:cubic-bezier(.22,.7,.16,1);
+  --spring:cubic-bezier(.3,1.15,.35,1);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden}
+body{background:var(--bg);color:var(--ink);font-family:var(--fd);
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+#errband{position:fixed;top:0;left:0;right:0;z-index:999;background:#8E0B16;color:#fff;
+  font:600 13px/1.4 var(--fd);padding:8px 14px;display:none}
+
+/* ============ scenes ============ */
+.scene{position:absolute;inset:0;opacity:0;visibility:hidden;pointer-events:none;
+  transition:opacity .45s ease,visibility 0s .45s;overflow:hidden;background:var(--bg)}
+.scene.active{opacity:1;visibility:visible;pointer-events:auto;transition:opacity .45s ease}
+.scene.dark{background:var(--dark);color:#F4F5F3}
+
+/* headline grammar: one enormous idea per scene */
+.hl{font-family:var(--fd);font-weight:500;letter-spacing:-.03em;line-height:1.06;text-wrap:balance}
+.hl b{font-weight:500;color:var(--indigo)}
+.sub{font-weight:400;color:var(--mut);letter-spacing:-.012em;line-height:1.5}
+.k{font-variant-numeric:tabular-nums}
+
+/* beat reveal primitives */
+.rv{opacity:0;transform:translateY(16px);transition:opacity .55s ease,transform .6s var(--ease)}
+.on>.rv,.rv.on{opacity:1;transform:none}
+
+/* ============ chrome ============ */
+#prog{position:fixed;top:0;left:0;height:2px;background:var(--indigo);z-index:80;width:0;
+  transition:width .5s var(--ease)}
+#rl,#rr{position:fixed;top:5.2vh;z-index:70;font-size:13.5px;font-weight:500;color:var(--lab);
+  letter-spacing:-.005em;transition:opacity .4s}
+#rl{left:var(--mx)} #rr{right:var(--mx)}
+#pgno{position:fixed;left:var(--mx);bottom:5vh;z-index:70;font-size:13px;font-weight:500;
+  color:var(--lab);letter-spacing:.01em;transition:opacity .4s}
+#navb{position:fixed;right:var(--mx);bottom:4.2vh;z-index:70;display:flex;gap:9px;transition:opacity .4s}
+#navb button{width:40px;height:40px;border-radius:50%;border:1px solid var(--line2);
+  background:rgba(255,255,255,.7);backdrop-filter:blur(8px);color:var(--ink);font-size:15px;
+  cursor:pointer;transition:border-color .2s,transform .15s}
+#navb button:hover{border-color:var(--line3)}
+#navb button:active{transform:scale(.94)}
+body.chrome-dark #rl,body.chrome-dark #rr,body.chrome-dark #pgno{color:rgba(244,245,243,.45)}
+body.chrome-dark #navb button{background:rgba(255,255,255,.06);border-color:var(--dline);color:#F4F5F3}
+body.bare #rl,body.bare #rr,body.bare #pgno,body.bare #navb{opacity:0;pointer-events:none}
+#hintc{position:fixed;left:50%;bottom:5vh;transform:translateX(-50%);z-index:70;font-size:12.5px;
+  color:var(--lab);opacity:0;transition:opacity .4s}
+body.chrome-dark #hintc{color:rgba(244,245,243,.4)}
+
+/* contents overlay */
+#menu{position:fixed;inset:0;z-index:90;background:rgba(8,8,10,.97);color:#F4F5F3;
+  display:flex;flex-direction:column;justify-content:center;padding:0 var(--mx);
+  opacity:0;visibility:hidden;transition:opacity .35s ease,visibility 0s .35s}
+#menu.open{opacity:1;visibility:visible;transition:opacity .35s ease}
+#menu .mtag{font-size:13.5px;color:rgba(244,245,243,.45);margin-bottom:4vh}
+#menu .mrow{display:flex;align-items:baseline;gap:2.2vw;padding:2.1vh 0;border-top:1px solid rgba(255,255,255,.12);
+  cursor:pointer;transition:padding-left .25s var(--ease)}
+#menu .mrow:hover{padding-left:1vw}
+#menu .mrow:last-of-type{border-bottom:1px solid rgba(255,255,255,.12)}
+#menu .mrow .n{font-size:14px;color:var(--indigo-lt);width:2ch;font-weight:600}
+#menu .mrow .t{font-weight:500;font-size:clamp(22px,2.6vw,38px);letter-spacing:-.02em}
+#menu .mrow .d{margin-left:auto;font-size:13.5px;color:rgba(244,245,243,.4)}
+#menu .mclose{position:absolute;top:5vh;right:var(--mx);font-size:13.5px;color:rgba(244,245,243,.55);cursor:pointer}
+
+/* =========================================================== 0 · COVER */
+#sc-cover .frag{position:absolute;border:1px solid #232329;border-radius:4px;background:#0A0A0C;
+  transition:transform 1.6s var(--ease),opacity 1.2s ease,border-color .8s ease,
+    width 1.6s var(--ease),height 1.6s var(--ease)}
+#sc-cover .frag.key{background:var(--indigo);border-color:var(--indigo)}
+#sc-cover .cwrap{position:absolute;left:var(--mx);top:50%;transform:translateY(-54%);z-index:5;max-width:56vw}
+#sc-cover .ctag{font-size:15px;font-weight:500;color:rgba(244,245,243,.55);letter-spacing:-.005em;
+  opacity:0;transition:opacity .8s ease .9s}
+#sc-cover.active .ctag{opacity:1}
+#sc-cover h1{font-weight:600;font-size:clamp(80px,11.5vw,178px);letter-spacing:-.05em;line-height:.92;
+  color:#F4F5F3;opacity:0;transform:translateY(26px);transition:opacity .9s ease .25s,transform 1s var(--ease) .25s}
+#sc-cover.active h1{opacity:1;transform:none}
+#sc-cover .csub{margin-top:3.4vh;font-weight:400;font-size:clamp(19px,1.75vw,26px);line-height:1.45;
+  letter-spacing:-.015em;color:rgba(244,245,243,.82);max-width:44ch;
+  opacity:0;transform:translateY(16px);transition:opacity .8s ease .65s,transform .9s var(--ease) .65s}
+#sc-cover.active .csub{opacity:1;transform:none}
+#sc-cover .begin{margin-top:5.5vh;display:inline-flex;align-items:center;gap:8px;
+  font:600 15px/1 var(--fd);color:#0A0A0C;background:#F4F5F3;border:0;border-radius:100px;
+  padding:16px 30px;cursor:pointer;opacity:0;transform:translateY(14px);
+  transition:opacity .7s ease 1.15s,transform .8s var(--ease) 1.15s}
+#sc-cover.active .begin{opacity:1;transform:none}
+#sc-cover .cfoot{position:absolute;left:var(--mx);bottom:5vh;font-size:13.5px;color:rgba(244,245,243,.45);
+  opacity:0;transition:opacity .8s ease 1.4s}
+#sc-cover.active .cfoot{opacity:1}
+
+/* =========================================================== 1 · CONTENTS */
+#sc-toc .wrap{position:absolute;left:var(--mx);right:var(--mx);top:50%;transform:translateY(-50%);
+  display:grid;grid-template-columns:1fr 1.15fr;gap:5vw;align-items:center}
+#sc-toc .hl{font-size:clamp(44px,5vw,82px)}
+#sc-toc .rows{max-width:560px;width:100%}
+#sc-toc .trow{display:flex;align-items:center;gap:20px;padding:2.5vh 0;border-top:1px solid var(--line);
+  opacity:0;transform:translateY(14px)}
+#sc-toc .trow:last-child{border-bottom:1px solid var(--line)}
+#sc-toc.active .trow{animation:tocin .6s var(--ease) forwards}
+#sc-toc.active .trow:nth-child(1){animation-delay:.20s}
+#sc-toc.active .trow:nth-child(2){animation-delay:.32s}
+#sc-toc.active .trow:nth-child(3){animation-delay:.44s}
+#sc-toc.active .trow:nth-child(4){animation-delay:.56s}
+#sc-toc.active .trow:nth-child(5){animation-delay:.68s}
+@keyframes tocin{to{opacity:1;transform:none}}
+#sc-toc .cnum{flex:none;width:32px;height:32px;position:relative;display:inline-flex;
+  align-items:center;justify-content:center;font-size:13.5px;font-weight:600;color:var(--ink)}
+#sc-toc .cnum svg{position:absolute;inset:0}
+#sc-toc .cnum circle{fill:none;stroke:var(--ink);stroke-width:1.5;opacity:.75;
+  stroke-dasharray:98;stroke-dashoffset:98}
+#sc-toc.active .cnum circle{animation:circdraw .7s var(--ease) forwards}
+#sc-toc.active .trow:nth-child(1) circle{animation-delay:.30s}
+#sc-toc.active .trow:nth-child(2) circle{animation-delay:.42s}
+#sc-toc.active .trow:nth-child(3) circle{animation-delay:.54s}
+#sc-toc.active .trow:nth-child(4) circle{animation-delay:.66s}
+#sc-toc.active .trow:nth-child(5) circle{animation-delay:.78s}
+@keyframes circdraw{to{stroke-dashoffset:0}}
+#sc-toc .tt{font-weight:500;font-size:clamp(17px,1.6vw,23px);letter-spacing:-.015em;line-height:1.25}
+#sc-toc .tt small{display:block;font-size:.72em;font-weight:400;color:var(--mut);margin-top:2px}
+
+/* =========================================================== 2 · WHAT SEQUIFI IS */
+#sc-what .hl{position:absolute;left:var(--mx);top:16vh;font-size:clamp(38px,4.4vw,72px);max-width:16ch;z-index:3}
+#sc-what .shot{position:absolute;left:50%;transform:translateX(-50%);top:44vh;width:min(62vw,980px);
+  border-radius:14px 14px 0 0;border:1px solid var(--line2);border-bottom:0;overflow:hidden;
+  box-shadow:0 -30px 80px -40px rgba(20,19,24,.35);opacity:0;transform:translateX(-50%) translateY(70px)}
+#sc-what.b1 .shot{animation:shotrise 1.1s var(--ease) forwards}
+@keyframes shotrise{to{opacity:1;transform:translateX(-50%) translateY(0)}}
+#sc-what .shot img{display:block;width:100%}
+
+/* =========================================================== 3 · INDUSTRIES */
+#sc-ind .hl{position:absolute;left:var(--mx);top:16vh;font-size:clamp(36px,4.2vw,68px);max-width:20ch}
+#sc-ind .grid{position:absolute;left:var(--mx);right:var(--mx);bottom:16vh;display:grid;
+  grid-template-columns:repeat(4,1fr);gap:3.5vh 3vw}
+#sc-ind .cell{border-top:1px solid var(--line);padding-top:2vh;opacity:0;transform:translateY(18px)}
+#sc-ind.b1 .cell{animation:tocin .55s var(--ease) forwards}
+#sc-ind .cell i{display:block;font-style:normal;font-size:12.5px;color:var(--lab);margin-bottom:1vh}
+#sc-ind .cell span{font-weight:500;font-size:clamp(22px,2.3vw,36px);letter-spacing:-.02em}
+#sc-ind .cell.core i{color:var(--indigo)}
+#sc-ind .cell.core span{color:var(--indigo)}
+
+/* =========================================================== 4 · TWO PEOPLE */
+#sc-people .hl{position:absolute;left:var(--mx);top:13vh;font-size:clamp(34px,3.8vw,60px);max-width:24ch}
+#sc-people .cols{position:absolute;left:var(--mx);right:var(--mx);top:33vh;bottom:12vh;
+  display:grid;grid-template-columns:1fr 1fr;gap:4vw}
+#sc-people .col{border-top:2px solid var(--ink);padding-top:2.4vh;opacity:0;transform:translateY(26px);
+  transition:opacity .6s ease,transform .7s var(--ease)}
+#sc-people.b1 .col.a,#sc-people.b2 .col.b{opacity:1;transform:none}
+#sc-people .who{font-weight:600;font-size:clamp(20px,1.9vw,28px);letter-spacing:-.018em}
+#sc-people .who small{font-weight:400;color:var(--mut);margin-left:10px;font-size:.72em}
+#sc-people .pt{margin-top:2vh;display:flex;gap:14px;font-size:clamp(14.5px,1.15vw,17.5px);color:var(--mut);line-height:1.5;max-width:46ch}
+#sc-people .pt b{color:var(--ink);font-weight:600}
+#sc-people .pt i{font-style:normal;flex:none;color:var(--lab);font-size:.86em;padding-top:2px}
+#sc-people .kick{margin-top:3vh;font-weight:500;font-size:clamp(16px,1.35vw,20px);color:var(--ink);
+  line-height:1.4;max-width:40ch;opacity:0;transform:translateY(12px);transition:opacity .6s ease,transform .6s var(--ease)}
+#sc-people.b3 .kick{opacity:1;transform:none}
+#sc-people .kick em{font-style:normal;color:var(--indigo)}
+
+/* =========================================================== 5 · THE LOAD (dot field) */
+#sc-load .hl{position:absolute;left:var(--mx);top:13vh;font-size:clamp(34px,3.9vw,62px);max-width:22ch}
+#sc-load .sub2{position:absolute;left:var(--mx);top:calc(12vh + clamp(150px,15.5vw,225px));max-width:44ch;
+  font-size:clamp(15px,1.3vw,19px);opacity:0;transform:translateY(10px);transition:all .55s var(--ease)}
+#sc-load.b1 .s1{opacity:1;transform:none}
+#sc-load .sub2 .warn{color:var(--ink);font-weight:500;display:block;margin-top:.6vh;
+  opacity:0;transition:opacity .55s ease}
+#sc-load.b2 .warn{opacity:1}
+#sc-load .field{position:absolute;left:var(--mx);right:var(--mx);top:46vh;bottom:10vh}
+#sc-load .admin{position:absolute;left:6%;top:44%;width:18px;height:18px;border-radius:50%;
+  background:var(--indigo)}
+#sc-load .admin::after{content:"the admin";position:absolute;top:46px;left:50%;transform:translateX(-50%);
+  font-size:12.5px;color:var(--lab);white-space:nowrap}
+#sc-load .ring{position:absolute;left:calc(6% + 9px);top:calc(44% + 9px);width:74px;height:74px;
+  transform:translate(-50%,-50%)}
+#sc-load .ring circle{fill:none;stroke:var(--soft);stroke-width:3}
+#sc-load .ring .arc{stroke:var(--indigo);stroke-dasharray:220;stroke-dashoffset:220;
+  transform:rotate(-90deg);transform-origin:center}
+#sc-load.b1 .ring .arc{transition:stroke-dashoffset 1.6s var(--ease);stroke-dashoffset:66}
+#sc-load .hrs{position:absolute;left:6%;top:20%;font-size:12.5px;color:var(--indigo);font-weight:600;
+  opacity:0;transition:opacity .5s ease .7s;white-space:nowrap;transform:translateX(-38%)}
+#sc-load.b1 .hrs{opacity:1}
+#sc-load .rep{position:absolute;width:5px;height:5px;border-radius:50%;background:var(--ink);
+  opacity:.62;transition:transform 1s var(--ease),opacity .7s ease,background .4s ease}
+#sc-load .rep.gone{background:var(--red);opacity:0}
+#sc-load .rep.red{background:var(--red);opacity:1}
+
+/* =========================================================== 6 · PILE UP */
+#sc-pile .hl{position:absolute;left:var(--mx);top:13vh;font-size:clamp(36px,4.2vw,68px);max-width:18ch;z-index:6}
+#sc-pile .sub{position:absolute;left:var(--mx);top:calc(13vh + clamp(100px,12vw,170px));z-index:6;
+  font-size:clamp(15px,1.3vw,19px);max-width:34ch}
+#sc-pile .stack{position:absolute;right:4vw;top:20vh;width:52vw;height:70vh;z-index:2}
+#sc-pile .card{position:absolute;width:78%;border-radius:10px;border:1px solid var(--line2);
+  overflow:hidden;box-shadow:0 30px 70px -30px rgba(20,19,24,.45);
+  opacity:0;transform:translateY(-60vh) rotate(0deg)}
+#sc-pile .card img{display:block;width:100%}
+#sc-pile .card.land{transition:transform .9s cubic-bezier(.3,.9,.4,1),opacity .3s ease;opacity:1}
+
+/* =========================================================== 7 · INCONSISTENT COMPONENTS */
+#sc-comp .hl{position:absolute;left:var(--mx);top:13vh;font-size:clamp(34px,3.9vw,62px);max-width:20ch}
+#sc-comp .sub{position:absolute;left:var(--mx);top:calc(13vh + clamp(92px,11vw,160px));max-width:44ch;
+  font-size:clamp(15px,1.3vw,19px)}
+#sc-comp .wall{position:absolute;left:var(--mx);right:var(--mx);top:44vh;display:grid;
+  grid-template-columns:repeat(6,1fr);gap:2.6vh 2vw;align-items:center}
+#sc-comp .wb{justify-self:center;font-family:var(--fd);cursor:default;white-space:nowrap;
+  opacity:0;transform:scale(.7);transition:opacity .4s ease,transform .5s var(--spring)}
+#sc-comp.b1 .wb{opacity:1;transform:none}
+#sc-comp .cap{position:absolute;left:var(--mx);bottom:12vh;font-size:13.5px;color:var(--lab);
+  opacity:0;transition:opacity .5s ease}
+#sc-comp.b2 .cap{opacity:1}
+#sc-comp .cap b{color:var(--mut);font-weight:600}
+
+/* =========================================================== 8 · NO HIERARCHY */
+#sc-hier .hl{position:absolute;left:var(--mx);top:13vh;font-size:clamp(34px,3.9vw,62px);max-width:18ch;z-index:4}
+#sc-hier .sub{position:absolute;left:var(--mx);top:calc(13vh + clamp(92px,11vw,160px));max-width:38ch;
+  font-size:clamp(15px,1.3vw,19px);z-index:4}
+#sc-hier .panel{position:absolute;right:var(--mx);top:20vh;width:44vw;border:1px solid var(--line2);
+  border-radius:12px;padding:2.4vh 2vw;background:#fff;box-shadow:0 26px 60px -34px rgba(20,19,24,.35)}
+#sc-hier .ln{font-weight:700;font-size:clamp(13px,1.05vw,16px);letter-spacing:0;line-height:1.5;
+  text-transform:none;padding:1vh 0;border-bottom:1px solid var(--line)}
+#sc-hier .ln:last-child{border-bottom:0}
+#sc-hier .ln span{position:relative;display:inline-block}
+#sc-hier .miss span::after{content:"";position:absolute;inset:-6px -10px;border:1.5px solid var(--err);
+  border-radius:6px;opacity:0;transform:scale(1.3);transition:opacity .5s ease,transform .6s var(--ease)}
+#sc-hier.b1 .miss span::after{opacity:1;transform:none}
+#sc-hier .misscap{position:absolute;left:var(--mx);bottom:12vh;max-width:36ch;font-size:13.5px;color:var(--err);
+  opacity:0;transition:opacity .5s ease .3s}
+#sc-hier.b1 .misscap{opacity:1}
+
+/* =========================================================== 9 · TANGLED NAV */
+#sc-nav .hl{position:absolute;left:var(--mx);top:13vh;font-size:clamp(34px,3.9vw,62px);max-width:18ch;z-index:5}
+#sc-nav .sub{position:absolute;left:var(--mx);top:calc(13vh + clamp(92px,11vw,160px));max-width:36ch;
+  font-size:clamp(15px,1.3vw,19px);z-index:5}
+#sc-nav .maze{position:absolute;right:var(--mx);top:16vh;width:48vw;height:72vh}
+#sc-nav .wf{position:absolute;width:34%;aspect-ratio:16/11;border:1px solid var(--line2);border-radius:8px;
+  background:#fff;box-shadow:0 16px 40px -24px rgba(20,19,24,.3);padding:8px}
+#sc-nav .wf i{display:block;height:7px;border-radius:3px;background:var(--line);margin-bottom:5px;font-style:normal}
+#sc-nav .wf i:first-child{width:44%;background:var(--line2)}
+#sc-nav .wf b{position:absolute;left:8px;bottom:6px;font-size:10.5px;color:var(--lab);font-weight:500}
+#sc-nav svg{position:absolute;inset:0;overflow:visible}
+#sc-nav .thread{fill:none;stroke:var(--red);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;
+  stroke-dasharray:3000;stroke-dashoffset:3000}
+#sc-nav.active .thread{transition:stroke-dashoffset 3.2s cubic-bezier(.5,.1,.5,.9) .5s;stroke-dashoffset:0}
+#sc-nav .qm{position:absolute;font-weight:600;font-size:22px;color:var(--red);opacity:0;
+  transition:opacity .5s ease 3.4s}
+#sc-nav.active .qm{opacity:1}
+
+/* =========================================================== 10 · FALLBACK (dark) */
+#sc-fall .hl{position:absolute;left:var(--mx);top:14vh;font-size:clamp(36px,4.2vw,66px);max-width:20ch;z-index:5;color:#F4F5F3}
+#sc-fall .hl small{display:block;font-size:.52em;font-weight:400;color:rgba(244,245,243,.6);margin-top:2vh;letter-spacing:-.015em}
+#sc-fall .sheet{position:absolute;left:var(--mx);right:var(--mx);bottom:0;top:46vh;
+  border:1px solid rgba(255,255,255,.14);border-bottom:0;border-radius:12px 12px 0 0;overflow:hidden;
+  background:#0C0C0E;transform:translateY(105%);transition:transform 1.1s var(--ease)}
+#sc-fall.b1 .sheet{transform:none}
+#sc-fall .sheet .row{display:grid;grid-template-columns:52px repeat(6,1fr);border-bottom:1px solid rgba(255,255,255,.07)}
+#sc-fall .sheet .cell{padding:1.15vh .8vw;font-size:12px;color:rgba(244,245,243,.5);border-right:1px solid rgba(255,255,255,.07);
+  white-space:nowrap;overflow:hidden}
+#sc-fall .sheet .hd .cell{color:rgba(244,245,243,.75);font-weight:600;background:rgba(255,255,255,.04)}
+#sc-fall .churn{position:absolute;right:var(--mx);top:16vh;z-index:5;text-align:right;
+  font-size:clamp(15px,1.3vw,19px);color:rgba(244,245,243,.6);opacity:0;transition:opacity .6s ease .5s}
+#sc-fall.b1 .churn{opacity:1}
+#sc-fall .churn b{color:#E0654F;font-weight:600}
+#sc-fall .drop{position:absolute;width:5px;height:5px;border-radius:50%;background:#E0654F;z-index:4;
+  opacity:0}
+#sc-fall.b1 .drop{animation:falldrop 1.6s ease-in forwards}
+@keyframes falldrop{0%{opacity:.9;transform:translateY(0)}100%{opacity:0;transform:translateY(46vh)}}
+
+/* =========================================================== 11 · PMF */
+#sc-pmf .wrap{position:absolute;left:var(--mx);right:var(--mx);top:50%;transform:translateY(-50%)}
+#sc-pmf .hl{font-size:clamp(44px,5.2vw,86px);max-width:18ch}
+#sc-pmf .l2{margin-top:3.5vh;font-weight:500;font-size:clamp(26px,2.9vw,48px);letter-spacing:-.025em;
+  color:var(--lab);max-width:22ch;line-height:1.15;
+  opacity:0;transform:translateY(16px);transition:all .7s var(--ease)}
+#sc-pmf.b1 .l2{opacity:1;transform:none}
+#sc-pmf.b1 .l2 em{font-style:normal;color:var(--indigo)}
+
+/* =========================================================== 12 · THREE ASKS */
+#sc-asks .wrap{position:absolute;left:var(--mx);right:var(--mx);top:50%;transform:translateY(-50%);
+  display:grid;grid-template-columns:1fr 1.2fr;gap:5vw;align-items:center}
+#sc-asks .hl{font-size:clamp(40px,4.6vw,76px);max-width:14ch}
+#sc-asks .rows{max-width:620px}
+#sc-asks .arow{display:flex;gap:22px;align-items:baseline;padding:3vh 0;border-top:1px solid var(--line);
+  opacity:0;transform:translateY(16px);transition:all .6s var(--ease)}
+#sc-asks .arow:last-child{border-bottom:1px solid var(--line)}
+#sc-asks.b0 .arow.r1,#sc-asks.b1 .arow.r2,#sc-asks.b2 .arow.r3{opacity:1;transform:none}
+#sc-asks .an{flex:none;font-size:14px;font-weight:600;color:var(--indigo)}
+#sc-asks .at{font-weight:500;font-size:clamp(19px,1.8vw,27px);letter-spacing:-.018em;line-height:1.3}
+#sc-asks .at small{display:block;font-weight:400;font-size:.68em;color:var(--mut);margin-top:.6vh}
+
+/* =========================================================== dividers (shared) */
+.divider .dwrap{position:absolute;left:var(--mx);right:var(--mx);top:50%;transform:translateY(-50%)}
+.divider .dk{font-size:14px;font-weight:500;color:rgba(244,245,243,.45);margin-bottom:3vh;
+  opacity:0;transition:opacity .7s ease .2s}
+.divider.active .dk{opacity:1}
+.divider h2{font-weight:500;font-size:clamp(64px,9vw,150px);letter-spacing:-.045em;line-height:.98;color:#F4F5F3;
+  opacity:0;transform:translateY(30px);transition:opacity .8s ease .35s,transform .9s var(--ease) .35s}
+.divider.active h2{opacity:1;transform:none}
+.divider .dsub{margin-top:3vh;font-size:clamp(17px,1.55vw,24px);font-weight:400;color:rgba(244,245,243,.62);
+  max-width:44ch;line-height:1.45;letter-spacing:-.012em;
+  opacity:0;transform:translateY(14px);transition:opacity .8s ease .7s,transform .8s var(--ease) .7s}
+.divider.active .dsub{opacity:1;transform:none}
+.divider .dline{position:absolute;left:var(--mx);right:var(--mx);top:32vh;height:1px}
+.divider .dline i{display:block;height:1px;background:var(--indigo);width:0;transition:width 1.3s var(--ease) .15s}
+.divider.active .dline i{width:100%}
+.divider .dfoot{position:absolute;left:var(--mx);bottom:5vh;font-size:13.5px;color:rgba(244,245,243,.4)}
+.divider .dfoot b{color:rgba(244,245,243,.6);font-weight:500}
+</style>
+</head>
+<body>
+<div id="errband"></div>
+<div id="prog"></div>
+<span id="rl"></span><span id="rr"></span>
+<span id="pgno"></span>
+<div id="navb"><button id="bPrev" aria-label="Back">←</button><button id="bNext" aria-label="Next">→</button></div>
+<span id="hintc">press C for contents</span>
+
+<!-- ============ 0 · COVER ============ -->
+<section class="scene dark bare" id="sc-cover" data-beats="0">
+  <div class="frags" id="coverFrags"></div>
+  <div class="cwrap">
+    <div class="ctag">Sequifi × Parallel</div>
+    <h1>Sequifi</h1>
+    <p class="csub">Building a visual language and a design system for HR and payroll software.</p>
+    <button class="begin" id="beginBtn">Begin the story <span>→</span></button>
+  </div>
+  <div class="cfoot">A Parallel case study</div>
+</section>
+
+<!-- ============ 1 · CONTENTS ============ -->
+<section class="scene" id="sc-toc" data-beats="0" data-rl="What's inside" data-rr="Sequifi × Parallel">
+  <div class="wrap">
+    <h2 class="hl">What's inside</h2>
+    <div class="rows">
+      <div class="trow"><span class="cnum"><svg viewBox="0 0 32 32"><circle cx="16" cy="16" r="15.2"/></svg>1</span>
+        <span class="tt">The brief<small>HR and payroll, and why adoption slipped.</small></span></div>
+      <div class="trow"><span class="cnum"><svg viewBox="0 0 32 32"><circle cx="16" cy="16" r="15.2"/></svg>2</span>
+        <span class="tt">New visual language<small>Finding what Sequifi should look like.</small></span></div>
+      <div class="trow"><span class="cnum"><svg viewBox="0 0 32 32"><circle cx="16" cy="16" r="15.2"/></svg>3</span>
+        <span class="tt">Meet Sequoia<small>The design system built to last.</small></span></div>
+      <div class="trow"><span class="cnum"><svg viewBox="0 0 32 32"><circle cx="16" cy="16" r="15.2"/></svg>4</span>
+        <span class="tt">The stress test<small>Proving it on the real product.</small></span></div>
+      <div class="trow"><span class="cnum"><svg viewBox="0 0 32 32"><circle cx="16" cy="16" r="15.2"/></svg>5</span>
+        <span class="tt">How we work<small>And what happens after we leave.</small></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 2 · WHAT SEQUIFI IS ============ -->
+<section class="scene" id="sc-what" data-beats="1" data-rl="The brief" data-rr="Sequifi × Parallel">
+  <h2 class="hl">Sequifi is HR and payroll software for home-services companies.</h2>
+  <div class="shot"><img src="Assets/Dashboard.png" alt="The Sequifi dashboard"></div>
+</section>
+
+<!-- ============ 3 · INDUSTRIES ============ -->
+<section class="scene" id="sc-ind" data-beats="1" data-rl="The brief" data-rr="Sequifi × Parallel">
+  <h2 class="hl">And it runs the whole back office operation across many industries.</h2>
+  <div class="grid">
+    <div class="cell"><i>01</i><span>Mortgage</span></div>
+    <div class="cell"><i>02</i><span>Roofing</span></div>
+    <div class="cell"><i>03</i><span>Fibre</span></div>
+    <div class="cell"><i>04</i><span>Turf</span></div>
+    <div class="cell"><i>05</i><span>Solar</span></div>
+    <div class="cell"><i>06</i><span>HVAC</span></div>
+    <div class="cell"><i>07</i><span>Pest control</span></div>
+    <div class="cell core"><i>·</i><span>One back office</span></div>
+  </div>
+</section>
+
+<!-- ============ 4 · TWO PEOPLE ============ -->
+<section class="scene" id="sc-people" data-beats="3" data-rl="The brief" data-rr="Sequifi × Parallel">
+  <h2 class="hl">Two very different kinds of people depend on it.</h2>
+  <div class="cols">
+    <div class="col a">
+      <div class="who">The HR admin <small>the key user</small></div>
+      <p class="pt"><i>1</i><span>Runs <b>hiring, payroll and payments</b> for the whole operation.</span></p>
+      <p class="pt"><i>2</i><span>Doesn't come from a tech background, and rarely has a spare hour to learn a new tool.</span></p>
+      <p class="kick">So the whole operation rests on <em>one person</em> who has no room to spare.</p>
+    </div>
+    <div class="col b">
+      <div class="who">The rep <small>out in the field</small></div>
+      <p class="pt"><i>1</i><span>Young and barely tech-literate. Primarily lives on <b>social media apps</b>.</span></p>
+      <p class="pt"><i>2</i><span>In the job for the money.</span></p>
+      <p class="kick">They churn fast, and if the tool is hard, <em>they simply never learn it</em>.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 5 · THE LOAD ============ -->
+<section class="scene" id="sc-load" data-beats="2" data-rl="The brief" data-rr="Sequifi × Parallel">
+  <h2 class="hl">A single admin runs pay for hundreds of reps, every week.</h2>
+  <p class="sub sub2 s1">They stare at the tool five or six hours a day.
+    <span class="warn">One small mistake means reps get paid wrong, and reps who get paid wrong leave.</span></p>
+  <div class="field" id="loadField">
+    <span class="admin"></span>
+    <svg class="ring" viewBox="0 0 74 74"><circle cx="37" cy="37" r="34"/><circle class="arc" cx="37" cy="37" r="34"/></svg>
+    <span class="hrs">five or six hours a day</span>
+  </div>
+</section>
+
+<!-- ============ 6 · PILE UP ============ -->
+<section class="scene" id="sc-pile" data-beats="1" data-rl="The brief" data-rr="Sequifi × Parallel">
+  <h2 class="hl">Over the years, features piled up.</h2>
+  <p class="sub">Screens got dense, and no two looked alike.</p>
+  <div class="stack" id="pileStack">
+    <div class="card c1"><img src="Assets/Old Screenshot 01.png" alt=""></div>
+    <div class="card c2"><img src="Assets/Old Screenshot 02.png" alt=""></div>
+    <div class="card c3"><img src="Assets/Old Screenshot 03.png" alt=""></div>
+    <div class="card c4"><img src="Assets/Old Screenshot 04.png" alt=""></div>
+  </div>
+</section>
+
+<!-- ============ 7 · INCONSISTENT ============ -->
+<section class="scene" id="sc-comp" data-beats="2" data-rl="The brief" data-rr="Sequifi × Parallel">
+  <h2 class="hl">The components were inconsistent.</h2>
+  <p class="sub">The same button or form was rebuilt in every module, so every screen meant learning it again.</p>
+  <div class="wall" id="btnWall"></div>
+  <p class="cap"><b>Twelve “Save” buttons, from twelve modules.</b> Illustrative recreation of the mismatch.</p>
+</section>
+
+<!-- ============ 8 · NO HIERARCHY ============ -->
+<section class="scene" id="sc-hier" data-beats="1" data-rl="The brief" data-rr="Sequifi × Parallel">
+  <h2 class="hl">There was no visual hierarchy.</h2>
+  <p class="sub">Everything looked equally important, so it was easy to miss what mattered.</p>
+  <div class="panel">
+    <p class="ln"><span>PAYROLL RUN #4821 · WEEKLY</span></p>
+    <p class="ln"><span>214 WORKERS INCLUDED IN THIS RUN</span></p>
+    <p class="ln"><span>COMMISSION OVERRIDES ENABLED</span></p>
+    <p class="ln miss"><span>3 WORKERS HAVE MISSING BANK DETAILS</span></p>
+    <p class="ln"><span>APPROVAL DEADLINE FRIDAY 5PM CT</span></p>
+    <p class="ln"><span>EXPORT · PRINT · DUPLICATE · ARCHIVE</span></p>
+  </div>
+  <p class="misscap">The detail that mattered. Three people about to be paid wrong, shouting no louder than the print button.</p>
+</section>
+
+<!-- ============ 9 · TANGLED NAV ============ -->
+<section class="scene" id="sc-nav" data-beats="0" data-rl="The brief" data-rr="Sequifi × Parallel">
+  <h2 class="hl">Navigation was confusing.</h2>
+  <p class="sub">A single task was scattered across screens that didn't connect.</p>
+  <div class="maze">
+    <div class="wf" style="left:2%;top:4%"><i></i><i></i><i></i><b>Workers</b></div>
+    <div class="wf" style="left:58%;top:12%"><i></i><i></i><i></i><b>Payroll</b></div>
+    <div class="wf" style="left:8%;top:44%"><i></i><i></i><i></i><b>Settings</b></div>
+    <div class="wf" style="left:62%;top:56%"><i></i><i></i><i></i><b>Reports</b></div>
+    <div class="wf" style="left:30%;top:74%"><i></i><i></i><i></i><b>Approvals</b></div>
+    <svg viewBox="0 0 800 700" preserveAspectRatio="none">
+      <path class="thread" d="M 150 90 C 380 30 520 90 560 130 C 620 190 300 210 180 330
+        C 90 420 300 400 540 430 C 700 450 640 520 560 560 C 470 610 420 560 330 600
+        C 260 630 300 660 340 640"/>
+    </svg>
+    <span class="qm" style="left:44%;top:88%">?</span>
+  </div>
+</section>
+
+<!-- ============ 10 · FALLBACK ============ -->
+<section class="scene dark" id="sc-fall" data-beats="1" data-rl="The brief" data-rr="Sequifi × Parallel">
+  <h2 class="hl">So admins fell back on spreadsheets and memory.</h2>
+  <div class="churn">And reps churned <b>even faster</b>.</div>
+  <div class="sheet" id="fallSheet"></div>
+  <span class="drop" style="right:calc(var(--mx) + 2vw);top:22vh;animation-delay:.5s"></span>
+  <span class="drop" style="right:calc(var(--mx) + 6vw);top:24vh;animation-delay:.85s"></span>
+  <span class="drop" style="right:calc(var(--mx) + 4vw);top:20vh;animation-delay:1.2s"></span>
+  <span class="drop" style="right:calc(var(--mx) + 9vw);top:23vh;animation-delay:1.5s"></span>
+</section>
+
+<!-- ============ 11 · PMF ============ -->
+<section class="scene" id="sc-pmf" data-beats="1" data-rl="The brief" data-rr="Sequifi × Parallel">
+  <div class="wrap">
+    <h2 class="hl">Sequifi already had product-market fit.</h2>
+    <p class="l2">Growth depended on people actually <em>adopting</em> it.</p>
+  </div>
+</section>
+
+<!-- ============ 12 · THREE ASKS ============ -->
+<section class="scene" id="sc-asks" data-beats="2" data-rl="The brief" data-rr="Sequifi × Parallel">
+  <div class="wrap">
+    <h2 class="hl">So they asked us for three things.</h2>
+    <div class="rows">
+      <div class="arow r1"><span class="an">01</span><span class="at">A visual language for the product.</span></div>
+      <div class="arow r2"><span class="an">02</span><span class="at">A design system their team could build on and run on their own.</span></div>
+      <div class="arow r3"><span class="an">03</span><span class="at">A product experience shaped around its real users.</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 13 · DIVIDER · VISUAL LANGUAGE ============ -->
+<section class="scene dark bare divider" id="sc-d1" data-beats="0">
+  <div class="dline"><i></i></div>
+  <div class="dwrap">
+    <div class="dk">Part one</div>
+    <h2>Visual<br>language</h2>
+    <p class="dsub">Finding what Sequifi should look like.</p>
+  </div>
+  <div class="dfoot"><b>Sequifi × Parallel</b> · New visual language · 01 / 04</div>
+</section>
+<style>
+/* ============ shared live-UI primitives (everything is real HTML on Sequoia tokens) ============ */
+.ui{background:#fff;border:1px solid var(--line2);border-radius:14px;
+  box-shadow:0 24px 60px -34px rgba(20,19,24,.35);overflow:hidden;font-family:var(--fd)}
+.ui .uihd{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--line)}
+.ui .uit{font-weight:600;font-size:14.5px;letter-spacing:-.01em}
+.uibtn{font:600 12.5px/1 var(--fd);border-radius:8px;padding:9px 14px;border:1px solid transparent;
+  cursor:default;white-space:nowrap;transition:background .5s ease,box-shadow .5s ease,transform .5s var(--ease),color .5s ease}
+.uibtn.pri{background:var(--indigo);color:#fff}
+.uibtn.sec{background:#fff;color:var(--ink);border-color:var(--line2)}
+.uirow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 18px;
+  border-bottom:1px solid var(--line);font-size:13px;color:var(--mut)}
+.uirow b{color:var(--ink);font-weight:600;font-size:13px}
+.uirow .amt{font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums;
+  transition:font-size .6s var(--ease),color .5s ease}
+.uiava{width:22px;height:22px;border-radius:50%;background:var(--soft);color:var(--indigo);
+  font:600 10px/22px var(--fd);text-align:center;flex:none}
+
+/* =========================================================== 14 · BEHAVIOUR RULES */
+#sc-behave .hl{position:absolute;left:var(--mx);top:11vh;font-size:clamp(24px,2.7vw,42px);max-width:30ch}
+#sc-behave .rules{position:absolute;left:var(--mx);top:30vh;width:34vw}
+#sc-behave .rule{padding:2.6vh 0;border-top:1px solid var(--line);opacity:.22;transition:opacity .5s ease}
+#sc-behave .rule .rt{font-weight:600;font-size:clamp(16px,1.5vw,22px);letter-spacing:-.015em;display:flex;gap:14px}
+#sc-behave .rule .rt i{font-style:normal;color:var(--indigo);font-size:.82em;padding-top:2px}
+#sc-behave .rule .rd{margin-top:.8vh;font-size:clamp(13.5px,1.1vw,16px);color:var(--mut);line-height:1.5;padding-left:30px}
+#sc-behave.b1 .rule.q1,#sc-behave.b2 .rule.q2,#sc-behave.b3 .rule.q3{opacity:1}
+#sc-behave.b2 .rule.q1,#sc-behave.b3 .rule.q1,#sc-behave.b3 .rule.q2{opacity:.38}
+#sc-behave .stage{position:absolute;right:var(--mx);top:26vh;width:38vw}
+#sc-behave .mini{width:100%}
+#sc-behave .mini .dimmable{transition:opacity .6s ease}
+#sc-behave.b1 .mini .dimmable{opacity:.32}
+#sc-behave.b1 .mini .uibtn.pri{transform:scale(1.12);box-shadow:0 10px 26px -8px rgba(78,97,214,.55)}
+#sc-behave .fam{position:absolute;inset:0;background:#fff;opacity:0;transition:opacity .6s ease;
+  display:flex;flex-direction:column}
+#sc-behave.b2 .fam{opacity:1}
+#sc-behave.b3 .fam{opacity:0}
+#sc-behave .fam .fsearch{margin:14px 18px 8px;border:1px solid var(--line2);border-radius:10px;
+  padding:9px 12px;font-size:12.5px;color:var(--lab)}
+#sc-behave .fam .fcard{margin:6px 18px;border:1px solid var(--line);border-radius:12px;padding:12px 14px;
+  display:flex;justify-content:space-between;align-items:center;font-size:13px}
+#sc-behave .fam .fcard b{font-weight:600}
+#sc-behave .fam .ftabs{margin-top:auto;border-top:1px solid var(--line);display:flex}
+#sc-behave .fam .ftabs span{flex:1;text-align:center;padding:11px 0;font-size:11.5px;color:var(--lab)}
+#sc-behave .fam .ftabs span.onx{color:var(--indigo);font-weight:600}
+#sc-behave.b3 .mini .amt{font-size:17px;color:var(--ink)}
+#sc-behave.b3 .mini .uirow{border-bottom-color:var(--line)}
+#sc-behave .cap{position:absolute;right:var(--mx);top:calc(26vh + 4px);transform:translateY(-160%);
+  font-size:12.5px;color:var(--lab)}
+
+/* =========================================================== 15 · ARCHETYPES */
+#sc-arch .hl{position:absolute;left:var(--mx);top:12vh;font-size:clamp(30px,3.4vw,54px);max-width:24ch}
+#sc-arch .duo{position:absolute;left:var(--mx);right:var(--mx);top:30vh;height:46vh}
+#sc-arch .side{position:absolute;top:0;width:44%;transition:transform 1s var(--ease),opacity .7s ease;
+  opacity:0;transform:translateY(24px)}
+#sc-arch .side.rul{left:0}
+#sc-arch .side.car{right:0}
+#sc-arch.b1 .side.rul{opacity:1;transform:none}
+#sc-arch.b2 .side.car{opacity:1;transform:none}
+#sc-arch.b3 .side.rul{transform:translateX(28%) scale(.97);opacity:.25}
+#sc-arch.b3 .side.car{transform:translateX(-28%) scale(.97);opacity:.25}
+#sc-arch .aname{font-weight:600;font-size:clamp(22px,2.2vw,34px);letter-spacing:-.02em}
+#sc-arch .aline{font-weight:500;font-size:clamp(14px,1.25vw,18px);margin-top:.5vh}
+#sc-arch .adesc{font-size:clamp(13px,1.05vw,15.5px);color:var(--mut);line-height:1.5;margin-top:1vh;max-width:40ch}
+#sc-arch .acard{margin-top:2.6vh;background:#fff;border:1px solid var(--line2);padding:16px 18px;font-size:13px}
+#sc-arch .rul .acard{border-radius:4px;font-variant-numeric:tabular-nums}
+#sc-arch .rul .acard .r{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--line)}
+#sc-arch .rul .acard .r:last-child{border-bottom:0;font-weight:700}
+#sc-arch .car .acard{border-radius:18px;box-shadow:0 16px 38px -22px rgba(20,19,24,.3);display:flex;gap:12px;align-items:center}
+#sc-arch .car .acard .nm{font-weight:600;font-size:14px}
+#sc-arch .car .acard .st{color:var(--mut);font-size:12px;margin-top:2px}
+#sc-arch .merge{position:absolute;left:50%;top:6%;transform:translate(-50%,30px);width:34%;opacity:0;
+  transition:opacity .7s ease .35s,transform .9s var(--ease) .35s;z-index:5}
+#sc-arch.b3 .merge{opacity:1;transform:translate(-50%,0)}
+#sc-arch .merge .acard2{background:#fff;border:1px solid var(--line2);border-radius:14px;
+  box-shadow:0 26px 60px -30px rgba(20,19,24,.4);padding:18px 20px}
+#sc-arch .merge .top{display:flex;gap:12px;align-items:center;padding-bottom:12px;border-bottom:1px solid var(--line)}
+#sc-arch .merge .nm{font-weight:600;font-size:14.5px}
+#sc-arch .merge .st{color:var(--mut);font-size:12px;margin-top:1px}
+#sc-arch .merge .r{display:flex;justify-content:space-between;padding:8px 0;font-size:13px;color:var(--mut);
+  font-variant-numeric:tabular-nums}
+#sc-arch .merge .r b{color:var(--ink);font-weight:700}
+#sc-arch .bothline{position:absolute;left:var(--mx);right:var(--mx);bottom:9vh;text-align:center;
+  font-weight:500;font-size:clamp(17px,1.6vw,25px);letter-spacing:-.015em;
+  opacity:0;transform:translateY(12px);transition:all .6s var(--ease) .6s}
+#sc-arch.b3 .bothline{opacity:1;transform:none}
+#sc-arch .bothline em{font-style:normal;color:var(--indigo)}
+
+/* =========================================================== 16 · ONE LANGUAGE */
+#sc-one .wrap{position:absolute;left:var(--mx);right:var(--mx);top:50%;transform:translateY(-50%);text-align:left}
+#sc-one .hl{font-size:clamp(40px,4.8vw,80px);max-width:18ch}
+#sc-one .sub{margin-top:2.6vh;font-size:clamp(17px,1.6vw,25px);max-width:44ch}
+#sc-one .sub b{color:var(--ink);font-weight:600}
+
+/* =========================================================== 17 · INDIGO */
+#sc-indigo .hl{position:absolute;left:var(--mx);top:12vh;font-size:clamp(28px,3.2vw,50px);max-width:22ch}
+#sc-indigo .sub{position:absolute;left:var(--mx);top:34vh;width:30vw;font-size:clamp(14px,1.2vw,17px)}
+#sc-indigo .caps{position:absolute;left:var(--mx);bottom:11vh;width:30vw;font-size:12.5px;color:var(--lab);line-height:1.6}
+#sc-indigo .caps b{color:var(--mut);font-weight:600}
+#sc-indigo .stage{position:absolute;right:var(--mx);top:24vh;width:42vw;height:46vh}
+#sc-indigo .mini{position:absolute;inset:0}
+#sc-indigo .mini .body{padding:16px 18px;display:flex;flex-direction:column;gap:10px}
+#sc-indigo .btl{display:flex;gap:8px;flex-wrap:wrap}
+#sc-indigo .before .x1{background:#2E9E5B;color:#fff}
+#sc-indigo .before .x2{background:#D8483B;color:#fff}
+#sc-indigo .before .x3{background:#E9A13B;color:#fff}
+#sc-indigo .before .x4{background:#3B82D8;color:#fff}
+#sc-indigo .before .x5{background:#8E44AD;color:#fff}
+#sc-indigo .mini.before{transition:opacity .8s ease}
+#sc-indigo.b1 .mini.before{opacity:0}
+#sc-indigo .mini.after{opacity:0;transition:opacity .8s ease}
+#sc-indigo.b1 .mini.after{opacity:1}
+#sc-indigo .after .g{background:#fff;color:var(--ink);border-color:var(--line2)}
+#sc-indigo .after .uibtn.hero{background:#fff;color:var(--ink);border-color:var(--line2)}
+#sc-indigo.b2 .after .uibtn.hero{background:var(--indigo);color:#fff;border-color:var(--indigo);
+  box-shadow:0 10px 26px -8px rgba(78,97,214,.5)}
+#sc-indigo .swatch{position:absolute;right:0;top:-7vh;display:flex;align-items:center;gap:10px;
+  font-size:12.5px;color:var(--lab);opacity:0;transition:opacity .5s ease .4s}
+#sc-indigo.b2 .swatch{opacity:1}
+#sc-indigo .swatch i{width:18px;height:18px;border-radius:5px;background:var(--indigo)}
+
+/* =========================================================== 18 · TYPE */
+#sc-type .hl{position:absolute;left:var(--mx);top:12vh;font-size:clamp(28px,3.2vw,50px);max-width:24ch}
+#sc-type .glyph{position:absolute;left:50%;top:52%;transform:translate(-50%,-50%);z-index:1;
+  font-weight:600;letter-spacing:-.04em;color:var(--soft);font-size:34vh;line-height:1;
+  transition:font-weight .8s ease,transform .9s var(--ease)}
+#sc-type.b1 .glyph{font-weight:400;transform:translate(-50%,-50%) scale(.86)}
+#sc-type .duo{position:absolute;left:var(--mx);right:var(--mx);bottom:10vh;display:grid;
+  grid-template-columns:1fr 1fr;gap:3vw;z-index:3}
+#sc-type .tmini{transition:opacity .6s ease,transform .7s var(--ease)}
+#sc-type .tmini .tag{font-size:12.5px;color:var(--lab);margin-bottom:1.2vh}
+#sc-type .tmini.tb{opacity:.35;transform:scale(.985)}
+#sc-type.b1 .tmini.ta{opacity:.35;transform:scale(.985)}
+#sc-type.b1 .tmini.tb{opacity:1;transform:none}
+#sc-type .dense{font-size:11.5px}
+#sc-type .dense .uirow{padding:7px 14px;font-size:11.5px}
+#sc-type .dense .uirow b{font-size:11.5px}
+#sc-type .welc{padding:22px 22px 20px}
+#sc-type .welc .w1{font-weight:600;font-size:clamp(19px,1.8vw,27px);letter-spacing:-.02em}
+#sc-type .welc .w2{color:var(--mut);font-size:13px;margin-top:6px;line-height:1.5}
+#sc-type .welc .uibtn{margin-top:14px;display:inline-block}
+
+/* =========================================================== 19 · SPACE */
+#sc-space .hl{position:absolute;left:var(--mx);top:12vh;font-size:clamp(28px,3.2vw,50px);max-width:20ch}
+#sc-space .sub{position:absolute;left:var(--mx);top:32vh;width:30vw;font-size:clamp(14px,1.2vw,17px)}
+#sc-space .stage{position:absolute;right:var(--mx);top:20vh;width:44vw}
+#sc-space .smini .grp{transition:padding .9s var(--ease)}
+#sc-space .smini .uihd{transition:padding .9s var(--ease)}
+#sc-space .smini .uirow{transition:padding .9s var(--ease)}
+#sc-space .smini .uihd{padding:8px 12px}
+#sc-space .smini .uirow{padding:6px 12px}
+#sc-space.b1 .smini .uihd{padding:16px 20px}
+#sc-space.b1 .smini .uirow{padding:13px 20px}
+#sc-space .ticks{position:absolute;left:-58px;top:0;bottom:0;width:44px;font-size:11px;color:var(--indigo);
+  display:flex;flex-direction:column;justify-content:center;gap:14px;opacity:0;transition:opacity .6s ease .5s;
+  font-variant-numeric:tabular-nums;text-align:right}
+#sc-space.b1 .ticks{opacity:1}
+#sc-space .cap{position:absolute;left:var(--mx);bottom:11vh;font-size:12.5px;color:var(--lab);width:30vw;line-height:1.6}
+#sc-space .cap b{color:var(--mut);font-weight:600}
+
+/* =========================================================== 20 · PAYOFF */
+#sc-payoff .hl{position:absolute;left:var(--mx);top:12vh;font-size:clamp(30px,3.5vw,56px);max-width:24ch}
+#sc-payoff .duo{position:absolute;left:var(--mx);right:var(--mx);top:32vh;bottom:11vh;
+  display:grid;grid-template-columns:1.35fr 1fr;gap:4vw;align-items:start}
+#sc-payoff .half{opacity:0;transform:translateY(20px);transition:all .7s var(--ease)}
+#sc-payoff.b1 .half.h1,#sc-payoff.b2 .half.h2{opacity:1;transform:none}
+#sc-payoff .htag{font-weight:600;font-size:clamp(15px,1.3vw,19px)}
+#sc-payoff .hline{font-size:clamp(13.5px,1.15vw,16.5px);color:var(--mut);margin:.8vh 0 2vh;max-width:44ch;line-height:1.5}
+#sc-payoff .phone{width:min(240px,18vw);border-radius:22px;border:1px solid var(--line2);overflow:hidden;
+  box-shadow:0 24px 60px -30px rgba(20,19,24,.35);background:#fff}
+#sc-payoff .phone .ph-hd{padding:12px 14px;border-bottom:1px solid var(--line);font-weight:600;font-size:12.5px}
+#sc-payoff .phone .big{padding:18px 14px 6px;font-weight:700;font-size:24px;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+#sc-payoff .phone .cap2{padding:0 14px 12px;color:var(--mut);font-size:11.5px}
+#sc-payoff .phone .uirow{padding:9px 14px;font-size:11.5px}
+
+/* =========================================================== 21 · DIVIDER · SEQUOIA */
+#sc-d2 .stackviz{position:absolute;right:var(--mx);bottom:12vh;width:220px}
+#sc-d2 .lay{border:1px solid rgba(255,255,255,.2);border-radius:6px;padding:9px 12px;font-size:12px;
+  color:rgba(244,245,243,.75);margin-top:8px;background:rgba(255,255,255,.03);
+  opacity:0;transform:translateY(14px);transition:all .6s var(--ease)}
+#sc-d2.active .lay{opacity:1;transform:none}
+#sc-d2.active .lay:nth-child(5){transition-delay:.5s}
+#sc-d2.active .lay:nth-child(4){transition-delay:.65s}
+#sc-d2.active .lay:nth-child(3){transition-delay:.8s}
+#sc-d2.active .lay:nth-child(2){transition-delay:.95s}
+#sc-d2.active .lay:nth-child(1){transition-delay:1.1s}
+#sc-d2 .lay.tok{border-color:var(--indigo);color:var(--indigo-lt)}
+
+/* =========================================================== 22 · FOUNDATIONS */
+#sc-found .hl{position:absolute;left:var(--mx);top:11vh;font-size:clamp(28px,3.2vw,50px)}
+#sc-found .hl small{display:block;font-size:.5em;color:var(--mut);font-weight:400;margin-top:1vh;letter-spacing:-.01em}
+#sc-found .spec{position:absolute;left:var(--mx);right:var(--mx);top:34vh;bottom:10vh;
+  display:grid;grid-template-columns:1.2fr 1.3fr 1fr .9fr;gap:3.4vw}
+#sc-found .fcol .ft{font-size:13px;font-weight:600;padding-bottom:1.4vh;border-bottom:1px solid var(--line2);margin-bottom:1.8vh}
+#sc-found .fitem{opacity:0;transform:translateY(12px);transition:all .5s var(--ease)}
+#sc-found.active .fitem{opacity:1;transform:none}
+#sc-found .chip{display:flex;align-items:center;gap:10px;margin-bottom:1.15vh;font-size:11.5px;color:var(--mut);
+  font-variant-numeric:tabular-nums}
+#sc-found .chip i{width:30px;height:20px;border-radius:4px;flex:none;border:1px solid rgba(20,19,24,.08)}
+#sc-found .tline{margin-bottom:1.1vh;line-height:1.06;letter-spacing:-.03em;white-space:nowrap}
+#sc-found .tline small{font-size:11px;color:var(--lab);letter-spacing:0;margin-left:8px}
+#sc-found .sbar{height:10px;background:var(--soft);border-radius:3px;margin-bottom:1.15vh;position:relative}
+#sc-found .sbar em{position:absolute;left:calc(100% + 8px);top:-2px;font-style:normal;font-size:11px;color:var(--lab);
+  font-variant-numeric:tabular-nums}
+#sc-found .rchip{display:inline-block;width:52px;height:34px;border:1.5px solid var(--ink);margin:0 10px 12px 0;
+  vertical-align:top;position:relative}
+#sc-found .rchip em{position:absolute;left:6px;bottom:-20px;font-style:normal;font-size:10.5px;color:var(--lab)}
+
+/* =========================================================== 23 · ATOMS */
+#sc-atoms .hl{position:absolute;left:var(--mx);top:11vh;font-size:clamp(28px,3.2vw,50px)}
+#sc-atoms .hl small{display:block;font-size:.5em;color:var(--mut);font-weight:400;margin-top:1vh}
+#sc-atoms .matrix{position:absolute;left:var(--mx);right:var(--mx);top:34vh;
+  display:grid;grid-template-columns:110px repeat(5,1fr);gap:1.6vh 1.6vw;align-items:center}
+#sc-atoms .mx-h{font-size:12px;color:var(--lab);font-weight:500}
+#sc-atoms .mx-r{font-size:13px;font-weight:600}
+#sc-atoms .cellw{display:flex;justify-content:center;opacity:0;transform:scale(.8);
+  transition:opacity .35s ease,transform .45s var(--spring)}
+#sc-atoms.active .cellw{opacity:1;transform:none}
+#sc-atoms .ab{font:600 12px/1 var(--fd);border-radius:8px;padding:9px 16px;background:var(--indigo);color:#fff;border:1px solid var(--indigo)}
+#sc-atoms .ab.hv{background:#3D4FC4;border-color:#3D4FC4}
+#sc-atoms .ab.fc{box-shadow:0 0 0 3px var(--soft),0 0 0 4.5px var(--indigo)}
+#sc-atoms .ab.ds{background:#EEEEF1;color:#A6A7AD;border-color:#EEEEF1}
+#sc-atoms .ab.er{background:var(--err);border-color:var(--err)}
+#sc-atoms .ain{width:100%;max-width:120px;border:1px solid var(--line2);border-radius:8px;padding:8px 10px;
+  font-size:11.5px;color:var(--lab);background:#fff}
+#sc-atoms .ain.hv{border-color:var(--line3)}
+#sc-atoms .ain.fc{border-color:var(--indigo);box-shadow:0 0 0 3px var(--soft)}
+#sc-atoms .ain.ds{background:#F4F4F6;color:#C2C3C8}
+#sc-atoms .ain.er{border-color:var(--err);color:var(--err)}
+#sc-atoms .atg{width:36px;height:21px;border-radius:100px;background:#D9DADF;position:relative;transition:background .3s}
+#sc-atoms .atg::after{content:"";position:absolute;top:2.5px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;
+  box-shadow:0 1px 3px rgba(0,0,0,.25);transition:left .3s}
+#sc-atoms .atg.onx{background:var(--indigo)}
+#sc-atoms .atg.onx::after{left:17px}
+#sc-atoms .atg.fc{box-shadow:0 0 0 3px var(--soft)}
+#sc-atoms .atg.ds{opacity:.4}
+#sc-atoms .atg.er{background:var(--err)}
+#sc-atoms .ghost{position:absolute;z-index:9;width:22px;height:22px;pointer-events:none;opacity:0;
+  transition:opacity .3s ease}
+#sc-atoms .ghost svg{display:block;filter:drop-shadow(0 2px 5px rgba(0,0,0,.3))}
+#sc-atoms.b1 .ghost{opacity:1}
+#sc-atoms .statecap{position:absolute;left:var(--mx);bottom:9vh;font-size:12.5px;color:var(--lab);
+  opacity:0;transition:opacity .5s}
+#sc-atoms.b1 .statecap{opacity:1}
+#sc-atoms .statecap b{color:var(--indigo);font-weight:600}
+
+/* =========================================================== 24 · MOLECULES */
+#sc-mole .hl{position:absolute;left:var(--mx);top:11vh;font-size:clamp(28px,3.2vw,50px)}
+#sc-mole .hl small{display:block;font-size:.5em;color:var(--mut);font-weight:400;margin-top:1vh;max-width:44ch;line-height:1.5}
+#sc-mole .lab2{position:absolute;left:var(--mx);bottom:9vh;font-size:12.5px;color:var(--lab)}
+#sc-mole .stage{position:absolute;left:var(--mx);right:var(--mx);top:37vh;display:grid;
+  grid-template-columns:1fr 1fr 1fr;gap:3vw;align-items:start}
+#sc-mole .mgroup .mt{font-size:12.5px;color:var(--lab);margin-bottom:1.6vh}
+#sc-mole .fpart{transition:transform .8s var(--ease),opacity .6s ease}
+#sc-mole .flabel{font-size:12px;font-weight:600;margin-bottom:6px;opacity:0;transform:translate(-40px,-16px)}
+#sc-mole .finput{border:1.5px solid var(--line2);border-radius:10px;padding:11px 13px;font-size:13px;color:var(--ink);
+  background:#fff;opacity:0;transform:scale(.9)}
+#sc-mole .fhelp{font-size:11.5px;color:var(--err);margin-top:6px;opacity:0;transform:translate(40px,16px)}
+#sc-mole.active .flabel,#sc-mole.active .finput,#sc-mole.active .fhelp{opacity:1;transform:none}
+#sc-mole.active .flabel{transition-delay:.25s}
+#sc-mole.active .finput{transition-delay:.4s}
+#sc-mole.active .fhelp{transition-delay:.6s}
+#sc-mole .finput.err{border-color:var(--err)}
+#sc-mole .srow{background:#fff;border:1px solid var(--line2);border-radius:12px;padding:13px 15px;
+  display:flex;align-items:center;gap:12px;font-size:12.5px;opacity:0;transform:translateY(18px);
+  transition:all .6s var(--ease) .2s}
+#sc-mole.b1 .srow{opacity:1;transform:none}
+#sc-mole .srow .g1 b{display:block;font-weight:600}
+#sc-mole .srow .g1 span{color:var(--mut);font-size:11.5px}
+#sc-mole .srow .stt{margin-left:auto;font-size:11px;color:#1E7A46;font-weight:600}
+#sc-mole .srow .uibtn{padding:7px 11px}
+#sc-mole .dd{position:relative;opacity:0;transform:translateY(18px);transition:all .6s var(--ease) .35s}
+#sc-mole.b1 .dd{opacity:1;transform:none}
+#sc-mole .ddt{border:1.5px solid var(--indigo);border-radius:10px;padding:11px 13px;font-size:13px;
+  display:flex;justify-content:space-between;background:#fff;box-shadow:0 0 0 3px var(--soft)}
+#sc-mole .ddl{border:1px solid var(--line2);border-radius:10px;margin-top:6px;overflow:hidden;background:#fff;
+  box-shadow:0 18px 40px -20px rgba(20,19,24,.3);max-height:0;transition:max-height .7s var(--ease) .55s}
+#sc-mole.b1 .ddl{max-height:150px}
+#sc-mole .ddl div{padding:9px 13px;font-size:12.5px;color:var(--mut);border-bottom:1px solid var(--line)}
+#sc-mole .ddl div.sel{color:var(--ink);background:var(--soft);font-weight:600}
+
+/* =========================================================== 25 · COMPONENTS */
+#sc-compo .hl{position:absolute;left:var(--mx);top:11vh;font-size:clamp(28px,3.2vw,50px)}
+#sc-compo .hl small{display:block;font-size:.5em;color:var(--mut);font-weight:400;margin-top:1vh}
+#sc-compo .stage{position:absolute;left:var(--mx);right:var(--mx);top:33vh;bottom:9vh;
+  display:grid;grid-template-columns:1.1fr 1.4fr;gap:3.4vw;align-items:start}
+#sc-compo .paycard{max-width:440px}
+#sc-compo .paycard .uihd .uit small{display:block;font-weight:400;color:var(--lab);font-size:11px;margin-top:2px}
+#sc-compo .prow{display:flex;justify-content:space-between;padding:11px 18px;font-size:13px;color:var(--mut);
+  border-bottom:1px solid var(--line);opacity:0;transform:translateX(-18px);transition:all .55s var(--ease);
+  font-variant-numeric:tabular-nums}
+#sc-compo.active .prow{opacity:1;transform:none}
+#sc-compo .prow b{color:var(--ink);font-weight:600}
+#sc-compo .prow.tot{border-bottom:0;background:var(--soft)}
+#sc-compo .prow.tot b{color:var(--indigo);font-weight:700;font-size:15px}
+#sc-compo .right2{opacity:0;transform:translateY(20px);transition:all .7s var(--ease)}
+#sc-compo.b1 .right2{opacity:1;transform:none}
+#sc-compo .fbar{display:flex;gap:8px;margin-bottom:1.6vh}
+#sc-compo .fchip{border:1px solid var(--line2);border-radius:8px;padding:8px 12px;font-size:12px;color:var(--mut);background:#fff}
+#sc-compo .fchip.onx{border-color:var(--indigo);color:var(--indigo);background:var(--soft);font-weight:600}
+#sc-compo .cap{position:absolute;left:var(--mx);bottom:4.5vh;font-size:12.5px;color:var(--lab)}
+
+/* =========================================================== 26 · ACCESSIBILITY */
+#sc-a11y .hl{position:absolute;left:var(--mx);top:11vh;font-size:clamp(28px,3.2vw,50px)}
+#sc-a11y .hl small{display:block;font-size:.5em;color:var(--mut);font-weight:400;margin-top:1vh;max-width:40ch;line-height:1.5}
+#sc-a11y .ladder{position:absolute;left:var(--mx);top:37vh;width:38vw}
+#sc-a11y .tier{display:flex;align-items:baseline;gap:2vw;padding:1.6vh 0;border-bottom:1px solid var(--line);
+  opacity:0;transform:translateY(10px);transition:all .5s var(--ease)}
+#sc-a11y.active .tier{opacity:1;transform:none}
+#sc-a11y .tier .tx{font-size:15.5px;font-weight:500;width:15ch}
+#sc-a11y .tier .hex{font-size:11.5px;color:var(--lab);font-variant-numeric:tabular-nums;width:8ch}
+#sc-a11y .tier .rt{margin-left:auto;font-size:12.5px;font-variant-numeric:tabular-nums;color:var(--mut)}
+#sc-a11y .tier .ok{color:#1E7A46;font-weight:700;font-size:12.5px;opacity:0;transition:opacity .4s ease}
+#sc-a11y.active .tier .ok{opacity:1}
+#sc-a11y .big{position:absolute;right:var(--mx);top:40vh;text-align:right}
+#sc-a11y .big .bl{font-size:13px;color:var(--mut)}
+#sc-a11y .big .bv{font-weight:700;font-size:clamp(54px,6vw,96px);letter-spacing:-.04em;font-variant-numeric:tabular-nums;line-height:1.05}
+#sc-a11y .big .bs{font-size:12.5px;color:var(--lab);margin-top:1vh}
+
+/* =========================================================== 27 · RESPONSIVE */
+#sc-resp .hl{position:absolute;left:var(--mx);top:11vh;font-size:clamp(28px,3.2vw,50px)}
+#sc-resp .hl small{display:block;font-size:.5em;color:var(--mut);font-weight:400;margin-top:1vh;max-width:46ch;line-height:1.5}
+#sc-resp .stage{position:absolute;left:0;right:0;top:34vh;bottom:14vh;display:flex;align-items:flex-start;justify-content:center}
+#sc-resp .dev{width:56vw;transition:width 1s var(--ease)}
+#sc-resp.b1 .dev{width:34vw}
+#sc-resp.b2 .dev{width:200px}
+#sc-resp .cards{display:flex;gap:10px;padding:12px 14px;flex-wrap:wrap}
+#sc-resp .scard{flex:1 1 120px;border:1px solid var(--line);border-radius:10px;padding:10px 12px;min-width:100px}
+#sc-resp .scard b{display:block;font-size:15px;font-weight:700;font-variant-numeric:tabular-nums}
+#sc-resp .scard span{font-size:10.5px;color:var(--lab)}
+#sc-resp .segs{position:absolute;left:50%;transform:translateX(-50%);bottom:6.5vh;display:flex;gap:26px;
+  font-size:13px;color:var(--lab)}
+#sc-resp .segs span{transition:color .3s,font-weight .3s}
+#sc-resp .segs .sd{color:var(--indigo);font-weight:600}
+#sc-resp.b1 .segs span{color:var(--lab);font-weight:400}
+#sc-resp.b1 .segs .st{color:var(--indigo);font-weight:600}
+#sc-resp.b2 .segs .st{color:var(--lab);font-weight:400}
+#sc-resp.b2 .segs .sp{color:var(--indigo);font-weight:600}
+
+/* =========================================================== 28 · THEMING */
+#sc-theme{transition:background .9s ease}
+#sc-theme.b1{background:#0D0D10}
+#sc-theme .hl{position:absolute;left:var(--mx);top:11vh;font-size:clamp(28px,3.2vw,50px);transition:color .9s ease}
+#sc-theme .hl small{display:block;font-size:.5em;font-weight:400;margin-top:1vh;color:var(--mut);transition:color .9s ease;max-width:44ch;line-height:1.5}
+#sc-theme.b1 .hl{color:#F4F5F3}
+#sc-theme.b1 .hl small{color:rgba(244,245,243,.6)}
+#sc-theme .tmini{position:absolute;right:var(--mx);top:26vh;width:40vw;
+  --srf:#fff;--txt:#17161A;--mut2:#55565C;--ln:rgba(20,19,24,.12);
+  background:var(--srf);border:1px solid var(--ln);border-radius:14px;overflow:hidden;
+  box-shadow:0 24px 60px -34px rgba(0,0,0,.4);transition:background .9s ease,border-color .9s ease}
+#sc-theme.b1 .tmini{--srf:#17181C;--txt:#F4F5F3;--mut2:#9EA0A8;--ln:rgba(255,255,255,.12)}
+#sc-theme .tmini .thd{padding:14px 18px;border-bottom:1px solid var(--ln);font-weight:600;font-size:14px;
+  color:var(--txt);display:flex;justify-content:space-between;transition:color .9s ease,border-color .9s ease}
+#sc-theme .tmini .trow{padding:11px 18px;border-bottom:1px solid var(--ln);display:flex;justify-content:space-between;
+  font-size:13px;color:var(--mut2);transition:color .9s ease,border-color .9s ease}
+#sc-theme .tmini .trow b{color:var(--txt);font-weight:600;transition:color .9s ease;font-variant-numeric:tabular-nums}
+#sc-theme .tmini .uibtn.pri{margin:14px 18px;display:block;width:max-content}
+#sc-theme .tok{position:absolute;left:var(--mx);top:40vh;font-size:13px;color:var(--mut);
+  font-variant-numeric:tabular-nums;transition:color .9s ease}
+#sc-theme.b1 .tok{color:rgba(244,245,243,.65)}
+#sc-theme .tok .tkn{display:flex;align-items:center;gap:10px;margin-top:1.2vh}
+#sc-theme .tok .tkn i{width:16px;height:16px;border-radius:4px;border:1px solid var(--line2);background:#fff;
+  transition:background .9s ease}
+#sc-theme.b1 .tok .tkn i{background:#17181C}
+#sc-theme .tok .arr{color:var(--indigo);font-weight:600}
+</style>
+
+<!-- ============ 14 · BEHAVIOUR ============ -->
+<section class="scene" id="sc-behave" data-beats="3" data-rl="New visual language" data-rr="Sequifi × Parallel">
+  <h2 class="hl">Before we decided how Sequifi should look, we agreed on how it should behave.</h2>
+  <div class="rules">
+    <div class="rule q1"><p class="rt"><i>01</i>The most important action is always the easiest thing to find.</p>
+      <p class="rd">Even on the busiest payroll screen, the admin should never have to hunt for the next step.</p></div>
+    <div class="rule q2"><p class="rt"><i>02</i>It should feel like an app people already know.</p>
+      <p class="rd">No one here gets trained, so we build on the patterns they already use every day.</p></div>
+    <div class="rule q3"><p class="rt"><i>03</i>Every number is easy to read and trust.</p>
+      <p class="rd">Pay is the whole point, so the figures are the clearest, calmest thing on the screen.</p></div>
+  </div>
+  <div class="stage">
+    <div class="ui mini">
+      <div class="uihd"><span class="uit dimmable">Payroll · Week 32</span><span class="uibtn pri">Run payroll</span></div>
+      <div class="dimmable">
+        <div class="uirow"><span class="uiava">MG</span><b>Maya Green</b><span class="amt k">$2,304.00</span></div>
+        <div class="uirow"><span class="uiava">DR</span><b>Dan Reyes</b><span class="amt k">$1,988.50</span></div>
+        <div class="uirow"><span class="uiava">SK</span><b>Sana Khan</b><span class="amt k">$2,730.25</span></div>
+        <div class="uirow"><span class="uiava">JP</span><b>Jon Park</b><span class="amt k">$1,842.00</span></div>
+      </div>
+      <div class="fam">
+        <div class="fsearch">Search workers…</div>
+        <div class="fcard"><b>This week's pay</b><span>$8,864.75</span></div>
+        <div class="fcard"><b>Approvals waiting</b><span>3</span></div>
+        <div class="ftabs"><span class="onx">Home</span><span>Pay</span><span>Team</span><span>More</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 15 · ARCHETYPES ============ -->
+<section class="scene" id="sc-arch" data-beats="3" data-rl="New visual language" data-rr="Sequifi × Parallel">
+  <h2 class="hl">Those rules come from what Sequifi needs to be.</h2>
+  <div class="duo">
+    <div class="side rul">
+      <div class="aname">Ruler</div>
+      <div class="aline">It keeps the business in control.</div>
+      <p class="adesc">Sequifi is where a company stays on top of its pay, its rules and its money. Everything has to be precise.</p>
+      <div class="acard k">
+        <div class="r"><span>Base</span><span>$1,400.00</span></div>
+        <div class="r"><span>Commission 12.5%</span><span>$442.00</span></div>
+        <div class="r"><span>Total</span><span>$1,842.00</span></div>
+      </div>
+    </div>
+    <div class="side car">
+      <div class="aname">Caregiver</div>
+      <div class="aline">It looks after the people getting paid.</div>
+      <p class="adesc">Pay is real people getting paid correctly and on time, and they should be able to see it and trust it.</p>
+      <div class="acard"><span class="uiava">JP</span><div><div class="nm">Jon Park</div><div class="st">Paid on time, every week</div></div></div>
+    </div>
+    <div class="merge">
+      <div class="acard2">
+        <div class="top"><span class="uiava">JP</span><div><div class="nm">Jon Park</div><div class="st">Paid Friday, on time</div></div></div>
+        <div class="r k"><span>Base</span><span>$1,400.00</span></div>
+        <div class="r k"><span>Commission 12.5%</span><span>$442.00</span></div>
+        <div class="r k"><span>Take-home</span><b>$1,842.00</b></div>
+      </div>
+    </div>
+  </div>
+  <p class="bothline">So Sequifi has to be <em>strict about the money</em> and <em>warm about the people</em>, at the same time.</p>
+</section>
+
+<!-- ============ 16 · ONE LANGUAGE ============ -->
+<section class="scene" id="sc-one" data-beats="0" data-rl="New visual language" data-rr="Sequifi × Parallel">
+  <div class="wrap">
+    <h2 class="hl rv on" style="transition-delay:.15s">We turned that into one visual language.</h2>
+    <p class="sub rv on" style="transition-delay:.4s">Calm, confident and uncluttered. <b>Precision for the admin, simplicity for the rep.</b></p>
+  </div>
+</section>
+
+<!-- ============ 17 · INDIGO ============ -->
+<section class="scene" id="sc-indigo" data-beats="2" data-rl="New visual language" data-rr="Sequifi × Parallel">
+  <h2 class="hl">Indigo keeps the screen calm and the next action obvious.</h2>
+  <p class="sub">It is the one colour we use for all the action you should take. Everything else stays black, white and grey, so nothing competes with what you came to do.</p>
+  <p class="caps"><b>Before:</b> many things compete for attention.<br><b>After:</b> only the action carries colour.</p>
+  <div class="stage">
+    <div class="swatch"><i></i>Indigo #4E61D6 · spent on one job</div>
+    <div class="ui mini before">
+      <div class="uihd"><span class="uit">Payroll · Week 32</span><span class="uibtn x2">Delete run</span></div>
+      <div class="body">
+        <div class="btl"><span class="uibtn x1">Approve all</span><span class="uibtn x3">Hold</span><span class="uibtn x4">Export</span><span class="uibtn x5">Recalculate</span></div>
+        <div class="uirow"><b>Maya Green</b><span class="amt k">$2,304.00</span></div>
+        <div class="uirow"><b>Dan Reyes</b><span class="amt k">$1,988.50</span></div>
+        <div class="uirow"><b>Sana Khan</b><span class="amt k">$2,730.25</span></div>
+      </div>
+    </div>
+    <div class="ui mini after">
+      <div class="uihd"><span class="uit">Payroll · Week 32</span><span class="uibtn hero">Run payroll</span></div>
+      <div class="body">
+        <div class="btl"><span class="uibtn g">Approve all</span><span class="uibtn g">Hold</span><span class="uibtn g">Export</span><span class="uibtn g">Recalculate</span></div>
+        <div class="uirow"><b>Maya Green</b><span class="amt k">$2,304.00</span></div>
+        <div class="uirow"><b>Dan Reyes</b><span class="amt k">$1,988.50</span></div>
+        <div class="uirow"><b>Sana Khan</b><span class="amt k">$2,730.25</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 18 · TYPE ============ -->
+<section class="scene" id="sc-type" data-beats="1" data-rl="New visual language" data-rr="Sequifi × Parallel">
+  <h2 class="hl">Hanken Grotesk stays sharp in a dense table and friendly on a welcome screen.</h2>
+  <div class="glyph">Ag</div>
+  <div class="duo">
+    <div class="tmini ta">
+      <div class="tag">The typeface in a packed payroll table</div>
+      <div class="ui dense">
+        <div class="uihd"><span class="uit">214 workers · Week 32</span></div>
+        <div class="uirow"><b>Maya Green</b><span>Solar · TX</span><span class="amt k">$2,304.00</span></div>
+        <div class="uirow"><b>Dan Reyes</b><span>Roofing · AZ</span><span class="amt k">$1,988.50</span></div>
+        <div class="uirow"><b>Sana Khan</b><span>Pest · FL</span><span class="amt k">$2,730.25</span></div>
+        <div class="uirow"><b>Jon Park</b><span>HVAC · UT</span><span class="amt k">$1,842.00</span></div>
+      </div>
+    </div>
+    <div class="tmini tb">
+      <div class="tag">The same typeface on a simple welcome screen</div>
+      <div class="ui welc">
+        <div class="w1">Welcome to Sequifi, Jon</div>
+        <div class="w2">Your first pay lands this Friday. Here's how to see it.</div>
+        <span class="uibtn pri">Show me</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 19 · SPACE ============ -->
+<section class="scene" id="sc-space" data-beats="1" data-rl="New visual language" data-rr="Sequifi × Parallel">
+  <h2 class="hl">Breathing room makes decisions easier.</h2>
+  <p class="sub">Admins spend all day here. Space around each thing means less to process.</p>
+  <p class="cap"><b>Before:</b> packed edge to edge. <b>After:</b> room around what matters. Same screen, same content.</p>
+  <div class="stage">
+    <div class="ticks"><span>24</span><span>16</span><span>12</span><span>8</span></div>
+    <div class="ui smini">
+      <div class="uihd"><span class="uit">Approvals</span><span class="uibtn pri">Approve 3</span></div>
+      <div class="grp">
+        <div class="uirow"><b>Commission override · Maya G.</b><span class="amt k">$186.00</span></div>
+        <div class="uirow"><b>New hire pay setup · Dan R.</b><span class="amt k">$1,988.50</span></div>
+        <div class="uirow"><b>Bonus adjustment · Sana K.</b><span class="amt k">$250.00</span></div>
+        <div class="uirow"><b>Rate change · Jon P.</b><span class="amt k">$21.50/hr</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 20 · PAYOFF ============ -->
+<section class="scene" id="sc-payoff" data-beats="2" data-rl="New visual language" data-rr="Sequifi × Parallel">
+  <h2 class="hl">An admin can trust it all day, and a rep can pick it up in minutes.</h2>
+  <div class="duo">
+    <div class="half h1">
+      <div class="htag">For the admin</div>
+      <p class="hline">Admins stay in the tool, instead of keeping a spreadsheet open beside it.</p>
+      <div class="ui">
+        <div class="uihd"><span class="uit">Payroll · Week 32</span><span class="uibtn pri">Run payroll</span></div>
+        <div class="uirow"><span class="uiava">MG</span><b>Maya Green</b><span>Solar · TX</span><span class="amt k">$2,304.00</span></div>
+        <div class="uirow"><span class="uiava">DR</span><b>Dan Reyes</b><span>Roofing · AZ</span><span class="amt k">$1,988.50</span></div>
+        <div class="uirow"><span class="uiava">SK</span><b>Sana Khan</b><span>Pest · FL</span><span class="amt k">$2,730.25</span></div>
+      </div>
+    </div>
+    <div class="half h2">
+      <div class="htag">For the rep</div>
+      <p class="hline">Simple enough to learn in their first week on the job.</p>
+      <div class="phone">
+        <div class="ph-hd">My pay</div>
+        <div class="big k">$612.40</div>
+        <div class="cap2">lands this Friday</div>
+        <div class="uirow"><b>Last week</b><span class="amt k">$598.10</span></div>
+        <div class="uirow"><b>This month</b><span class="amt k">$2,406.90</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 21 · DIVIDER · SEQUOIA ============ -->
+<section class="scene dark bare divider" id="sc-d2" data-beats="0">
+  <div class="dline"><i></i></div>
+  <div class="dwrap">
+    <div class="dk">Part two</div>
+    <h2>Sequoia</h2>
+    <p class="dsub">One system behind every screen.</p>
+  </div>
+  <div class="stackviz">
+    <div class="lay">Components</div>
+    <div class="lay">Molecules</div>
+    <div class="lay">Atoms</div>
+    <div class="lay tok">Tokens</div>
+    <div class="lay" style="opacity:0 !important;border:0"></div>
+  </div>
+  <div class="dfoot"><b>Sequifi × Parallel</b> · Meet Sequoia · 02 / 04</div>
+</section>
+
+<!-- ============ 22 · FOUNDATIONS ============ -->
+<section class="scene" id="sc-found" data-beats="0" data-rl="Sequoia · Foundations" data-rr="Sequifi × Parallel">
+  <h2 class="hl">Everything sits on one set of tokens.<small>Colour · Type · Spacing · Radius</small></h2>
+  <div class="spec">
+    <div class="fcol">
+      <div class="ft">Colour</div>
+      <div class="fitem"><div class="chip"><i style="background:#ECEEFB"></i>purple_100 · #ECEEFB</div></div>
+      <div class="fitem"><div class="chip"><i style="background:#B9C1F0"></i>purple_300 · #B9C1F0</div></div>
+      <div class="fitem"><div class="chip"><i style="background:#4E61D6"></i>purple_600 · #4E61D6</div></div>
+      <div class="fitem"><div class="chip"><i style="background:#3D4FC4"></i>purple_700 · #3D4FC4</div></div>
+      <div class="fitem"><div class="chip"><i style="background:#17161A"></i>grey_900 · #17161A</div></div>
+      <div class="fitem"><div class="chip"><i style="background:#55565C"></i>grey_600 · #55565C</div></div>
+      <div class="fitem"><div class="chip"><i style="background:#8E0B16"></i>red_700 · #8E0B16</div></div>
+    </div>
+    <div class="fcol">
+      <div class="ft">Type</div>
+      <div class="fitem"><div class="tline" style="font-size:clamp(40px,3.6vw,64px);font-weight:600">H1<small>72</small></div></div>
+      <div class="fitem"><div class="tline" style="font-size:clamp(26px,2.3vw,40px);font-weight:600">Heading 2<small>44</small></div></div>
+      <div class="fitem"><div class="tline" style="font-size:clamp(17px,1.5vw,24px);font-weight:500">Heading 3<small>24</small></div></div>
+      <div class="fitem"><div class="tline" style="font-size:15px">Body<small>16</small></div></div>
+      <div class="fitem"><div class="tline" style="font-size:12px;color:var(--mut)">Caption<small>12</small></div></div>
+    </div>
+    <div class="fcol">
+      <div class="ft">Spacing</div>
+      <div class="fitem"><div class="sbar" style="width:8%"><em>4</em></div></div>
+      <div class="fitem"><div class="sbar" style="width:16%"><em>8</em></div></div>
+      <div class="fitem"><div class="sbar" style="width:24%"><em>12</em></div></div>
+      <div class="fitem"><div class="sbar" style="width:32%"><em>16</em></div></div>
+      <div class="fitem"><div class="sbar" style="width:48%"><em>24</em></div></div>
+      <div class="fitem"><div class="sbar" style="width:64%"><em>32</em></div></div>
+    </div>
+    <div class="fcol">
+      <div class="ft">Radius</div>
+      <div class="fitem"><span class="rchip" style="border-radius:2px"><em>2</em></span><span class="rchip" style="border-radius:6px"><em>6</em></span></div>
+      <div class="fitem" style="margin-top:26px"><span class="rchip" style="border-radius:12px"><em>12</em></span><span class="rchip" style="border-radius:17px"><em>24</em></span></div>
+      <div class="fitem" style="margin-top:26px"><span class="rchip" style="border-radius:100px;width:64px"><em>full</em></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 23 · ATOMS ============ -->
+<section class="scene" id="sc-atoms" data-beats="1" data-rl="Sequoia · Atoms" data-rr="Sequifi × Parallel">
+  <h2 class="hl">Every control in every state.<small>A primary button, an input, a toggle, each drawn for default, hover, focus, disabled and error.</small></h2>
+  <div class="matrix" id="atomMatrix">
+    <span class="mx-h"></span><span class="mx-h">Default</span><span class="mx-h">Hover</span><span class="mx-h">Focus</span><span class="mx-h">Disabled</span><span class="mx-h">Error</span>
+    <span class="mx-r">Button</span>
+    <span class="cellw"><span class="ab">Run payroll</span></span>
+    <span class="cellw"><span class="ab hv">Run payroll</span></span>
+    <span class="cellw"><span class="ab fc">Run payroll</span></span>
+    <span class="cellw"><span class="ab ds">Run payroll</span></span>
+    <span class="cellw"><span class="ab er">Fix 3 errors</span></span>
+    <span class="mx-r">Input</span>
+    <span class="cellw"><span class="ain">Hourly rate</span></span>
+    <span class="cellw"><span class="ain hv">Hourly rate</span></span>
+    <span class="cellw"><span class="ain fc">21.50</span></span>
+    <span class="cellw"><span class="ain ds">Hourly rate</span></span>
+    <span class="cellw"><span class="ain er">Required</span></span>
+    <span class="mx-r">Toggle</span>
+    <span class="cellw"><span class="atg"></span></span>
+    <span class="cellw"><span class="atg onx"></span></span>
+    <span class="cellw"><span class="atg onx fc"></span></span>
+    <span class="cellw"><span class="atg ds"></span></span>
+    <span class="cellw"><span class="atg er"></span></span>
+  </div>
+  <div class="ghost" id="atomGhost"><svg viewBox="0 0 22 22"><path d="M4 2 L18 11 L11 12.5 L8 19 Z" fill="#17161A" stroke="#fff" stroke-width="1.4"/></svg></div>
+  <p class="statecap">One control, <b>five states</b>, drawn once and reused everywhere.</p>
+</section>
+
+<!-- ============ 24 · MOLECULES ============ -->
+<section class="scene" id="sc-mole" data-beats="1" data-rl="Sequoia · Molecules" data-rr="Sequifi × Parallel">
+  <h2 class="hl">A few atoms make a pattern.<small>A field with its label and error. A summary row. A dropdown. The combinations that show up on every screen.</small></h2>
+  <div class="stage">
+    <div class="mgroup">
+      <div class="mt">Label, help text, error</div>
+      <div class="fpart flabel">Hourly rate</div>
+      <div class="fpart finput err k">21.5O</div>
+      <div class="fpart fhelp">Numbers only. Did you type the letter O?</div>
+    </div>
+    <div class="mgroup">
+      <div class="mt">Detail, status, actions</div>
+      <div class="srow"><span class="uiava">MG</span><span class="g1"><b>Maya Green</b><span>Solar · Austin, TX</span></span><span class="stt">Active</span><span class="uibtn sec">View</span></div>
+    </div>
+    <div class="mgroup">
+      <div class="mt">Trigger and open list</div>
+      <div class="dd">
+        <div class="ddt"><span>Pay schedule</span><span>▾</span></div>
+        <div class="ddl"><div class="sel">Weekly · Fridays</div><div>Bi-weekly</div><div>Monthly · 1st</div></div>
+      </div>
+    </div>
+  </div>
+  <p class="lab2">Search, filters and actions compose the same way.</p>
+</section>
+
+<!-- ============ 25 · COMPONENTS ============ -->
+<section class="scene" id="sc-compo" data-beats="1" data-rl="Sequoia · Components" data-rr="Sequifi × Parallel">
+  <h2 class="hl">Patterns build into whole sections.<small>A pay breakdown, a worker list, a filter bar. What a screen is actually made of.</small></h2>
+  <div class="stage">
+    <div class="ui paycard">
+      <div class="uihd"><span class="uit">How this role is paid<small>Solar installer · Texas</small></span></div>
+      <div class="prow" style="transition-delay:.25s"><span>Base</span><b class="k">$1,400.00</b></div>
+      <div class="prow" style="transition-delay:.4s"><span>Commission 12.5%</span><b class="k">$442.00</b></div>
+      <div class="prow" style="transition-delay:.55s"><span>Weekend bonus</span><b class="k">$120.00</b></div>
+      <div class="prow tot" style="transition-delay:.75s"><span>Take-home</span><b class="k" id="compoTotal">$0.00</b></div>
+    </div>
+    <div class="right2">
+      <div class="fbar"><span class="fchip onx">All teams</span><span class="fchip">Solar</span><span class="fchip">Roofing</span><span class="fchip">This week</span></div>
+      <div class="ui">
+        <div class="uirow"><span class="uiava">MG</span><b>Maya Green</b><span>Solar · TX</span><span class="amt k">$2,304.00</span></div>
+        <div class="uirow"><span class="uiava">DR</span><b>Dan Reyes</b><span>Roofing · AZ</span><span class="amt k">$1,988.50</span></div>
+        <div class="uirow"><span class="uiava">SK</span><b>Sana Khan</b><span>Pest · FL</span><span class="amt k">$2,730.25</span></div>
+        <div class="uirow"><span class="uiava">JP</span><b>Jon Park</b><span>HVAC · UT</span><span class="amt k">$1,842.00</span></div>
+      </div>
+    </div>
+  </div>
+  <p class="cap">Every part of these is a molecule you've already seen.</p>
+</section>
+
+<!-- ============ 26 · ACCESSIBILITY ============ -->
+<section class="scene" id="sc-a11y" data-beats="0" data-rl="Sequoia · Accessibility" data-rr="Sequifi × Parallel">
+  <h2 class="hl">Everything clears WCAG contrast, down to the faintest label.<small>This is payroll. The number that decides someone's pay is the loudest thing on the screen.</small></h2>
+  <div class="ladder">
+    <div class="tier" style="transition-delay:.2s"><span class="tx" style="color:#17161A">text_primary</span><span class="hex">#17161A</span><span class="rt k">18.0 : 1</span><span class="ok">AA ✓</span></div>
+    <div class="tier" style="transition-delay:.34s"><span class="tx" style="color:#55565C">text_secondary</span><span class="hex">#55565C</span><span class="rt k">7.3 : 1</span><span class="ok">AA ✓</span></div>
+    <div class="tier" style="transition-delay:.48s"><span class="tx" style="color:#6E6F76">text_tertiary</span><span class="hex">#6E6F76</span><span class="rt k">5.0 : 1</span><span class="ok">AA ✓</span></div>
+    <div class="tier" style="transition-delay:.62s"><span class="tx" style="color:#74757C">text_ghost</span><span class="hex">#74757C</span><span class="rt k">4.6 : 1</span><span class="ok">AA ✓</span></div>
+    <div class="tier" style="transition-delay:.76s"><span class="tx" style="color:#8E0B16">text_error</span><span class="hex">#8E0B16</span><span class="rt k">9.5 : 1</span><span class="ok">AA ✓</span></div>
+  </div>
+  <div class="big">
+    <div class="bl">Take-home pay</div>
+    <div class="bv k">$1,842.00</div>
+    <div class="bs">The loudest thing on the screen.</div>
+  </div>
+</section>
+
+<!-- ============ 27 · RESPONSIVE ============ -->
+<section class="scene" id="sc-resp" data-beats="2" data-rl="Sequoia · Responsive" data-rr="Sequifi × Parallel">
+  <h2 class="hl">The same system, phone to desktop.<small>One payroll run, three screens. The admin gets the whole picture, the rep gets a version that fits their phone.</small></h2>
+  <div class="stage">
+    <div class="ui dev">
+      <div class="uihd"><span class="uit">Payroll · Week 32</span><span class="uibtn pri">Run payroll</span></div>
+      <div class="cards">
+        <div class="scard"><b class="k">$8,864.75</b><span>Total pay</span></div>
+        <div class="scard"><b class="k">214</b><span>Workers</span></div>
+        <div class="scard"><b class="k">3</b><span>Approvals</span></div>
+      </div>
+      <div class="uirow"><b>Maya Green</b><span class="amt k">$2,304.00</span></div>
+      <div class="uirow"><b>Dan Reyes</b><span class="amt k">$1,988.50</span></div>
+    </div>
+  </div>
+  <div class="segs"><span class="sd">Desktop</span><span class="st">Tablet</span><span class="sp">Phone</span></div>
+</section>
+
+<!-- ============ 28 · THEMING ============ -->
+<section class="scene" id="sc-theme" data-beats="1" data-rl="Sequoia · Theming" data-rr="Sequifi × Parallel">
+  <h2 class="hl">Light or dark, one system.<small>The surface is a token like any other. In dark mode nothing is redrawn, only re-coloured.</small></h2>
+  <div class="tok">
+    <div>surface</div>
+    <div class="tkn"><i></i><span class="k" id="tokVal">#FFFFFF</span><span class="arr">→</span><span class="k">token, not a repaint</span></div>
+  </div>
+  <div class="tmini">
+    <div class="thd"><span>Payroll · Week 32</span><span class="k">$8,864.75</span></div>
+    <div class="trow"><span>Maya Green</span><b class="k">$2,304.00</b></div>
+    <div class="trow"><span>Dan Reyes</span><b class="k">$1,988.50</b></div>
+    <div class="trow"><span>Sana Khan</span><b class="k">$2,730.25</b></div>
+    <span class="uibtn pri">Run payroll</span>
+  </div>
+</section>
+<style>
+/* =========================================================== 30 · FLOWS */
+#sc-flows .wrap{position:absolute;left:var(--mx);right:var(--mx);top:50%;transform:translateY(-50%)}
+#sc-flows .hl{font-size:clamp(34px,4vw,64px);max-width:26ch}
+#sc-flows .fl{display:flex;gap:3vw;margin-top:5vh}
+#sc-flows .fname{font-weight:500;font-size:clamp(20px,2vw,30px);letter-spacing:-.02em;color:var(--lab);
+  border-top:1px solid var(--line);padding-top:1.6vh;flex:1;
+  opacity:0;transform:translateY(14px);transition:all .55s var(--ease)}
+#sc-flows.active .fname{opacity:1;transform:none;color:var(--ink)}
+#sc-flows.active .fname:nth-child(1){transition-delay:.25s}
+#sc-flows.active .fname:nth-child(2){transition-delay:.4s}
+#sc-flows.active .fname:nth-child(3){transition-delay:.55s}
+#sc-flows .fname i{display:block;font-style:normal;font-size:12.5px;color:var(--lab);margin-bottom:.8vh}
+#sc-flows .loop{margin-top:5.5vh;font-size:clamp(16px,1.45vw,22px);font-weight:500;color:var(--mut);
+  opacity:0;transform:translateY(12px);transition:all .6s var(--ease)}
+#sc-flows.b1 .loop{opacity:1;transform:none}
+#sc-flows .loop em{font-style:normal;color:var(--indigo)}
+
+/* =========================================================== 31-33 · BEFORE/AFTER WIPES */
+.ba .hl{position:absolute;left:var(--mx);top:10.5vh;font-size:clamp(26px,3vw,46px);z-index:6}
+.ba .stage{position:absolute;left:var(--mx);right:var(--mx);top:24vh;bottom:11vh;border-radius:14px;
+  overflow:hidden;border:1px solid var(--line2);box-shadow:0 30px 80px -40px rgba(20,19,24,.4);
+  background:#fff;cursor:ew-resize}
+.ba .img{position:absolute;inset:0;background-size:cover;background-position:top center}
+.ba .new{clip-path:inset(0 calc(100% - var(--w,0%)) 0 0)}
+.ba .bar{position:absolute;top:0;bottom:0;left:var(--w,0%);width:2px;background:var(--indigo);z-index:5;
+  transform:translateX(-1px)}
+.ba .bar::after{content:"◂ ▸";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  background:var(--indigo);color:#fff;font-size:10px;letter-spacing:1px;border-radius:100px;padding:7px 10px;white-space:nowrap}
+.ba .tag{position:absolute;top:14px;font-size:12px;font-weight:600;z-index:6;border-radius:6px;padding:6px 10px}
+.ba .tagb{left:14px;background:rgba(20,19,24,.75);color:#fff}
+.ba .taga{right:14px;background:var(--indigo);color:#fff;opacity:0;transition:opacity .4s ease}
+.ba.b1 .taga{opacity:1}
+.ba .cap{position:absolute;right:var(--mx);top:11.5vh;z-index:6;font-size:13px;color:var(--lab);text-align:right}
+.ba .cap b{color:var(--mut);font-weight:600}
+
+/* =========================================================== 35 · HOW WE WORK 1 */
+#sc-how1 .hl{position:absolute;left:var(--mx);top:12vh;font-size:clamp(32px,3.7vw,58px)}
+#sc-how1 .rows{position:absolute;left:var(--mx);right:var(--mx);top:34vh;display:grid;grid-template-columns:repeat(3,1fr);gap:3.5vw}
+#sc-how1 .hcol{border-top:1px solid var(--line2);padding-top:2.2vh;opacity:0;transform:translateY(16px);
+  transition:all .6s var(--ease)}
+#sc-how1.active .hcol{opacity:1;transform:none}
+#sc-how1.active .hcol:nth-child(1){transition-delay:.25s}
+#sc-how1.active .hcol:nth-child(2){transition-delay:.4s}
+#sc-how1.active .hcol:nth-child(3){transition-delay:.55s}
+#sc-how1 .ht{font-weight:600;font-size:clamp(18px,1.7vw,26px);letter-spacing:-.018em}
+#sc-how1 .hd2{margin-top:1.2vh;font-size:clamp(13.5px,1.15vw,17px);color:var(--mut);line-height:1.55;max-width:36ch}
+#sc-how1 .hd2 b{color:var(--ink);font-weight:600}
+
+/* =========================================================== 36 · TIMELINE */
+#sc-how2 .hl{position:absolute;left:var(--mx);top:12vh;font-size:clamp(30px,3.4vw,54px);max-width:24ch}
+#sc-how2 .hl small{display:block;font-size:.52em;font-weight:400;color:var(--mut);margin-top:1.2vh;max-width:46ch;line-height:1.5}
+#sc-how2 .tl{position:absolute;left:var(--mx);right:var(--mx);top:42vh}
+#sc-how2 .wk{display:grid;grid-template-columns:140px repeat(4,1fr);gap:0 1.2vw;font-size:12.5px;color:var(--lab);margin-bottom:1.4vh}
+#sc-how2 .trk{display:grid;grid-template-columns:140px repeat(4,1fr);gap:0 1.2vw;align-items:center;margin-bottom:2.4vh}
+#sc-how2 .tn{font-size:13.5px;font-weight:600}
+#sc-how2 .seg{height:34px;border-radius:8px;display:flex;align-items:center;padding:0 12px;font-size:12px;
+  font-weight:600;color:#fff;background:var(--indigo);transform:scaleX(0);transform-origin:left;
+  transition:transform .7s var(--ease)}
+#sc-how2 .trk.dev .seg{background:var(--soft);color:var(--indigo)}
+#sc-how2.active .seg{transform:none}
+#sc-how2 .note{position:absolute;left:var(--mx);bottom:11vh;font-size:13px;color:var(--lab)}
+#sc-how2 .note b{color:var(--indigo);font-weight:600}
+
+/* =========================================================== 37 · KEEP BUILDING */
+#sc-how3 .wrap{position:absolute;left:var(--mx);right:var(--mx);top:50%;transform:translateY(-50%)}
+#sc-how3 .hl{font-size:clamp(38px,4.6vw,76px);max-width:18ch}
+#sc-how3 .sub{margin-top:2.8vh;font-size:clamp(16px,1.5vw,23px);max-width:44ch}
+#sc-how3 .toks{margin-top:5vh;display:flex;gap:12px;flex-wrap:wrap;max-width:56vw}
+#sc-how3 .tk2{font:500 12.5px/1 var(--fd);color:var(--mut);border:1px solid var(--line2);border-radius:8px;
+  padding:9px 12px;opacity:0;transform:translateY(10px);transition:all .5s var(--ease)}
+#sc-how3.active .tk2{opacity:1;transform:none}
+#sc-how3 .tk2 b{color:var(--indigo);font-weight:600}
+
+/* =========================================================== 38 · END */
+#sc-end .ewrap{position:absolute;left:var(--mx);right:var(--mx);top:50%;transform:translateY(-50%)}
+#sc-end .ebig{font-weight:500;font-size:clamp(40px,5.2vw,88px);letter-spacing:-.04em;line-height:1.06;color:#F4F5F3;
+  max-width:21ch;opacity:0;transform:translateY(26px);transition:opacity .9s ease .2s,transform 1s var(--ease) .2s}
+#sc-end.active .ebig{opacity:1;transform:none}
+#sc-end .ebig em{font-style:normal;color:var(--indigo-lt)}
+#sc-end .esub{margin-top:3.4vh;font-size:clamp(17px,1.6vw,25px);color:rgba(244,245,243,.62);
+  opacity:0;transition:opacity .9s ease .7s}
+#sc-end.active .esub{opacity:1}
+#sc-end .efoot{position:absolute;left:var(--mx);right:var(--mx);bottom:5vh;display:flex;justify-content:space-between;
+  font-size:13.5px;color:rgba(244,245,243,.42);opacity:0;transition:opacity .9s ease 1.1s}
+#sc-end.active .efoot{opacity:1}
+#sc-end .efoot b{color:rgba(244,245,243,.65);font-weight:500}
+</style>
+
+<!-- ============ 29 · DIVIDER · STRESS TEST ============ -->
+<section class="scene dark bare divider" id="sc-d3" data-beats="0">
+  <div class="dline"><i></i></div>
+  <div class="dwrap">
+    <div class="dk">Part three</div>
+    <h2>The stress<br>test</h2>
+    <p class="dsub">None of this counts until it survives the real product.</p>
+  </div>
+  <div class="dfoot"><b>Sequifi × Parallel</b> · The stress test · 03 / 04</div>
+</section>
+
+<!-- ============ 30 · FLOWS ============ -->
+<section class="scene" id="sc-flows" data-beats="1" data-rl="The stress test" data-rr="Sequifi × Parallel">
+  <div class="wrap">
+    <h2 class="hl">We took Sequifi's hardest flows and rebuilt every one on Sequoia.</h2>
+    <div class="fl">
+      <div class="fname"><i>01</i>Onboarding</div>
+      <div class="fname"><i>02</i>Hiring</div>
+      <div class="fname"><i>03</i>Reporting</div>
+    </div>
+    <p class="loop">When a flow didn't fit, <em>we fixed the system beneath it</em>.</p>
+  </div>
+</section>
+
+<!-- ============ 31 · ONBOARDING ============ -->
+<section class="scene ba" id="sc-bo" data-beats="1" data-rl="The stress test · Before & after" data-rr="Sequifi × Parallel">
+  <h2 class="hl">Onboarding, rebuilt on Sequoia.</h2>
+  <p class="cap"><b>Drag the line</b>, or click anywhere to sweep.</p>
+  <div class="stage" data-wipe>
+    <div class="img old" style="background-image:url('Assets/Onboarding-Old.png')"></div>
+    <div class="img new" style="background-image:url('Assets/Onboarding-New.png')"></div>
+    <div class="bar"></div>
+    <span class="tag tagb">Before</span><span class="tag taga">After · on Sequoia</span>
+  </div>
+</section>
+
+<!-- ============ 32 · HIRING ============ -->
+<section class="scene ba" id="sc-bh" data-beats="1" data-rl="The stress test · Before & after" data-rr="Sequifi × Parallel">
+  <h2 class="hl">Hiring, rebuilt on Sequoia.</h2>
+  <p class="cap"><b>Drag the line</b>, or click anywhere to sweep.</p>
+  <div class="stage" data-wipe>
+    <div class="img old" style="background-image:url('Assets/Hiring-Old.png')"></div>
+    <div class="img new" style="background-image:url('Assets/Hiring-New.png')"></div>
+    <div class="bar"></div>
+    <span class="tag tagb">Before</span><span class="tag taga">After · on Sequoia</span>
+  </div>
+</section>
+
+<!-- ============ 33 · REPORTING ============ -->
+<section class="scene ba" id="sc-br" data-beats="1" data-rl="The stress test · Before & after" data-rr="Sequifi × Parallel">
+  <h2 class="hl">Reporting, rebuilt on Sequoia.</h2>
+  <p class="cap"><b>Drag the line</b>, or click anywhere to sweep.</p>
+  <div class="stage" data-wipe>
+    <div class="img old" style="background-image:url('Assets/Reports-Old.png')"></div>
+    <div class="img new" style="background-image:url('Assets/Reports-New.png')"></div>
+    <div class="bar"></div>
+    <span class="tag tagb">Before</span><span class="tag taga">After · on Sequoia</span>
+  </div>
+</section>
+
+<!-- ============ 34 · DIVIDER · HOW WE WORK ============ -->
+<section class="scene dark bare divider" id="sc-d4" data-beats="0">
+  <div class="dline"><i></i></div>
+  <div class="dwrap">
+    <div class="dk">Part four</div>
+    <h2>How we<br>work</h2>
+    <p class="dsub">A system is only as good as what happens next.</p>
+  </div>
+  <div class="dfoot"><b>Sequifi × Parallel</b> · How we work · 04 / 04</div>
+</section>
+
+<!-- ============ 35 · HOW 1 ============ -->
+<section class="scene" id="sc-how1" data-beats="0" data-rl="How we work" data-rr="Sequifi × Parallel">
+  <h2 class="hl">Working with us feels light.</h2>
+  <div class="rows">
+    <div class="hcol"><div class="ht">Open files</div>
+      <p class="hd2"><b>You see it as it's built.</b> Our working files stay open the whole time, so there are no surprises at handoff.</p></div>
+    <div class="hcol"><div class="ht">Senior-led</div>
+      <p class="hd2"><b>The people who pitch do the work.</b> Senior designers on the project from day one, not a hand-off to juniors.</p></div>
+    <div class="hcol"><div class="ht">Async</div>
+      <p class="hd2"><b>Nothing waits for a meeting.</b> Walkthroughs you can watch whenever you want, so the work keeps moving.</p></div>
+  </div>
+</section>
+
+<!-- ============ 36 · HOW 2 · TIMELINE ============ -->
+<section class="scene" id="sc-how2" data-beats="0" data-rl="How we work" data-rr="Sequifi × Parallel">
+  <h2 class="hl">Your developers don't wait for us to finish.<small>We share the foundations first, so the build starts while the rest of the system comes together.</small></h2>
+  <div class="tl">
+    <div class="wk"><span></span><span>Week 1</span><span>Week 2</span><span>Week 3</span><span>Week 4</span></div>
+    <div class="trk">
+      <span class="tn">Us, designing</span>
+      <div class="seg" style="transition-delay:.25s">Foundations</div>
+      <div class="seg" style="transition-delay:.45s">Components</div>
+      <div class="seg" style="transition-delay:.65s">Templates</div>
+      <div class="seg" style="transition-delay:.85s">Docs</div>
+    </div>
+    <div class="trk dev">
+      <span class="tn">Your developers</span>
+      <span></span>
+      <div class="seg" style="transition-delay:1.05s">Building</div>
+      <div class="seg" style="transition-delay:1.2s">Building</div>
+      <div class="seg" style="transition-delay:1.35s">Building</div>
+    </div>
+  </div>
+  <p class="note">Foundations ship in <b>week one</b>. The build never idles.</p>
+</section>
+
+<!-- ============ 37 · HOW 3 ============ -->
+<section class="scene" id="sc-how3" data-beats="0" data-rl="How we work" data-rr="Sequifi × Parallel">
+  <div class="wrap">
+    <h2 class="hl">Your team can keep building on it without us.</h2>
+    <p class="sub">Clear names, clear rules, and a structure that shows exactly where new things belong.</p>
+    <div class="toks">
+      <span class="tk2" style="transition-delay:.25s"><b>colour</b> / purple_600</span>
+      <span class="tk2" style="transition-delay:.35s"><b>space</b> / space_16</span>
+      <span class="tk2" style="transition-delay:.45s"><b>type</b> / heading_2</span>
+      <span class="tk2" style="transition-delay:.55s"><b>radius</b> / radius_12</span>
+      <span class="tk2" style="transition-delay:.65s"><b>component</b> / pay_breakdown</span>
+      <span class="tk2" style="transition-delay:.75s"><b>pattern</b> / summary_row</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 38 · END ============ -->
+<section class="scene dark bare" id="sc-end" data-beats="0">
+  <div class="ewrap">
+    <p class="ebig">A design system is a bet on <em>everything you build after&nbsp;it</em>.</p>
+    <p class="esub">If that's a bet you're making, we'd love to help.</p>
+  </div>
+  <div class="efoot"><span><b>Sequoia</b> · Sequifi × Parallel</span><span>A design system case study · The end</span></div>
+</section>
+
+<!-- ============ CONTENTS OVERLAY ============ -->
+<div id="menu">
+  <span class="mclose" id="menuClose">Close ✕</span>
+  <div class="mtag">Contents · jump anywhere</div>
+  <div class="mrow" data-go="2"><span class="n">1</span><span class="t">The brief</span><span class="d">HR and payroll, and why adoption slipped</span></div>
+  <div class="mrow" data-go="13"><span class="n">2</span><span class="t">New visual language</span><span class="d">Finding what Sequifi should look like</span></div>
+  <div class="mrow" data-go="21"><span class="n">3</span><span class="t">Meet Sequoia</span><span class="d">The design system built to last</span></div>
+  <div class="mrow" data-go="29"><span class="n">4</span><span class="t">The stress test</span><span class="d">Proving it on the real product</span></div>
+  <div class="mrow" data-go="34"><span class="n">5</span><span class="t">How we work</span><span class="d">And what happens after we leave</span></div>
+</div>
+
+<script>
+window.onerror=function(m,s,l){var e=document.getElementById('errband');e.style.display='block';e.textContent='Script error: '+m+' (line '+l+')';};
+
+/* ============ engine ============ */
+const SC=[...document.querySelectorAll('.scene')];
+const N=SC.length;
+let si=0, beat=0;
+const beatsOf=s=>parseInt(SC[s].dataset.beats||'0',10);
+const rlEl=document.getElementById('rl'), rrEl=document.getElementById('rr'),
+      pg=document.getElementById('pgno'), prog=document.getElementById('prog'),
+      hintc=document.getElementById('hintc');
+
+/* seeded pseudo-random (stable across re-renders) */
+function srand(i){const x=Math.sin(i*127.1+311.7)*43758.5453;return x-Math.floor(x);}
+/* time-based tween (backgrounded-tab safe) */
+function tween(dur,fn,done){const t0=performance.now();const id=setInterval(()=>{
+  let p=(performance.now()-t0)/dur;if(p>=1){p=1;clearInterval(id);}
+  fn(1-Math.pow(1-p,3));if(p===1&&done)done();},16);return id;}
+
+let timers=[];
+const T=(fn,ms)=>{const id=setTimeout(fn,ms);timers.push(id);return id;};
+const I=(fn,ms)=>{const id=setInterval(fn,ms);timers.push(id);return id;};
+function clearTimers(){timers.forEach(id=>{clearTimeout(id);clearInterval(id);});timers=[];}
+
+/* ============ scene hooks ============ */
+const hooks={};
+
+/* --- cover: chaos → grid assembly --- */
+(function(){
+  const host=document.getElementById('coverFrags');
+  const FR=[];
+  for(let i=0;i<34;i++){
+    const f=document.createElement('div');f.className='frag';
+    const w=30+srand(i)*90, h=12+srand(i+50)*40;
+    f.style.width=w+'px';f.style.height=h+'px';
+    if(i===21)f.classList.add('key');
+    host.appendChild(f);FR.push(f);
+  }
+  hooks['sc-cover']=(b,silent)=>{
+    const vw=innerWidth,vh=innerHeight;
+    const gx=vw*0.66, gy=vh*0.16, cols=4, cw=(vw*0.28)/cols;
+    FR.forEach((f,i)=>{
+      const sx=srand(i+9)*vw*1.1-vw*.05, sy=srand(i+99)*vh, sr=(srand(i+7)-.5)*70;
+      const c=i%cols, r=Math.floor(i/cols);
+      const tx=gx+c*cw, ty=gy+r*(vh*0.075);
+      f.style.transitionDelay=(silent?0:(.15+srand(i+3)*.9))+'s';
+      if(silent){f.style.transform=`translate(${tx}px,${ty}px)`;f.style.opacity=.9;
+        f.style.width=(cw-14)+'px';f.style.height=(vh*0.075-16)+'px';return;}
+      f.style.transition='none';
+      f.style.transform=`translate(${sx}px,${sy}px) rotate(${sr}deg)`;
+      f.style.width=(30+srand(i)*90)+'px';f.style.height=(12+srand(i+50)*40)+'px';
+      f.style.opacity=.35;
+      f.getBoundingClientRect();
+      f.style.transition='';
+      T(()=>{f.style.transform=`translate(${tx}px,${ty}px) rotate(0deg)`;f.style.opacity=.9;
+        f.style.width=(cw-14)+'px';f.style.height=(vh*0.075-16)+'px';},40);
+    });
+  };
+})();
+
+/* --- load: rep dot field --- */
+(function(){
+  const field=document.getElementById('loadField');
+  const reps=[];
+  const COLSD=18, ROWSD=9;
+  for(let i=0;i<COLSD*ROWSD;i++){
+    const d=document.createElement('span');d.className='rep';field.appendChild(d);reps.push(d);
+  }
+  const gone=[];for(let i=0;i<COLSD*ROWSD;i++){if(srand(i+400)<.08)gone.push(i);}
+  hooks['sc-load']=(b,silent)=>{
+    const W=field.clientWidth,H=field.clientHeight;
+    const x0=W*0.30, xw=W*0.66, y0=H*0.06, yh=H*0.8;
+    if(b===0){
+      reps.forEach((d,i)=>{
+        d.classList.remove('gone','red');
+        const c=i%COLSD, r=Math.floor(i/COLSD);
+        const tx=x0+ (c/(COLSD-1))*xw, ty=y0+(r/(ROWSD-1))*yh;
+        if(silent){d.style.transition='none';d.style.transform=`translate(${tx}px,${ty}px)`;d.getBoundingClientRect();d.style.transition='';return;}
+        d.style.transition='none';
+        d.style.transform=`translate(${W*0.06+9}px,${H*0.44+9}px)`;
+        d.getBoundingClientRect();d.style.transition='';
+        d.style.transitionDelay=(srand(i)*0.9)+'s';
+        T(()=>{d.style.transform=`translate(${tx}px,${ty}px)`;},30);
+      });
+    }
+    if(b===2){
+      gone.forEach((gi,k)=>{
+        const d=reps[gi];
+        const c=gi%COLSD, r=Math.floor(gi/COLSD);
+        const tx=x0+(c/(COLSD-1))*xw, ty=y0+(r/(ROWSD-1))*yh;
+        if(silent){d.classList.add('gone');return;}
+        T(()=>d.classList.add('red'),200+k*90);
+        T(()=>{d.classList.add('gone');d.style.transform=`translate(${tx}px,${ty+64}px)`;},700+k*110);
+      });
+    }else if(b<2){gone.forEach(gi=>reps[gi].classList.remove('gone','red'));}
+  };
+})();
+
+/* --- pile: screens land --- */
+hooks['sc-pile']=(b,silent)=>{
+  const cards=[...document.querySelectorAll('#sc-pile .card')];
+  const pose=[[0,4,-3],[6,14,2.5],[12,26,-1.6],[18,38,3.2]];
+  if(b===0){
+    cards.forEach((c,i)=>{
+      c.classList.remove('land');
+      c.style.left=pose[i][0]+'%';c.style.zIndex=i+1;
+      c.style.transform=`translateY(-70vh) rotate(${pose[i][2]*2}deg)`;
+    });
+  }
+  if(b===1){
+    cards.forEach((c,i)=>{
+      const land=()=>{c.classList.add('land');
+        c.style.transform=`translateY(${pose[i][1]}%) rotate(${pose[i][2]}deg)`;};
+      if(silent){c.classList.add('land');c.style.transition='none';
+        c.style.transform=`translateY(${pose[i][1]}%) rotate(${pose[i][2]}deg)`;
+        c.getBoundingClientRect();c.style.transition='';}
+      else T(land,300+i*420);
+    });
+  }
+};
+
+/* --- inconsistent button wall --- */
+(function(){
+  const wall=document.getElementById('btnWall');
+  const variants=[
+    'border-radius:2px;background:#3B5BDB;color:#fff;font-size:12px;padding:8px 18px',
+    'border-radius:100px;background:#2E9E5B;color:#fff;font-size:11px;padding:10px 22px;text-transform:uppercase;letter-spacing:.08em',
+    'border-radius:6px;background:#fff;color:#3B5BDB;border:2px solid #3B5BDB;font-size:13px;padding:7px 14px',
+    'border-radius:0;background:#17161A;color:#fff;font-size:12px;padding:9px 16px',
+    'border-radius:10px;background:#E9A13B;color:#17161A;font-size:12.5px;padding:8px 15px;font-weight:800',
+    'border-radius:4px;background:#EEF;color:#446;border:1px solid #99A;font-size:11px;padding:6px 12px',
+    'border-radius:14px;background:#D8483B;color:#fff;font-size:13.5px;padding:11px 20px',
+    'border-radius:3px;background:linear-gradient(#fff,#DDD);color:#333;border:1px solid #AAA;font-size:11.5px;padding:7px 13px',
+    'border-radius:8px;background:#8E44AD;color:#fff;font-size:12px;padding:9px 17px;font-style:italic',
+    'border-radius:100px;background:#fff;color:#17161A;border:1px dashed #888;font-size:12px;padding:8px 16px',
+    'border-radius:5px;background:#4E61D6;color:#fff;font-size:14px;padding:10px 18px',
+    'border-radius:0 12px 0 12px;background:#0B7285;color:#fff;font-size:12px;padding:8px 15px'
+  ];
+  const labels=['Save','SAVE','Save changes','save','Save.','Apply','SAVE NOW','Save',' Save ','Submit','Save','Done'];
+  variants.forEach((v,i)=>{
+    const b=document.createElement('span');b.className='wb';
+    b.setAttribute('style',v);b.textContent=labels[i];
+    b.style.transitionDelay=(i*0.07)+'s';
+    wall.appendChild(b);
+  });
+})();
+
+/* --- fallback spreadsheet build --- */
+(function(){
+  const sheet=document.getElementById('fallSheet');
+  let built=false;
+  hooks['sc-fall']=(b)=>{
+    if(built)return;built=true;
+    const cols=['','A','B','C','D','E','F'];
+    let html='<div class="row hd">'+cols.map(c=>`<div class="cell">${c}</div>`).join('')+'</div>';
+    const data=['Maya G. 2304 paid?','Dan R. 1988.5 CHECK','Sana K. 2730.25 ok','Jon P. 1842 ask Rick','override 12.5%','bonus?? 250','wk32 FINAL v3'];
+    for(let r=1;r<=7;r++){
+      html+='<div class="row"><div class="cell">'+r+'</div>';
+      for(let c=1;c<7;c++){const t=(srand(r*7+c)<.5)?(data[(r+c)%7]):'';html+=`<div class="cell">${t}</div>`;}
+      html+='</div>';
+    }
+    sheet.innerHTML=html;
+  };
+})();
+
+/* --- atoms ghost cursor --- */
+hooks['sc-atoms']=(b,silent)=>{
+  const g=document.getElementById('atomGhost');
+  if(b===1&&!silent){
+    const cells=[...document.querySelectorAll('#sc-atoms .cellw')].slice(0,5);
+    const sec=document.getElementById('sc-atoms').getBoundingClientRect();
+    let step=0;
+    const hop=()=>{
+      if(step>=cells.length||si!==SC.indexOf(document.getElementById('sc-atoms')))return;
+      const r=cells[step].getBoundingClientRect();
+      g.style.transition='transform .8s cubic-bezier(.4,.1,.2,1)';
+      g.style.transform=`translate(${r.left-sec.left+r.width/2}px,${r.top-sec.top+r.height+6}px)`;
+      step++;T(hop,950);
+    };
+    const r0=cells[0].getBoundingClientRect();
+    g.style.transition='none';
+    g.style.transform=`translate(${r0.left-sec.left-60}px,${r0.top-sec.top+80}px)`;
+    g.getBoundingClientRect();
+    T(hop,150);
+  }
+};
+
+/* --- components total count-up --- */
+hooks['sc-compo']=(b,silent)=>{
+  if(b===0){
+    const el=document.getElementById('compoTotal');
+    if(silent){el.textContent='$1,962.00';return;}
+    T(()=>{tween(1200,p=>{
+      el.textContent='$'+(1962*p).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+    });},850);
+  }
+};
+
+/* --- theming token value --- */
+hooks['sc-theme']=(b)=>{
+  document.getElementById('tokVal').textContent=(b>=1)?'#17181C':'#FFFFFF';
+};
+
+/* --- before/after wipes --- */
+document.querySelectorAll('[data-wipe]').forEach(st=>{
+  let dragging=false;
+  const setW=v=>st.style.setProperty('--w',Math.max(0,Math.min(100,v))+'%');
+  st.addEventListener('pointerdown',e=>{dragging=true;st.setPointerCapture(e.pointerId);
+    const r=st.getBoundingClientRect();setW((e.clientX-r.left)/r.width*100);e.stopPropagation();});
+  st.addEventListener('pointermove',e=>{if(!dragging)return;
+    const r=st.getBoundingClientRect();setW((e.clientX-r.left)/r.width*100);});
+  st.addEventListener('pointerup',()=>dragging=false);
+  st.addEventListener('click',e=>e.stopPropagation());
+});
+['sc-bo','sc-bh','sc-br'].forEach(id=>{
+  hooks[id]=(b,silent)=>{
+    const st=document.querySelector('#'+id+' [data-wipe]');
+    if(b===0){st.style.setProperty('--w','0%');}
+    if(b===1){
+      if(silent){st.style.setProperty('--w','100%');return;}
+      tween(1800,p=>st.style.setProperty('--w',(p*100)+'%'));
+    }
+  };
+});
+
+/* ============ render ============ */
+let lastSi=-1;
+function render(animate){
+  clearTimers();
+  SC.forEach((s,i)=>{
+    s.classList.toggle('active',i===si);
+    for(let b=0;b<=9;b++)s.classList.remove('b'+b);
+  });
+  const sc=SC[si];
+  for(let b=0;b<=beat;b++)sc.classList.add('b'+b);
+  const id=sc.id;
+  if(hooks[id]){for(let b=0;b<=beat;b++)hooks[id](b,!(animate&&b===beat));}
+  /* chrome */
+  const bare=sc.classList.contains('bare');
+  document.body.classList.toggle('bare',bare);
+  document.body.classList.toggle('chrome-dark',sc.classList.contains('dark'));
+  rlEl.textContent=sc.dataset.rl||'';rrEl.textContent=sc.dataset.rr||'';
+  pg.textContent=String(si+1).padStart(2,'0')+' / '+N;
+  prog.style.width=(si/(N-1)*100)+'%';
+  hintc.style.opacity=(si===0)?'':0;
+  location.hash=si+'.'+beat;
+  lastSi=si;
+}
+function next(){
+  if(beat<beatsOf(si)){beat++;render(true);}
+  else if(si<N-1){si++;beat=0;render(true);}
+}
+function prev(){
+  if(beat>0){beat--;render(true);}
+  else if(si>0){si--;beat=beatsOf(si);render(true);}
+}
+function jump(s,b){si=Math.max(0,Math.min(N-1,s));beat=Math.min(b||0,beatsOf(si));render(true);}
+
+/* nav wiring */
+document.getElementById('bNext').addEventListener('click',e=>{e.stopPropagation();next();});
+document.getElementById('bPrev').addEventListener('click',e=>{e.stopPropagation();prev();});
+document.getElementById('beginBtn').addEventListener('click',e=>{e.stopPropagation();next();});
+document.addEventListener('click',e=>{
+  if(e.target.closest('button,a,#menu,[data-wipe],#navb'))return;
+  if(e.clientX<innerWidth*0.13)prev();else next();
+});
+document.addEventListener('keydown',e=>{
+  const menu=document.getElementById('menu');
+  if(e.key==='Escape'){menu.classList.remove('open');return;}
+  if(e.key.toLowerCase()==='c'){menu.classList.toggle('open');return;}
+  if(menu.classList.contains('open'))return;
+  if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();next();}
+  else if(e.key==='ArrowLeft'){e.preventDefault();prev();}
+  else if(e.key==='Home'){jump(0,0);}
+  else if(e.key==='End'){jump(N-1,0);}
+  else if(e.key>='1'&&e.key<='5'){jump([2,13,21,29,34][+e.key-1],0);}
+});
+document.getElementById('menuClose').addEventListener('click',()=>document.getElementById('menu').classList.remove('open'));
+document.querySelectorAll('#menu .mrow').forEach(r=>r.addEventListener('click',()=>{
+  document.getElementById('menu').classList.remove('open');jump(+r.dataset.go,0);
+}));
+
+/* start from hash if present; wait for a real viewport (the preview pane can
+   evaluate scripts at 0x0, which zeroes every measured position) */
+(function(){
+  const m=location.hash.match(/^#(\d+)\.(\d+)$/);
+  if(m){si=Math.min(N-1,+m[1]);beat=Math.min(beatsOf(si),+m[2]);}
+  function start(){
+    if(innerWidth<50||innerHeight<50){setTimeout(start,120);return;}
+    render(false);
+    /* replay entry animation for initial scene */
+    T(()=>{const s=SC[si];s.classList.remove('active');void s.offsetWidth;s.classList.add('active');
+      if(hooks[s.id])for(let b=0;b<=beat;b++)hooks[s.id](b,b<beat);},60);
+  }
+  start();
+  let rsz;
+  addEventListener('resize',()=>{clearTimeout(rsz);rsz=setTimeout(()=>render(false),160);});
+})();
+</script>
+</body>
+</html>
