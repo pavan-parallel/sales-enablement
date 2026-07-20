@@ -393,7 +393,7 @@ function wake(){document.body.classList.remove('idle');clearTimeout(idleT);idleT
 ['mousemove','keydown','click'].forEach(e=>addEventListener(e,wake));wake();
 
 /* ---------------- keyboard ---------------- */
-addEventListener('keydown',e=>{
+function onKey(e){
   const k=e.key.toLowerCase(),cmd=e.metaKey||e.ctrlKey;
   if(palette.classList.contains('open')){
     if(k==='escape')closePalette();
@@ -403,7 +403,7 @@ addEventListener('keydown',e=>{
     return;
   }
   if(cmd&&k==='k'){e.preventDefault();openPalette();return;}
-  if(e.target.tagName==='INPUT')return;
+  if(e.target&&e.target.tagName==='INPUT')return;
   if(k==='/'){e.preventDefault();openPalette();}
   else if(k==='['||(cmd&&k==='b')){e.preventDefault();toggleNav();}
   else if(k==='f'){toggleImmersive();}
@@ -411,7 +411,13 @@ addEventListener('keydown',e=>{
   else if(k==='escape'){document.body.classList.remove('immersive');}
   else if(k==='arrowright'){const i=LEAVES.indexOf(current);go(LEAVES[Math.min(i+1,LEAVES.length-1)].slug,true);}
   else if(k==='arrowleft'){const i=LEAVES.indexOf(current);go(LEAVES[Math.max(i-1,0)].slug,true);}
-});
+}
+addEventListener('keydown',onKey);
+/* Once you click INTO the prototype, the iframe steals keyboard focus and key events no longer
+   reach this window — so the shortcuts (F, etc.) go dead. For same-origin prototypes we mirror the
+   handler onto the iframe's own window so they keep working; cross-origin (Figma) embeds throw on
+   access and are safely ignored (there, click the hub once to regain focus). */
+proto.addEventListener('load',()=>{try{proto.contentWindow.addEventListener('keydown',onKey);}catch(_){}});
 palette.addEventListener('click',e=>{if(e.target===palette)closePalette();});
 addEventListener('resize',fitApp);
 addEventListener('hashchange',()=>{const s=location.hash.slice(1);if(s&&s!==current?.slug)go(s,false);});
