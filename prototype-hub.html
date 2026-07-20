@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
+<title>Parallel · Prototypes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0C0D10;--stage:#0A0B0D;--card:#1A1B1F;--card2:#232429;
+  --ink:#EAEBEE;--mut:#969AA2;--lab:#666A72;
+  --line:rgba(255,255,255,.07);--line2:rgba(255,255,255,.13);--line3:rgba(255,255,255,.22);
+  --indigo:#6E7BEF;--indigo-lt:#9AA3F7;--indigo-soft:rgba(110,123,239,.15);--indigo-dk:#6E7BEF;
+  --dark:#000;
+  --f:'Hanken Grotesk',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  --ease:cubic-bezier(.4,0,.1,1);--spring:cubic-bezier(.34,1.2,.4,1);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden}
+body{background:var(--bg);color:var(--ink);font-family:var(--f);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;font-size:14px}
+button{font-family:inherit;color:inherit;cursor:pointer;background:none;border:0}
+::selection{background:var(--indigo-soft)}
+
+#app{display:flex;height:100%}
+
+/* ============ SIDEBAR ============ */
+#sidebar{width:300px;flex:none;background:var(--card);border-right:1px solid var(--line);display:flex;flex-direction:column;min-height:0;
+  transition:width .42s var(--ease),opacity .3s var(--ease);overflow:hidden}
+body.nav-hidden #sidebar{width:0;opacity:0}
+/* immersive: the sidebar becomes a peek-on-hover overlay so you can switch without leaving fullscreen */
+body.immersive #sidebar{width:0;opacity:0;position:absolute;left:0;top:0;height:100%;z-index:40;
+  box-shadow:0 0 70px rgba(0,0,0,.7);transition:width .34s var(--ease),opacity .3s var(--ease)}
+body.immersive.peek #sidebar{width:300px;opacity:1}
+#edge{position:absolute;left:0;top:0;bottom:0;width:20px;z-index:38;display:none}
+body.immersive #edge{display:block}
+#edge::after{content:"";position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:48px;border-radius:0 4px 4px 0;
+  background:var(--line3);transition:opacity .25s,width .2s,background .2s}
+#edge:hover::after{width:4px;background:var(--indigo)}
+body.peek #edge::after{opacity:0}
+#side-in{width:300px;flex:none;display:flex;flex-direction:column;min-height:0;height:100%}
+#brand{padding:26px 24px 20px;display:flex;align-items:center;gap:11px;flex:none}
+#brand .dia{width:15px;height:15px;flex:none;background:var(--indigo);
+  clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%)}
+#brand .bt{font-size:16px;font-weight:600;letter-spacing:-.02em}
+#brand .bt small{display:block;font-weight:500;font-size:11.5px;color:var(--lab);letter-spacing:-.003em;margin-top:2px}
+#searchpill{margin:0 16px 14px;display:flex;align-items:center;gap:9px;font-size:13px;font-weight:500;color:var(--mut);
+  background:var(--bg);border:1px solid var(--line);border-radius:11px;padding:9px 12px;cursor:text;transition:border-color .2s,box-shadow .2s;flex:none}
+#searchpill:hover{border-color:var(--line2);box-shadow:0 6px 18px -12px rgba(20,19,24,.2)}
+#searchpill svg{width:14px;height:14px;color:var(--lab)}
+#searchpill .kb{margin-left:auto;font-size:11px;font-weight:600;color:var(--lab);border:1px solid var(--line);border-radius:5px;padding:1px 6px;background:var(--card)}
+#tree{flex:1;overflow-y:auto;padding:2px 12px 26px}
+#tree::-webkit-scrollbar{width:9px}#tree::-webkit-scrollbar-thumb{background:var(--line);border-radius:6px;border:3px solid var(--card)}
+
+.grp{margin-top:2px}
+.grp>.ghead{display:flex;align-items:center;gap:7px;width:100%;padding:8px;text-align:left;
+  color:var(--lab);font-weight:600;font-size:11px;letter-spacing:.07em;text-transform:uppercase;border-radius:8px;transition:color .15s}
+.grp>.ghead:hover{color:var(--mut)}
+.grp>.ghead .chev{width:9px;height:9px;flex:none;transition:transform .22s var(--ease);opacity:.65}
+.grp.collapsed>.ghead .chev{transform:rotate(-90deg)}
+.grp.collapsed>.gbody{display:none}
+.grp .grp>.ghead{text-transform:none;letter-spacing:-.005em;font-size:12.5px;color:var(--mut)}
+.gbody{padding-left:9px;border-left:1px solid var(--line);margin-left:9px}
+
+.leaf{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:8px 11px;border-radius:9px;
+  color:var(--mut);font-size:13.5px;font-weight:500;letter-spacing:-.008em;position:relative;line-height:1.25;
+  transition:background .16s,color .16s}
+.leaf:hover{background:rgba(255,255,255,.05);color:var(--ink)}
+.leaf.active{background:var(--indigo-soft);color:var(--indigo-lt)}
+.leaf.active::before{content:"";position:absolute;left:-9px;top:7px;bottom:7px;width:2px;border-radius:2px;background:var(--indigo)}
+.leaf .dot{width:6px;height:6px;border-radius:50%;background:var(--line3);flex:none;transition:background .2s,box-shadow .2s}
+.leaf.haslink .dot{background:var(--indigo);box-shadow:0 0 0 3px var(--indigo-soft)}
+.leaf .lt{flex:1;min-width:0}
+.leaf .lt .sub{display:block;font-size:11px;font-weight:400;color:var(--lab);margin-top:2px;letter-spacing:0}
+.leaf .tag{font-size:10px;font-weight:600;color:var(--lab);border:1px solid var(--line2);border-radius:5px;padding:1px 5px;flex:none}
+.leaf.hidden,.grp.hidden{display:none}
+
+/* ============ MAIN / STAGE ============ */
+#main{flex:1;position:relative;min-width:0;min-height:0}
+#stage{position:absolute;inset:0;display:grid;place-items:center;
+  background:radial-gradient(60% 55% at 50% 42%,rgba(110,123,239,.045),transparent 70%),var(--stage);transition:background .4s}
+#stage.app{background:#000}
+
+/* floating controls (no chunky bar) */
+.chrome{position:absolute;z-index:20;display:flex;align-items:center;gap:8px;transition:opacity .4s var(--ease),transform .3s var(--ease)}
+#c-left{top:22px;left:24px}
+#c-right{top:22px;right:26px}
+body.idle .chrome{opacity:.32}
+body.immersive .chrome{opacity:0;pointer-events:none;transform:translateY(-6px)}
+.ic{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;color:var(--mut);
+  background:rgba(26,27,31,.66);backdrop-filter:blur(12px) saturate(1.4);-webkit-backdrop-filter:blur(12px) saturate(1.4);
+  border:1px solid var(--line2);transition:color .2s,border-color .2s,box-shadow .2s,background .2s}
+.ic:hover{color:var(--ink);border-color:var(--line3);background:rgba(35,36,41,.8)}
+.ic svg{width:17px;height:17px}
+.ic:disabled{opacity:.4;cursor:default}
+#crumb{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--mut);border:1px solid var(--line2);
+  background:rgba(26,27,31,.66);backdrop-filter:blur(12px) saturate(1.4);-webkit-backdrop-filter:blur(12px) saturate(1.4);
+  border-radius:11px;padding:9px 15px;font-weight:500;letter-spacing:-.008em;max-width:52vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#crumb .sep{color:var(--lab)}#crumb b{color:var(--ink);font-weight:600}
+#crumb .live{width:6px;height:6px;border-radius:50%;background:var(--indigo);box-shadow:0 0 0 3px var(--indigo-soft);flex:none}
+
+/* device frames — the prototype floats as the hero */
+#frame{position:relative;transition:width .4s var(--ease),height .4s var(--ease)}
+.screen{position:relative;width:100%;height:100%;overflow:hidden;background:#000}
+.screen iframe{width:100%;height:100%;border:0;display:block;background:#000}
+
+/* phone (Figma embeds) — graphite handset */
+#stage.phone #frame{height:min(88vh,880px);width:calc(min(88vh,880px)*0.462);border-radius:42px;padding:11px;
+  background:linear-gradient(155deg,#33343a,#1a1519 46%,#0c0c0f);
+  box-shadow:inset 0 1.5px 0 rgba(255,255,255,.14),0 2px 5px rgba(20,19,24,.2),0 50px 100px -34px rgba(28,28,48,.5)}
+#stage.phone #frame .screen{border-radius:31px}
+/* app (self-framed local prototypes) — the prototype already draws its own device bezel, scaler and
+   backdrop, so we add NO frame of our own (that was the "frame in a frame"). It fills the stage and
+   its own dark scene becomes the immersive backdrop. */
+/* windowed: inset so the floating controls sit clear above the prototype (it self-scales to fit).
+   immersive: true full-bleed so nothing but the prototype shows. */
+#stage.app #frame{position:absolute;top:66px;left:24px;right:24px;bottom:24px;width:auto;height:auto;border-radius:0;background:none;box-shadow:none}
+body.immersive #stage.app #frame{top:0;left:0;right:0;bottom:0}
+#stage.app #frame .screen{position:absolute;inset:0}
+#stage.app #frame .screen iframe{position:absolute;inset:0;width:100%;height:100%;transform:none}
+/* desktop — clean browser window */
+#stage.desktop #frame{width:min(94%,1240px);height:min(84vh,800px);border-radius:14px;overflow:hidden;background:var(--card);
+  border:1px solid var(--line2);box-shadow:0 54px 110px -40px rgba(28,28,48,.38)}
+#stage.desktop #frame .bar{height:36px;display:flex;align-items:center;gap:7px;padding:0 15px;border-bottom:1px solid var(--line);background:var(--card)}
+#stage.desktop #frame .bar i{width:11px;height:11px;border-radius:50%;background:var(--line2)}
+#stage.desktop #frame .screen{height:calc(100% - 36px)}
+#stage.phone #frame .bar,#stage.app #frame .bar{display:none}
+
+/* empty / not-linked state */
+#empty{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:15px;text-align:center;padding:34px;background:var(--card)}
+#frame.nolink #empty{display:flex}#frame.nolink .screen iframe{display:none}
+#empty .eico{width:48px;height:48px;border-radius:13px;background:var(--bg);border:1px solid var(--line);display:grid;place-items:center;color:var(--lab)}
+#empty .eico svg{width:22px;height:22px}
+#empty h3{font-size:15.5px;font-weight:600;letter-spacing:-.02em}
+#empty p{font-size:12.5px;color:var(--mut);max-width:32ch;line-height:1.55}
+#empty code{font-family:ui-monospace,Menlo,monospace;font-size:11.5px;color:var(--indigo);background:var(--indigo-soft);padding:2px 7px;border-radius:6px}
+
+/* ============ COMMAND PALETTE ============ */
+#palette{position:fixed;inset:0;z-index:200;background:rgba(20,19,24,.28);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  opacity:0;visibility:hidden;transition:opacity .22s,visibility 0s .22s;display:grid;place-items:start center;padding:14vh 20px 20px}
+#palette.open{opacity:1;visibility:visible;transition:opacity .22s}
+#pcard{width:min(620px,94vw);background:var(--card);border:1px solid var(--line2);border-radius:18px;overflow:hidden;
+  box-shadow:0 40px 100px -30px rgba(20,19,24,.5);transform:translateY(-10px) scale(.985);transition:transform .26s var(--spring)}
+#palette.open #pcard{transform:none}
+#phead{display:flex;align-items:center;gap:12px;padding:17px 20px;border-bottom:1px solid var(--line)}
+#phead svg{width:18px;height:18px;color:var(--lab);flex:none}
+#pinput{flex:1;border:0;outline:0;background:none;font-family:var(--f);font-size:16px;font-weight:500;color:var(--ink);letter-spacing:-.01em}
+#pinput::placeholder{color:var(--lab)}
+#plist{max-height:min(52vh,460px);overflow-y:auto;padding:8px}
+#plist::-webkit-scrollbar{width:10px}#plist::-webkit-scrollbar-thumb{background:var(--line);border-radius:6px;border:3px solid var(--card)}
+.prow{display:flex;align-items:center;gap:13px;padding:11px 13px;border-radius:11px;cursor:pointer}
+.prow.sel{background:var(--indigo-soft)}
+.prow .pdot{width:7px;height:7px;border-radius:50%;background:var(--line3);flex:none}
+.prow.haslink .pdot{background:var(--indigo)}
+.prow .pn{font-size:14.5px;font-weight:600;letter-spacing:-.01em}
+.prow .pp{font-size:12px;color:var(--lab);margin-top:1px;letter-spacing:-.003em}
+.prow .pd{width:20px;height:20px;color:var(--lab);flex:none;margin-left:auto;opacity:0;transition:opacity .15s}
+.prow.sel .pd{opacity:1;color:var(--indigo)}
+.prow .pd svg{width:20px;height:20px}
+#pempty{padding:34px;text-align:center;color:var(--lab);font-size:13.5px;display:none}
+#pfoot{display:flex;align-items:center;gap:18px;padding:11px 18px;border-top:1px solid var(--line);font-size:11.5px;color:var(--lab)}
+#pfoot .k{display:inline-flex;align-items:center;gap:5px}
+#pfoot kbd{font-family:var(--f);font-size:10.5px;font-weight:600;color:var(--mut);border:1px solid var(--line2);border-radius:5px;padding:1px 6px;background:var(--bg)}
+#pfoot .grow{margin-left:auto}
+
+/* hint chip + toast */
+#hint{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:15;display:flex;gap:16px;align-items:center;
+  background:var(--card);border:1px solid var(--line);border-radius:100px;padding:9px 18px;font-size:12px;color:var(--mut);
+  box-shadow:0 16px 40px -22px rgba(20,19,24,.35);transition:opacity .5s;font-weight:500}
+#hint kbd{font-family:var(--f);font-size:11px;font-weight:600;color:var(--ink);border:1px solid var(--line2);border-radius:5px;padding:1px 6px;margin-right:5px}
+body.immersive #hint,body.idle #hint{opacity:0;pointer-events:none}
+#toast{position:fixed;bottom:24px;left:50%;transform:translate(-50%,16px);z-index:210;background:#2A2C32;color:var(--ink);border:1px solid var(--line2);
+  border-radius:100px;padding:10px 20px;font-size:12.5px;font-weight:600;opacity:0;pointer-events:none;transition:opacity .25s,transform .3s var(--ease)}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+
+@media(max-width:820px){#sidebar{position:absolute;z-index:30;height:100%;box-shadow:0 0 60px rgba(0,0,0,.2)}}
+</style>
+</head>
+<body>
+<div id="app">
+  <!-- ============ SIDEBAR ============ -->
+  <aside id="sidebar"><div id="side-in">
+    <div id="brand"><span class="dia"></span><span class="bt">Prototypes<small>Parallel · client work</small></span></div>
+    <div id="searchpill">
+      <svg viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/><path d="M20 20l-3.5-3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <span>Search prototypes</span><span class="kb">⌘K</span>
+    </div>
+    <nav id="tree"></nav>
+  </div></aside>
+
+  <!-- ============ MAIN ============ -->
+  <main id="main">
+    <div id="stage" class="app">
+      <div id="frame">
+        <div class="bar"><i></i><i></i><i></i></div>
+        <div class="screen">
+          <iframe id="proto" allowfullscreen title="Prototype"></iframe>
+          <div id="empty">
+            <div class="eico"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="3" width="16" height="18" rx="3" stroke="currentColor" stroke-width="1.8"/><path d="M9 8h6M9 12h6M9 16h3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+            <h3 id="emptyTitle">No prototype linked yet</h3>
+            <p>Add this flow's link to its <code>src</code> field in the <code>CATALOG</code> at the top of this file and it appears here.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- floating controls -->
+      <div class="chrome" id="c-left">
+        <button class="ic" id="navToggle" title="Toggle sidebar ( [ )"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="16" rx="2.5" stroke="currentColor" stroke-width="1.8"/><path d="M9 4v16" stroke="currentColor" stroke-width="1.8"/></svg></button>
+        <div id="crumb"></div>
+      </div>
+      <div id="edge"></div>
+
+      <div class="chrome" id="c-right">
+        <button class="ic" id="restartBtn" title="Restart prototype ( R )"><svg viewBox="0 0 24 24" fill="none"><path d="M20 11a8 8 0 1 0-.55 4.2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M20 4v5h-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <button class="ic" id="copyBtn" title="Copy link"><svg viewBox="0 0 24 24" fill="none"><rect x="9" y="9" width="12" height="12" rx="2.4" stroke="currentColor" stroke-width="1.8"/><path d="M5 15V5a2 2 0 0 1 2-2h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
+        <button class="ic" id="extBtn" title="Open in new tab"><svg viewBox="0 0 24 24" fill="none"><path d="M7 17L17 7M17 7H9M17 7v8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <button class="ic" id="immBtn" title="Immersive ( F )"><svg viewBox="0 0 24 24" fill="none"><path d="M4 9V5a1 1 0 0 1 1-1h4M20 9V5a1 1 0 0 0-1-1h-4M4 15v4a1 1 0 0 0 1 1h4M20 15v4a1 1 0 0 1-1 1h-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- ============ COMMAND PALETTE ============ -->
+<div id="palette">
+  <div id="pcard">
+    <div id="phead">
+      <svg viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/><path d="M20 20l-3.5-3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <input id="pinput" type="text" placeholder="Jump to a prototype…" autocomplete="off" spellcheck="false">
+    </div>
+    <div id="plist"></div>
+    <div id="pempty">No prototype matches that.</div>
+    <div id="pfoot">
+      <span class="k"><kbd>↑</kbd><kbd>↓</kbd> navigate</span>
+      <span class="k"><kbd>↵</kbd> open</span>
+      <span class="k"><kbd>esc</kbd> close</span>
+      <span class="k grow"><kbd>[</kbd> sidebar</span>
+      <span class="k"><kbd>F</kbd> immersive</span>
+    </div>
+  </div>
+</div>
+
+<div id="hint"><span><kbd>⌘K</kbd>search</span><span><kbd>←→</kbd>switch</span><span><kbd>F</kbd>immersive</span></div>
+<div id="toast"></div>
+
+<script>
+/* =====================================================================
+   THE INDEX — single source of truth for every prototype.
+   Each leaf: name, device 'phone'|'desktop'|'app', src (iframe URL —
+   a Figma embed link, or a local prototype path), optional file
+   (external "open" target), sub, tag, note. Groups nest via children.
+   Add a link → paste it into `src`; it goes live instantly.
+   ===================================================================== */
+const CATALOG=[
+  {group:"IndusInd Cards Hub", children:[
+    {group:"Activation Journeys", children:[
+      {name:"Credit Card Activation Journey", device:"app", src:"indusind-prototype/index.html", file:"indusind-prototype/index.html"},
+      {name:"Setting up Card Space", sub:"Pre-physical card arrival", device:"phone", src:"", file:""},
+      {name:"New User Activation", tag:"old", device:"phone", src:"", file:""},
+    ]},
+    {group:"Tokenisation", note:"Saving your card details across vendors, like Swiggy.", children:[
+      {name:"Adding Vendors", device:"phone", src:"", file:""},
+    ]},
+    {group:"Desktop", children:[
+      {name:"Desktop Landing", device:"desktop", src:"", file:""},
+      {name:"Geofencing", device:"desktop", src:"", file:""},
+    ]},
+    {group:"Festive Theming", children:[
+      {name:"Diwali", device:"phone", src:"", file:""},
+      {name:"X'Mas", device:"phone", src:"", file:""},
+    ]},
+    {name:"Convert Bill to EMI", device:"phone", src:"", file:""},
+  ]},
+  {group:"Aurasell", children:[
+    {name:"Onboarding", device:"phone", src:"", file:""},
+  ]},
+];
+
+/* ---------------- flat, slugged model ---------------- */
+const slugify=s=>s.toLowerCase().replace(/['’]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+const LEAVES=[];
+(function walk(nodes,path,slugPath,note){
+  nodes.forEach(n=>{
+    if(n.children)walk(n.children,path.concat(n.group),slugPath.concat(slugify(n.group)),n.note||note);
+    else LEAVES.push({node:n,path:path.slice(),note,slug:slugPath.concat(slugify(n.name)).join('/')});
+  });
+})(CATALOG,[],[],null);
+
+/* ---------------- sidebar tree ---------------- */
+const treeEl=document.getElementById('tree');
+function renderTree(nodes){
+  const frag=document.createDocumentFragment();
+  nodes.forEach(n=>{
+    if(n.children){
+      const g=document.createElement('div');g.className='grp';
+      const h=document.createElement('button');h.className='ghead';
+      h.innerHTML='<svg class="chev" viewBox="0 0 10 10" fill="none"><path d="M2 3l3 3 3-3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>'+n.group+'</span>';
+      const body=document.createElement('div');body.className='gbody';body.appendChild(renderTree(n.children));
+      h.onclick=()=>g.classList.toggle('collapsed');
+      g.appendChild(h);g.appendChild(body);frag.appendChild(g);
+    }else{
+      const leaf=LEAVES.find(l=>l.node===n);
+      const b=document.createElement('button');b.className='leaf'+(n.src?' haslink':'');
+      let html='<span class="dot"></span><span class="lt">'+n.name+(n.sub?'<span class="sub">'+n.sub+'</span>':'')+'</span>';
+      if(n.tag)html+='<span class="tag">'+n.tag+'</span>';
+      b.innerHTML=html;b.onclick=()=>go(leaf.slug,true);
+      leaf.el=b;frag.appendChild(b);
+    }
+  });
+  return frag;
+}
+treeEl.appendChild(renderTree(CATALOG));
+
+/* ---------------- selection + deep links ---------------- */
+const stage=document.getElementById('stage'),frame=document.getElementById('frame'),proto=document.getElementById('proto'),
+      crumb=document.getElementById('crumb'),extBtn=document.getElementById('extBtn'),emptyTitle=document.getElementById('emptyTitle');
+let current=null;
+
+/* app prototypes self-scale (their own #scaler fits to the iframe viewport), so the hub does not
+   scale them — the iframe just fills the stage. Kept as a no-op so existing call sites are safe. */
+function fitApp(){}
+function go(slug,push){
+  const leaf=LEAVES.find(l=>l.slug===slug)||LEAVES[0];current=leaf;const n=leaf.node;
+  LEAVES.forEach(l=>l.el&&l.el.classList.toggle('active',l===leaf));
+  let p=leaf.el.parentElement;while(p&&p!==treeEl){if(p.classList.contains('grp'))p.classList.remove('collapsed');p=p.parentElement;}
+  leaf.el.scrollIntoView({block:'nearest'});
+  stage.className=n.device;                        // phone | desktop | app
+  const par=leaf.path[leaf.path.length-1];
+  crumb.innerHTML=(n.src?'<span class="live"></span>':'')+(par?'<span>'+par+'</span><span class="sep">›</span>':'')+'<b>'+n.name+'</b>';
+  if(n.src){
+    frame.classList.remove('nolink');
+    if(proto.getAttribute('src')!==n.src)proto.setAttribute('src',n.src);
+    proto.style.transform='none';
+    if(n.device==='app')requestAnimationFrame(fitApp);
+  }else{frame.classList.add('nolink');proto.removeAttribute('src');emptyTitle.textContent=n.name+' — no link yet';}
+  extBtn.disabled=!(n.file||n.src);extBtn.onclick=()=>{const u=n.file||n.src;u&&window.open(u,'_blank');};
+  document.body.classList.remove('peek');   // if picked from the immersive peek-drawer, let it slide away
+  const h='#'+slug;if(push&&location.hash!==h)history.pushState(null,'',h);else history.replaceState(null,'',h);
+  document.title='Prototypes · '+n.name;
+}
+
+/* ---------------- command palette ---------------- */
+const palette=document.getElementById('palette'),pinput=document.getElementById('pinput'),
+      plist=document.getElementById('plist'),pempty=document.getElementById('pempty');
+let pfiltered=[],psel=0;
+function openPalette(){palette.classList.add('open');pinput.value='';buildPalette('');setTimeout(()=>pinput.focus(),40);}
+function closePalette(){palette.classList.remove('open');}
+function buildPalette(q){
+  q=q.trim().toLowerCase();
+  pfiltered=LEAVES.filter(l=>!q||(l.node.name+' '+(l.node.sub||'')+' '+l.path.join(' ')).toLowerCase().includes(q));
+  psel=0;plist.innerHTML='';pempty.style.display=pfiltered.length?'none':'block';
+  pfiltered.forEach((l,i)=>{
+    const r=document.createElement('div');r.className='prow'+(l.node.src?' haslink':'')+(i===0?' sel':'');
+    r.innerHTML='<span class="pdot"></span><div><div class="pn">'+l.node.name+'</div><div class="pp">'+l.path.join(' › ')+'</div></div>'
+      +'<span class="pd"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>';
+    r.onmouseenter=()=>{psel=i;markSel();};
+    r.onclick=()=>{go(l.slug,true);closePalette();};
+    plist.appendChild(r);
+  });
+}
+function markSel(){[...plist.children].forEach((r,i)=>r.classList.toggle('sel',i===psel));
+  const el=plist.children[psel];if(el)el.scrollIntoView({block:'nearest'});}
+pinput.addEventListener('input',()=>buildPalette(pinput.value));
+document.getElementById('searchpill').addEventListener('click',openPalette);
+
+/* ---------------- chrome: toggles, copy, idle ---------------- */
+function toggleNav(){document.body.classList.toggle('nav-hidden');}
+function toggleImmersive(){document.body.classList.toggle('immersive');document.body.classList.remove('peek');requestAnimationFrame(fitApp);}
+/* immersive edge-peek: hover the left edge to slide the sidebar in temporarily */
+document.getElementById('edge').addEventListener('mouseenter',()=>{if(document.body.classList.contains('immersive'))document.body.classList.add('peek');});
+document.getElementById('sidebar').addEventListener('mouseleave',()=>document.body.classList.remove('peek'));
+/* restart the current prototype from scratch (reload its iframe) */
+function restartProto(){
+  const s=proto.getAttribute('src');if(!s)return;
+  proto.setAttribute('src','about:blank');
+  setTimeout(()=>{proto.setAttribute('src',s);if(current&&current.node.device==='app')requestAnimationFrame(fitApp);},50);
+  toast('Prototype restarted');
+}
+document.getElementById('restartBtn').onclick=restartProto;
+document.getElementById('navToggle').onclick=toggleNav;
+document.getElementById('immBtn').onclick=toggleImmersive;
+document.getElementById('copyBtn').onclick=()=>{
+  const url=location.origin+location.pathname+'#'+current.slug;
+  navigator.clipboard.writeText(url).then(()=>toast('Link copied')).catch(()=>toast('Copy failed'));
+};
+let toastT=null;const toastEl=document.getElementById('toast');
+function toast(m){toastEl.textContent=m;toastEl.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>toastEl.classList.remove('on'),1800);}
+
+/* idle-fade the floating controls so the prototype stays the focus */
+let idleT=null;
+function wake(){document.body.classList.remove('idle');clearTimeout(idleT);idleT=setTimeout(()=>document.body.classList.add('idle'),2600);}
+['mousemove','keydown','click'].forEach(e=>addEventListener(e,wake));wake();
+
+/* ---------------- keyboard ---------------- */
+addEventListener('keydown',e=>{
+  const k=e.key.toLowerCase(),cmd=e.metaKey||e.ctrlKey;
+  if(palette.classList.contains('open')){
+    if(k==='escape')closePalette();
+    else if(k==='arrowdown'){e.preventDefault();psel=Math.min(psel+1,pfiltered.length-1);markSel();}
+    else if(k==='arrowup'){e.preventDefault();psel=Math.max(psel-1,0);markSel();}
+    else if(k==='enter'&&pfiltered[psel]){go(pfiltered[psel].slug,true);closePalette();}
+    return;
+  }
+  if(cmd&&k==='k'){e.preventDefault();openPalette();return;}
+  if(e.target.tagName==='INPUT')return;
+  if(k==='/'){e.preventDefault();openPalette();}
+  else if(k==='['||(cmd&&k==='b')){e.preventDefault();toggleNav();}
+  else if(k==='f'){toggleImmersive();}
+  else if(k==='r'&&!cmd){e.preventDefault();restartProto();}
+  else if(k==='escape'){document.body.classList.remove('immersive');}
+  else if(k==='arrowright'){const i=LEAVES.indexOf(current);go(LEAVES[Math.min(i+1,LEAVES.length-1)].slug,true);}
+  else if(k==='arrowleft'){const i=LEAVES.indexOf(current);go(LEAVES[Math.max(i-1,0)].slug,true);}
+});
+palette.addEventListener('click',e=>{if(e.target===palette)closePalette();});
+addEventListener('resize',fitApp);
+addEventListener('hashchange',()=>{const s=location.hash.slice(1);if(s&&s!==current?.slug)go(s,false);});
+
+/* ---------------- boot ---------------- */
+go(location.hash.slice(1)||LEAVES[0].slug,false);
+setTimeout(()=>{const h=document.getElementById('hint');if(h)h.style.opacity='0';},6000);
+</script>
+</body>
+</html>
